@@ -50,7 +50,7 @@
 
         public void RemovingDrive()
         {
-            this.treesorService.Unloading();
+            this.treesorService.Dispose();
         }
 
         #endregion Get notified of end of life

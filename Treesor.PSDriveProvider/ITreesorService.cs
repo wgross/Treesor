@@ -9,8 +9,7 @@ namespace Treesor.PSDriveProvider
     /// <summary>
     /// Interface contract for data servcies 
     /// </summary>
-    public interface ITreesorService
+    public interface ITreesorService : IDisposable
     {
-        void Unloading();
     }
 }
