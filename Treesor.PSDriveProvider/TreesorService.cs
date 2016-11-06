@@ -8,5 +8,10 @@ namespace Treesor.PSDriveProvider
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         public static Func<string,ITreesorService> Factory { get; set; }
+
+        public void Unloading()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

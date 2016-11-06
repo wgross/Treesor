@@ -1,5 +1,4 @@
-﻿using Elementary.Hierarchy.Collections;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using System.IO;
 using System.Management.Automation;
@@ -8,7 +7,7 @@ using Treesor.PSDriveProvider;
 namespace Treesor.PowershellDriveProvider.Test
 {
     [TestFixture]
-    public class TreesorDriveProviderLoadingTest
+    public class TreesorDriveCmdletProviderTest
     {
         private PowerShell powershell;
 
@@ -50,7 +49,7 @@ namespace Treesor.PowershellDriveProvider.Test
         //}
 
         [Test]
-        public void Powershell_creates_drive_with_specific_url()
+        public void Provider_creates_new_instance_of_treesor_service()
         {
             // ARRANGE
 
@@ -76,14 +75,40 @@ namespace Treesor.PowershellDriveProvider.Test
                 .Invoke();
 
             // ASSERT
-            // url must be shown to the factory 
+            // url must be shown to the factory
 
             Assert.AreEqual(@"\", givenUri);
+            Assert.IsFalse(this.powershell.HadErrors);
+        }
 
-            //var drives = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
+        [Test]
+        public void Provider_notifies_service_about_drive_removal()
+        {
+            // ARRANGE
 
-            //Assert.IsNotNull(drives.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
-            //Assert.IsNotNull(drives.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "custTree"));
+            var treesorService = new Mock<ITreesorService>();
+            treesorService.Setup(s => s.Unloading());
+
+            TreesorService.Factory = uri => treesorService.Object;
+
+            this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
+            this.powershell.AddStatement()
+                .AddCommand("New-PsDrive")
+                .AddParameter("Name", "custTree2")
+                .AddParameter("PsProvider", "Treesor")
+                .AddParameter("Root", @"\")
+                .Invoke();
+
+            // ACT
+            // drive is remove
+
+            var result = this.powershell.AddStatement().AddCommand("Remove-PsDrive").AddParameter("Name", "custTree2").Invoke();
+
+            // ASSERT
+            // drive is no longer there and service was called.
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            treesorService.Verify(s => s.Unloading(), Times.Once());
         }
     }
 }

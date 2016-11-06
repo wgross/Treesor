@@ -10,8 +10,8 @@
     using System.Management.Automation.Provider;
 
     [CmdletProvider("Treesor", ProviderCapabilities.None)]
-    public class TreesorDriveCmdletProvider : DriveCmdletProvider
-        // ItemCmdletProvider //  NavigationCmdletProvider //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
+    public class TreesorDriveProvider : ItemCmdletProvider
+        //  NavigationCmdletProvider //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -70,7 +70,7 @@
 
             if (treesorDriveInfo == null)
             {
-                this.WriteError(new ErrorRecord(new ArgumentNullException("drive"), "NullDrive", ErrorCategory.InvalidArgument, null));
+                this.WriteError(new ErrorRecord(new ArgumentNullException(nameof(drive)), "NullDrive", ErrorCategory.InvalidArgument, null));
                 return null;
             }
 
@@ -81,7 +81,15 @@
 
         #endregion Override DriveCmdletProvider methods
 
-        //#region Override ItemCmdletProvider methods
+        #region Override ItemCmdletProvider methods
+
+        protected override bool IsValidPath(string path)
+        {
+            log.Trace().Message($"{nameof(IsValidPath)}({nameof(path)}={path})").Write();
+
+            TreesorNodePath parsedPath;
+            return TreesorNodePath.TryParse(path, out parsedPath);
+        }
 
         //protected override void ClearItem(string path)
         //{
@@ -112,13 +120,6 @@
         //    this.WriteItemObject(item, path, isContainer: item is TreesorContainerItem);
         //}
 
-        //protected override bool IsValidPath(string path)
-        //{
-        //    log.Trace().Message($"{nameof(IsValidPath)}({nameof(path)}={path})").Write();
-
-        //    TreesorNodePath parsedPath;
-        //    return TreesorNodePath.TryParse(path, out parsedPath);
-        //}
 
         //protected override bool ItemExists(string path)
         //{
@@ -134,7 +135,7 @@
         //    this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
         //}
 
-        //#endregion Override ItemCmdletProvider methods
+        #endregion Override ItemCmdletProvider methods
 
         //#region Override ContainerCmdletProvider methods
 

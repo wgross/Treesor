@@ -131,7 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreesorDriveProviderLoadingTest.cs" />
+    <Compile Include="TreesorDriveCmdletProviderTest.cs" />
     <Compile Include="TreesorNodePathTest.cs" />
   </ItemGroup>
   <ItemGroup>
