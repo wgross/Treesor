@@ -11,5 +11,6 @@ namespace Treesor.PSDriveProvider
     /// </summary>
     public interface ITreesorService : IDisposable
     {
+        bool ItemExists(TreesorNodePath treesorNodePath);
     }
 }

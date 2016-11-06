@@ -1,6 +1,7 @@
 ﻿using Moq;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using Treesor.PSDriveProvider;
 
@@ -109,7 +110,10 @@ namespace Treesor.PowershellDriveProvider.Test
             // ACT
             // drive is remove
 
-            this.powershell.AddStatement().AddCommand("Remove-PsDrive").AddParameter("Name", "custTree");
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-PsDrive").AddParameter("Name", "custTree");
+
             var result = this.powershell.Invoke();
 
             // ASSERT
@@ -117,6 +121,40 @@ namespace Treesor.PowershellDriveProvider.Test
             
             Assert.IsFalse(this.powershell.HadErrors);
             treesorService.Verify(s => s.Dispose(), Times.Once());
+        }
+
+        [Test]
+        public void Provider_returns_drive_info()
+        {
+            // ARRANGE
+
+            var treesorService = new Mock<ITreesorService>();
+            treesorService.Setup(s => s.Dispose());
+
+            TreesorService.Factory = uri => treesorService.Object;
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-PsDrive")
+                    .AddParameter("Name", "custTree")
+                    .AddParameter("PsProvider", "Treesor")
+                    .AddParameter("Root", @"\");
+            
+            // ACT
+            // get drive info from powershell 
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Get-PsDrive").AddParameter("Name", "custTree");
+            
+            var result = this.powershell.Invoke();
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<TreesorDriveInfo>(result.Last().BaseObject);
         }
     }
 }

@@ -2,12 +2,8 @@
 {
     using NLog;
     using NLog.Fluent;
-    using PSDriveProvider;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
     using System.Management.Automation;
+    using System;
 
     public class TreesorDriveInfo : PSDriveInfo
     {
@@ -30,12 +26,22 @@
            ));
         }
 
+        internal void ClearItem(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
+
         #region Creation and initialization of this instance
 
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
             this.treesorService = TreesorService.Factory(driveInfo.Root);
+        }
+
+        internal object GetItem(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
         }
 
         //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
@@ -54,5 +60,20 @@
         }
 
         #endregion Get notified of end of life
+
+        #region Implement ItemCmdletProvider methods
+
+        internal bool ItemExists(TreesorNodePath treesorNodePath)
+        {
+            return this.treesorService.ItemExists(treesorNodePath);
+        }
+
+        internal void SetItem(TreesorNodePath treesorNodePath, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion Implement ItemCmdletProvider methods
+
     }
 }

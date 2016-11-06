@@ -1,7 +1,6 @@
 ﻿namespace Treesor.PSDriveProvider
 {
     using Elementary.Hierarchy;
-    using System.Collections.Generic;
     using System.Linq;
 
     public sealed class TreesorNodePath
@@ -24,7 +23,7 @@
             return true; // currently no error cases are implemented
         }
 
-                public static TreesorNodePath Create(HierarchyPath<string> treeKey)
+        public static TreesorNodePath Create(HierarchyPath<string> treeKey)
         {
             return new TreesorNodePath(treeKey);
         }
@@ -85,6 +84,7 @@
         {
             return this.HierarchyPath.ToString();
         }
+
         #endregion Override object behaviour
     }
 }
