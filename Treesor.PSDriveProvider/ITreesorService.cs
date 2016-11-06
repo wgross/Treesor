@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Treesor.PSDriveProvider
 {
-    public class Class1
+    public interface ITreesorService
     {
+
     }
 }
