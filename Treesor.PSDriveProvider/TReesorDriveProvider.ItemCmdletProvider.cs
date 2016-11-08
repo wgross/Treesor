@@ -42,7 +42,7 @@ namespace Treesor.PSDriveProvider
             //    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item is TreesorContainerItem})")
             //    .Write();
 
-            this.WriteItemObject(item, path, isContainer: true /*currently all are containers*/);
+            this.WriteItemObject(item, path, isContainer: item.IsContainer);
         }
 
         protected override bool ItemExists(string path)

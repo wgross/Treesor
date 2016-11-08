@@ -28,7 +28,7 @@
 
         internal void ClearItem(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            this.treesorService.ClearItem(treesorNodePath);
         }
 
         #region Creation and initialization of this instance
@@ -39,9 +39,9 @@
             this.treesorService = TreesorService.Factory(driveInfo.Root);
         }
 
-        internal object GetItem(TreesorNodePath treesorNodePath)
+        internal TreesorItem GetItem(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            return this.treesorService.GetItem(treesorNodePath);
         }
 
         //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
@@ -70,7 +70,7 @@
 
         internal void SetItem(TreesorNodePath treesorNodePath, object value)
         {
-            throw new NotImplementedException();
+            this.treesorService.SetItem(treesorNodePath, value);
         }
 
         #endregion Implement ItemCmdletProvider methods

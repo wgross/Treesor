@@ -127,6 +127,7 @@
     <Compile Include="TreesorDriveProvider.cs" />
     <Compile Include="TreesorDriveInfo.cs" />
     <Compile Include="TreesorDriveProvider.ItemCmdletProvider.cs" />
+    <Compile Include="TreesorItem.cs" />
     <Compile Include="TreesorNodePath.cs" />
     <Compile Include="TreesorService.cs" />
   </ItemGroup>

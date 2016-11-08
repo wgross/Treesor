@@ -45,8 +45,23 @@ namespace Treesor.PSDriveProvider
         }
 
         #endregion IDisposable Support
-        
+
         public bool ItemExists(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TreesorItem GetItem(TreesorNodePath rootPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetItem(TreesorNodePath rootPath, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ClearItem(TreesorNodePath rootPath)
         {
             throw new NotImplementedException();
         }

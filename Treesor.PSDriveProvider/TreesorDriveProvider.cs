@@ -1,17 +1,15 @@
 ﻿namespace Treesor.PSDriveProvider
 {
-    using Elementary.Hierarchy;
     using NLog;
     using NLog.Fluent;
     using System;
     using System.Collections.ObjectModel;
-    using System.Linq;
     using System.Management.Automation;
     using System.Management.Automation.Provider;
 
     [CmdletProvider("Treesor", ProviderCapabilities.None)]
-    public partial class TreesorDriveProvider : ItemCmdletProvider
-        //  NavigationCmdletProvider //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
+    public partial class TreesorDriveProvider : ContainerCmdletProvider
+    //  NavigationCmdletProvider //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -80,8 +78,6 @@
         }
 
         #endregion Override DriveCmdletProvider methods
-
-        
 
         //#region Override ContainerCmdletProvider methods
 
