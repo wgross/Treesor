@@ -14,5 +14,11 @@ namespace Treesor.PSDriveProvider
         void SetItem(TreesorNodePath rootPath, object value);
 
         void ClearItem(TreesorNodePath rootPath);
+
+        TreesorItem NewItem(TreesorNodePath treesorNodePath, object newItemValue);
+
+        void RemoveItem(TreesorNodePath treesorNodePath, bool recurse);
+
+        bool HasChildItems(TreesorNodePath treesorNodePath);
     }
 }

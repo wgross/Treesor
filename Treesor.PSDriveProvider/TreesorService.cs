@@ -65,5 +65,20 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
+
+        public TreesorItem NewItem(TreesorNodePath treesorNodePath, object newItemValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasChildItems(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

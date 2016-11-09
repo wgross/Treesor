@@ -73,7 +73,21 @@
             this.treesorService.SetItem(treesorNodePath, value);
         }
 
-        #endregion Implement ItemCmdletProvider methods
+        internal TreesorItem NewItem(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
+        {
+            return this.treesorService.NewItem(treesorNodePath, newItemValue);
+        }
 
+        internal void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)
+        {
+            this.treesorService.RemoveItem(treesorNodePath, recurse);
+        }
+
+        internal bool HasChildItems(TreesorNodePath treesorNodePath)
+        {
+            return this.treesorService.HasChildItems(treesorNodePath);
+        }
+
+        #endregion Implement ItemCmdletProvider methods
     }
 }
