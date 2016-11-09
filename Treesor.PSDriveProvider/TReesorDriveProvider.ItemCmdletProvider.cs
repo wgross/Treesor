@@ -38,9 +38,9 @@ namespace Treesor.PSDriveProvider
 
             var item = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
 
-            //log.Debug()
-            //    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item is TreesorContainerItem})")
-            //    .Write();
+            log.Debug()
+                .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item.IsContainer})")
+                .Write();
 
             this.WriteItemObject(item, path, isContainer: item.IsContainer);
         }

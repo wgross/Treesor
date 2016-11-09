@@ -156,7 +156,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
-            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem());
+            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath));
 
             // ACT
             // test for a missing item
