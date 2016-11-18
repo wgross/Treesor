@@ -108,7 +108,7 @@ namespace Treesor.PSDriveProvider.Test
             // PS asks if root is item is there
 
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.Create("item"))).Returns(false);
-            
+
             // ACT
 
             this.powershell
@@ -156,7 +156,50 @@ namespace Treesor.PSDriveProvider.Test
             Assert.IsFalse(this.powershell.HadErrors);
         }
 
-
         #endregion Remove-Item > RemoveItem
+
+        #region Get-ChildItem > GetChildItem
+
+        [Test]
+        public void Provider_retrieves_child_items_of_item_under_root()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+
+            //this.treesorService
+            //    .Setup(s => s.HasChildItems(TreesorNodePath.Create("item")))
+            //    .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetChildItems(TreesorNodePath.Create("item")))
+                .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child")) });
+
+            // ACT
+                
+            this.powershell
+                .AddStatement()
+                .AddCommand("Get-ChildItem").AddParameter("Path", @"custTree:\item");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // the result cotains the single child item of 'item'
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
+            //this.treesorService.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Get-ChildItem > GetChildItem
+
     }
 }

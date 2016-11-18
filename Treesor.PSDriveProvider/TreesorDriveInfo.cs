@@ -4,6 +4,7 @@
     using NLog.Fluent;
     using System.Management.Automation;
     using System;
+    using System.Collections.Generic;
 
     public class TreesorDriveInfo : PSDriveInfo
     {
@@ -39,6 +40,11 @@
             this.treesorService = TreesorService.Factory(driveInfo.Root);
         }
 
+        internal IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath, bool recurse)
+        {
+            return this.treesorService.GetChildItems(treesorNodePath);
+        }
+
         internal TreesorItem GetItem(TreesorNodePath treesorNodePath)
         {
             return this.treesorService.GetItem(treesorNodePath);
@@ -57,6 +63,11 @@
         public void RemovingDrive()
         {
             this.treesorService.Dispose();
+        }
+
+        internal IEnumerable<object> GetChildNames(TreesorNodePath treesorNodePath, ReturnContainers returnContainers)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Get notified of end of life

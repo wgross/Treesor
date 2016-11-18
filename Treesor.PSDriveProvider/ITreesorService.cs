@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Treesor.PSDriveProvider
 {
@@ -20,5 +21,7 @@ namespace Treesor.PSDriveProvider
         void RemoveItem(TreesorNodePath treesorNodePath, bool recurse);
 
         bool HasChildItems(TreesorNodePath treesorNodePath);
+
+        IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath);
     }
 }

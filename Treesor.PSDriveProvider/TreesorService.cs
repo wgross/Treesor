@@ -1,5 +1,6 @@
 ﻿using NLog;
 using System;
+using System.Collections.Generic;
 
 namespace Treesor.PSDriveProvider
 {
@@ -77,6 +78,11 @@ namespace Treesor.PSDriveProvider
         }
 
         public bool HasChildItems(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath)
         {
             throw new NotImplementedException();
         }

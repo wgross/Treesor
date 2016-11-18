@@ -1,4 +1,5 @@
 ﻿using NLog.Fluent;
+using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider
 {
@@ -6,15 +7,15 @@ namespace Treesor.PSDriveProvider
     {
         #region Override ContainerCmdletProvider methods
 
-        //protected override bool ConvertPath(string path, string filter, ref string updatedPath, ref string updatedFilter)
-        //{
-        //    log.Trace().Message($"{nameof(ConvertPath)}({nameof(path)}={path},{nameof(filter)}={filter})").Write();
+        protected override bool ConvertPath(string path, string filter, ref string updatedPath, ref string updatedFilter)
+        {
+            log.Trace().Message($"{nameof(ConvertPath)}({nameof(path)}={path},{nameof(filter)}={filter})").Write();
 
-        //    updatedPath = path; // TreesorNodePath.Parse(path).ToString();
-        //    updatedFilter = filter;
+            updatedPath = path; // TreesorNodePath.Parse(path).ToString();
+            updatedFilter = filter;
 
-        //    return true;
-        //}
+            return true;
+        }
 
         //protected override void CopyItem(string path, string copyPath, bool recurse)
         //{
@@ -23,33 +24,33 @@ namespace Treesor.PSDriveProvider
         //    this.GetTreesorDriveInfo().CopyItem(sourcePath: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(copyPath), recurse: recurse);
         //}
 
-        //protected override void GetChildItems(string path, bool recurse)
-        //{
-        //    log.Trace().Message($"{nameof(GetChildItems)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
+        protected override void GetChildItems(string path, bool recurse)
+        {
+            log.Trace().Message($"{nameof(GetChildItems)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
-        //    foreach (var childItem in this.GetTreesorDriveInfo().GetChildItem(TreesorNodePath.Parse(path), recurse))
-        //    {
-        //        log.Trace()
-        //            .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem is TreesorContainerItem})")
-        //            .Write();
+            foreach (var childItem in this.GetTreesorDriveInfo().GetChildItems(TreesorNodePath.Parse(path), recurse))
+            {
+                log.Trace()
+                    .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem.IsContainer})")
+                    .Write();
 
-        //        this.WriteItemObject(childItem, childItem.Path.ToString(), childItem is TreesorContainerItem);
-        //    }
-        //}
+                this.WriteItemObject(childItem, childItem.Path.ToString(), childItem.IsContainer);
+            }
+        }
 
-        //protected override void GetChildNames(string path, ReturnContainers returnContainers)
-        //{
-        //    log.Trace().Message($"{nameof(GetChildNames)}({nameof(path)}={path},{nameof(returnContainers)}={returnContainers})").Write();
+        protected override void GetChildNames(string path, ReturnContainers returnContainers)
+        {
+            log.Trace().Message($"{nameof(GetChildNames)}({nameof(path)}={path},{nameof(returnContainers)}={returnContainers})").Write();
 
-        //    foreach (var childName in this.GetTreesorDriveInfo().GetChildNames(TreesorNodePath.Parse(path), returnContainers))
-        //    {
-        //        log.Trace()
-        //            .Message($"{nameof(GetChildNames)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childName)}={childName},{nameof(path)}={path},isContainer={true})")
-        //            .Write();
+            foreach (var childName in this.GetTreesorDriveInfo().GetChildNames(TreesorNodePath.Parse(path), returnContainers))
+            {
+                log.Trace()
+                    .Message($"{nameof(GetChildNames)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childName)}={childName},{nameof(path)}={path},isContainer={true})")
+                    .Write();
 
-        //        this.WriteItemObject(childName, path, true);
-        //    }
-        //}
+                this.WriteItemObject(childName, path, true);
+            }
+        }
 
         protected override bool HasChildItems(string path)
         {
@@ -106,7 +107,7 @@ namespace Treesor.PSDriveProvider
 
         #endregion Override ContainerCmdletProvider methods
 
-        //#region Override NavigationCmdletProvider methods
+        #region Override NavigationCmdletProvider methods
 
         //protected override void MoveItem(string path, string destination)
         //{
@@ -115,16 +116,16 @@ namespace Treesor.PSDriveProvider
         //    this.GetTreesorDriveInfo().MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
         //}
 
-        //protected override string GetChildName(string path)
-        //{
-        //    log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')").Write();
+        protected override string GetChildName(string path)
+        {
+            log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')").Write();
 
-        //    var childName = TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
+            var childName = TreesorNodePath.Parse(path).HierarchyPath.Leaf().ToString();
 
-        //    log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')->'{childName}'").Write();
+            log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')->'{childName}'").Write();
 
-        //    return childName;
-        //}
+            return childName;
+        }
 
         //protected override string MakePath(string parent, string child)
         //{
@@ -152,14 +153,14 @@ namespace Treesor.PSDriveProvider
         //    return result;
         //}
 
-        //protected override bool IsItemContainer(string path)
-        //{
-        //    log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
+        protected override bool IsItemContainer(string path)
+        {
+            log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
 
-        //    return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path)) != null);
-        //}
+            return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path)).IsContainer);
+        }
 
-        //#endregion Override NavigationCmdletProvider methods
+        #endregion Override NavigationCmdletProvider methods
 
         //#region IPropertyCmdletProvider Members
 
