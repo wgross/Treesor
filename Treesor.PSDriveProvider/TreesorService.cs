@@ -86,5 +86,10 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<TreesorItem> GetDescendants(TreesorNodePath treesorNodePath)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

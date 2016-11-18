@@ -42,7 +42,10 @@
 
         internal IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath, bool recurse)
         {
-            return this.treesorService.GetChildItems(treesorNodePath);
+            if (recurse)
+                return this.treesorService.GetDescendants(treesorNodePath);
+            else 
+                return this.treesorService.GetChildItems(treesorNodePath);
         }
 
         internal TreesorItem GetItem(TreesorNodePath treesorNodePath)

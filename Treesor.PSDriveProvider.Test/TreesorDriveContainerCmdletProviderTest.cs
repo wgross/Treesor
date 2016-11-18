@@ -173,16 +173,12 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
                 .Returns(new TreesorItem(TreesorNodePath.Create("item")));
 
-            //this.treesorService
-            //    .Setup(s => s.HasChildItems(TreesorNodePath.Create("item")))
-            //    .Returns(true);
-
             this.treesorService
                 .Setup(s => s.GetChildItems(TreesorNodePath.Create("item")))
                 .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child")) });
 
             // ACT
-                
+
             this.powershell
                 .AddStatement()
                 .AddCommand("Get-ChildItem").AddParameter("Path", @"custTree:\item");
@@ -194,12 +190,47 @@ namespace Treesor.PSDriveProvider.Test
 
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
-            //this.treesorService.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.VerifyAll();
         }
 
-        #endregion Get-ChildItem > GetChildItem
+        [Test]
+        public void Provider_retrieves_grandchildren_items_of_item_under_root()
+        {
+            // ARRANGE
 
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+
+            this.treesorService
+                .Setup(s => s.GetDescendants(TreesorNodePath.Create("item")))
+                .Returns(new[] {
+                    new TreesorItem(TreesorNodePath.Create("child")),
+                    new TreesorItem(TreesorNodePath.Create("grandchild"))
+                });
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Get-ChildItem").AddParameter("Path", @"custTree:\item").AddParameter("Recurse");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // the result contains the single child item of 'item'
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Exactly(2)); // because of isContainer
+            this.treesorService.Verify(s => s.GetDescendants(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Get-ChildItem > GetChildItem
     }
 }

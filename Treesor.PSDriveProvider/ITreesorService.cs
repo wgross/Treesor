@@ -23,5 +23,7 @@ namespace Treesor.PSDriveProvider
         bool HasChildItems(TreesorNodePath treesorNodePath);
 
         IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath);
+
+        IEnumerable<TreesorItem>  GetDescendants(TreesorNodePath treesorNodePath);
     }
 }
