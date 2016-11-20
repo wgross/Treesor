@@ -96,5 +96,10 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
+
+        public void RenameItem(TreesorNodePath treesorNodePath, string newName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

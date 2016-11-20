@@ -98,12 +98,12 @@ namespace Treesor.PSDriveProvider
             this.GetTreesorDriveInfo().RemoveItem(TreesorNodePath.Parse(path), recurse);
         }
 
-        //protected override void RenameItem(string path, string newName)
-        //{
-        //    log.Debug("Processing RenameItem({0}, {1})", path ?? "null", newName ?? "null");
+        protected override void RenameItem(string path, string newName)
+        {
+            log.Debug($"{nameof(RenameItem)}({nameof(path)}='{path}', {nameof(newName)}='{newName}'s)");
 
-        //    var renamedItem = this.GetTreesorDriveInfo().RenameItem(TreesorNodePath.Parse(path), newName);
-        //}
+            this.GetTreesorDriveInfo().RenameItem(TreesorNodePath.Parse(path), newName);
+        }
 
         #endregion Override ContainerCmdletProvider methods
 

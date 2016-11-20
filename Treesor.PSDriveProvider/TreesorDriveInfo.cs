@@ -107,6 +107,11 @@
             return this.treesorService.HasChildItems(treesorNodePath);
         }
 
+        internal void RenameItem(TreesorNodePath treesorNodePath, string newName)
+        {
+            this.treesorService.RenameItem(treesorNodePath, newName);
+        }
+
         #endregion Implement ItemCmdletProvider methods
     }
 }

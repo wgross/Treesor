@@ -296,5 +296,39 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Copy-Item > CopyItem
+
+        #region Rename-Item > RenameItem
+
+        [Test]
+        public void Provider_renames_item_under_root()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
+                .Returns((TreesorItem)null);
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-Item").AddParameter("Path", @"custTree:\item").AddParameter("NewName", "item2");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Exactly(2));
+            this.treesorService.Verify(s => s.RenameItem(TreesorNodePath.Create("item"), "item2"), Times.Once());
+        }
+
+        #endregion 
+
     }
 }
