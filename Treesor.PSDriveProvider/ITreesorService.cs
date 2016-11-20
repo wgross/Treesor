@@ -24,6 +24,8 @@ namespace Treesor.PSDriveProvider
 
         IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath);
 
-        IEnumerable<TreesorItem>  GetDescendants(TreesorNodePath treesorNodePath);
+        IEnumerable<TreesorItem> GetDescendants(TreesorNodePath treesorNodePath);
+
+        void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse);
     }
 }

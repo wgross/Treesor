@@ -232,5 +232,69 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Get-ChildItem > GetChildItem
+
+        #region Copy-Item > CopyItem
+
+        [Test]
+        public void Provider_copies_Item_to_new_name_under_root()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
+                .Returns((TreesorItem)null);
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Copy-Item").AddParameter("Path", @"custTree:\item").AddParameter("Destination", @"custTree:\item2");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorService.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
+        }
+
+        [Test]
+        public void Provider_copies_item_to_new_name_under_root_recursively()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
+                .Returns(true);
+
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
+                .Returns((TreesorItem)null);
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Copy-Item").AddParameter("Path", @"custTree:\item").AddParameter("Destination", @"custTree:\item2").AddParameter("Recurse");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorService.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), true), Times.Once());
+        }
+
+        #endregion Copy-Item > CopyItem
     }
 }

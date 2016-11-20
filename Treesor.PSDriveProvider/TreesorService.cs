@@ -91,5 +91,10 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
+
+        public void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

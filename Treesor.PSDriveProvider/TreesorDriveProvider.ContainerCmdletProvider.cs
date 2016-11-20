@@ -17,12 +17,12 @@ namespace Treesor.PSDriveProvider
             return true;
         }
 
-        //protected override void CopyItem(string path, string copyPath, bool recurse)
-        //{
-        //    log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(copyPath)}={copyPath},{nameof(recurse)}={recurse})").Write();
+        protected override void CopyItem(string path, string destinationPath, bool recurse)
+        {
+            log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(destinationPath)}={destinationPath},{nameof(recurse)}={recurse})").Write();
 
-        //    this.GetTreesorDriveInfo().CopyItem(sourcePath: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(copyPath), recurse: recurse);
-        //}
+            this.GetTreesorDriveInfo().CopyItem(path: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(destinationPath), recurse: recurse);
+        }
 
         protected override void GetChildItems(string path, bool recurse)
         {
@@ -157,7 +157,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
 
-            return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path)).IsContainer);
+            return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path))?.IsContainer ?? false);
         }
 
         #endregion Override NavigationCmdletProvider methods

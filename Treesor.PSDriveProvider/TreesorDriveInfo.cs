@@ -27,6 +27,11 @@
            ));
         }
 
+        internal void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
+        {
+            this.treesorService.CopyItem(path, destinationPath, recurse);
+        }
+
         internal void ClearItem(TreesorNodePath treesorNodePath)
         {
             this.treesorService.ClearItem(treesorNodePath);
