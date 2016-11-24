@@ -328,7 +328,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService.Verify(s => s.RenameItem(TreesorNodePath.Create("item"), "item2"), Times.Once());
         }
 
-        #endregion 
+        #endregion Rename-Item > RenameItem
 
     }
 }

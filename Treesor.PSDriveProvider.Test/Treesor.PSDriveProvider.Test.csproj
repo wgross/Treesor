@@ -134,6 +134,7 @@
     <Compile Include="TreesorDriveCmdletProviderTest.cs" />
     <Compile Include="TreesorDriveContainerCmdletProviderTest.cs" />
     <Compile Include="TreesorDriveItemCmdletProviderTest.cs" />
+    <Compile Include="TreesorDriveNavigationCmdletProviderTest.cs" />
     <Compile Include="TreesorNodePathTest.cs" />
   </ItemGroup>
   <ItemGroup>
