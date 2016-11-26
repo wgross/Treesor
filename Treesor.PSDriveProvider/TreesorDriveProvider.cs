@@ -8,8 +8,8 @@
     using System.Management.Automation.Provider;
 
     [CmdletProvider("Treesor", ProviderCapabilities.None)]
-    public partial class TreesorDriveProvider : NavigationCmdletProvider // ContainerCmdletProvider
-    //  NavigationCmdletProvider //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
+    public partial class TreesorDriveProvider : NavigationCmdletProvider 
+        //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 

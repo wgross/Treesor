@@ -101,5 +101,10 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
+
+        public void MoveItem(TreesorNodePath path, TreesorNodePath destination)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

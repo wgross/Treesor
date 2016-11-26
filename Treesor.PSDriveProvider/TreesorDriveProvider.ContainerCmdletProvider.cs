@@ -17,11 +17,11 @@ namespace Treesor.PSDriveProvider
             return true;
         }
 
-        protected override void CopyItem(string path, string destinationPath, bool recurse)
+        protected override void CopyItem(string path, string copyPath, bool recurse)
         {
-            log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(destinationPath)}={destinationPath},{nameof(recurse)}={recurse})").Write();
+            log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(copyPath)}={copyPath},{nameof(recurse)}={recurse})").Write();
 
-            this.GetTreesorDriveInfo().CopyItem(path: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(destinationPath), recurse: recurse);
+            this.GetTreesorDriveInfo().CopyItem(path: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(copyPath), recurse: recurse);
         }
 
         protected override void GetChildItems(string path, bool recurse)
@@ -106,9 +106,7 @@ namespace Treesor.PSDriveProvider
         }
 
         #endregion Override ContainerCmdletProvider methods
-
         
-
         //#region IPropertyCmdletProvider Members
 
         //public void ClearProperty(string path, Collection<string> propertyToClear)

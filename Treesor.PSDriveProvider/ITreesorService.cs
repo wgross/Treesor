@@ -29,5 +29,6 @@ namespace Treesor.PSDriveProvider
         void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse);
 
         void RenameItem(TreesorNodePath treesorNodePath, string newName);
+        void MoveItem(TreesorNodePath path, TreesorNodePath destination);
     }
 }

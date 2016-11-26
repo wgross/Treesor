@@ -27,6 +27,11 @@
            ));
         }
 
+        internal void MoveItem(TreesorNodePath path, TreesorNodePath destination)
+        {
+            this.treesorService.MoveItem(path, destination);
+        }
+
         internal void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
         {
             this.treesorService.CopyItem(path, destinationPath, recurse);

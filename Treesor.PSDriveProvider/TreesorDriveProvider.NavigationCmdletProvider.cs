@@ -12,12 +12,12 @@ namespace Treesor.PSDriveProvider
     {
         #region Override NavigationCmdletProvider methods
 
-        //protected override void MoveItem(string path, string destination)
-        //{
-        //    log.Debug("Processing MoveItem({0}, {1})", path ?? "null", destination ?? "null");
+        protected override void MoveItem(string path, string destination)
+        {
+            log.Trace().Message($"{nameof(MoveItem)}({path}, {destination})").Write();
 
-        //    this.GetTreesorDriveInfo().MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
-        //}
+            this.GetTreesorDriveInfo().MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
+        }
 
         protected override string GetChildName(string path)
         {

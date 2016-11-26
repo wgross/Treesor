@@ -169,5 +169,35 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Set-Location
+
+        #region Move-Item > MoveItem
+
+        [Test]
+        public void Provider_moves_child_of_root_under_other_child()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create("item1")))
+                .Returns(true);
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Move-Item").AddParameter("Path", @"treesor:\item1").AddParameter("Destination", @"treesor:\item2");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.MoveItem(TreesorNodePath.Create("item1"), TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Move-Item > MoveItem
+
     }
 }
