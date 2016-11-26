@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Elementary.Hierarchy.Collections;
+using NLog;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +14,12 @@ namespace Treesor.PSDriveProvider
         #region IDisposable Support
 
         private bool disposedValue = false; // To detect redundant calls
+        private IHierarchy<string, Guid> hierarchy;
+
+        public TreesorService(IHierarchy<string, Guid> hierarchy)
+        {
+            this.hierarchy = hierarchy;
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -69,7 +76,15 @@ namespace Treesor.PSDriveProvider
 
         public TreesorItem NewItem(TreesorNodePath treesorNodePath, object newItemValue)
         {
-            throw new NotImplementedException();
+            // currently a value is not accepted.
+            // a data model of the nodes is not yet decided
+
+            if (newItemValue != null)
+                throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
+
+            this.hierarchy.Add(treesorNodePath.HierarchyPath, Guid.NewGuid());
+
+            return new TreesorItem(treesorNodePath);
         }
 
         public void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)

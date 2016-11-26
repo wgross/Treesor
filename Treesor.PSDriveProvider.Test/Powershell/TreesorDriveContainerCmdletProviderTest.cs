@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -39,42 +40,12 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region New-Item > NewItem
-
-        [Test]
-        public void Provider_creates_new_item_under_root()
-        {
-            // ARRANGE
-
-            this.treesorService
-                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Returns<TreesorNodePath, object>((p, v) => new TreesorItem(p));
-
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("New-Item").AddParameter("Path", @"custTree:\item").AddParameter("Value", "value");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // provider write new item on outut pipe
-
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.NewItem(TreesorNodePath.Create("item"), "value"), Times.Once());
-            this.treesorService.VerifyAll();
-
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.IsInstanceOf<TreesorItem>(result.Last().BaseObject);
-        }
-
-        #endregion New-Item > NewItem
+        
 
         #region Remove-Item > RemoveItem
 
         [Test]
-        public void Provider_removes_existing_item_under_root()
+        public void Powershell_removes_existing_item_under_root()
         {
             // ARRANGE
             // PS asks if root is item is there
@@ -102,7 +73,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_removes_missing_item_under_root()
+        public void Powershell_removes_missing_item_under_root()
         {
             // ARRANGE
             // PS asks if root is item is there
@@ -129,7 +100,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_removes_children_under_existing_item_under_root()
+        public void Powershell_removes_children_under_existing_item_under_root()
         {
             // ARRANGE
             // PS asks if root is item is there
@@ -161,7 +132,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Get-ChildItem > GetChildItem
 
         [Test]
-        public void Provider_retrieves_child_items_of_item_under_root()
+        public void Powershell_retrieves_child_items_of_item_under_root()
         {
             // ARRANGE
 
@@ -195,7 +166,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_retrieves_grandchildren_items_of_item_under_root()
+        public void Powershell_retrieves_grandchildren_items_of_item_under_root()
         {
             // ARRANGE
 
@@ -236,7 +207,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Copy-Item > CopyItem
 
         [Test]
-        public void Provider_copies_Item_to_new_name_under_root()
+        public void Powershell_copies_Item_to_new_name_under_root()
         {
             // ARRANGE
 
@@ -266,7 +237,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_copies_item_to_new_name_under_root_recursively()
+        public void Powershell_copies_item_to_new_name_under_root_recursively()
         {
             // ARRANGE
 
@@ -300,7 +271,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Rename-Item > RenameItem
 
         [Test]
-        public void Provider_renames_item_under_root()
+        public void Powershell_renames_item_under_root()
         {
             // ARRANGE
 
@@ -329,6 +300,5 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Rename-Item > RenameItem
-
     }
 }

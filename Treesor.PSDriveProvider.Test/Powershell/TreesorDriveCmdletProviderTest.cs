@@ -43,7 +43,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         //[Test]
-        //public void Powershell_loads_Treesor_DriveProvider_automatically()
+        //public void Powershell_loads_Treesor_DrivePowershell_automatically()
         //{
         //    // ACT
 
@@ -57,7 +57,7 @@ namespace Treesor.PowershellDriveProvider.Test
         //}
 
         [Test]
-        public void Provider_creates_new_instance_of_treesor_service()
+        public void Powershell_creates_new_instance_of_treesor_service()
         {
             // ARRANGE
 
@@ -91,7 +91,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Provider_notifies_service_about_drive_removal()
+        public void Powershell_notifies_service_about_drive_removal()
         {
             // ARRANGE
 
@@ -124,7 +124,7 @@ namespace Treesor.PowershellDriveProvider.Test
         }
 
         [Test]
-        public void Provider_returns_drive_info()
+        public void Powershell_returns_drive_info()
         {
             // ARRANGE
 

@@ -41,7 +41,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Set-Location
 
         [Test]
-        public void Provider_sets_location_to_root_container()
+        public void Powershell_sets_location_to_root_container()
         {
             // ARRANGE
 
@@ -71,7 +71,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_gets_location_from_root_container()
+        public void Powershell_gets_location_from_root_container()
         {
             // ARRANGE
 
@@ -105,7 +105,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_set_location_to_container_under_root()
+        public void Powershell_set_location_to_container_under_root()
         {
             // ARRANGE
 
@@ -135,7 +135,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_gets_location_from_container_under_root()
+        public void Powershell_gets_location_from_container_under_root()
         {
             // ARRANGE
 
@@ -173,7 +173,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Move-Item > MoveItem
 
         [Test]
-        public void Provider_moves_child_of_root_under_other_child()
+        public void Powershell_moves_child_of_root_under_other_child()
         {
             // ARRANGE
 

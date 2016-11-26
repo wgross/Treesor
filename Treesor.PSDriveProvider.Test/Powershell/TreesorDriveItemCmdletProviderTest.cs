@@ -38,10 +38,69 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
+        #region New-Item > NewItem
+
+        [Test]
+        public void Powershell_creates_new_item_under_root()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
+                .Returns<TreesorNodePath, object>((p, v) => new TreesorItem(p));
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-Item").AddParameter("Path", @"custTree:\item");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // provider write new item on outut pipe
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorService.Verify(s => s.NewItem(TreesorNodePath.Create("item"), null), Times.Once());
+            this.treesorService.VerifyAll();
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.IsInstanceOf<TreesorItem>(result.Last().BaseObject);
+        }
+
+        [Test]
+        public void Powershell_creates_new_item_under_root_with_value_fails()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
+                .Throws(new NotSupportedException());
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-Item").AddParameter("Path", @"custTree:\item").AddParameter("Value", "value");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // provider write new item on outut pipe
+
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorService.Verify(s => s.NewItem(TreesorNodePath.Create("item"), "value"), Times.Once());
+            this.treesorService.VerifyAll();
+
+            Assert.IsTrue(this.powershell.HadErrors);
+        }
+
+        #endregion New-Item > NewItem
+
         #region Test-Path > ItemExists
 
         [Test]
-        public void Provider_asks_service_for_existence_of_missing_root()
+        public void Powershell_asks_service_for_existence_of_missing_root()
         {
             // ACT
             // test for a missing item
@@ -61,7 +120,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_asks_service_for_existence_of_existing_root()
+        public void Powershell_asks_service_for_existence_of_existing_root()
         {
             // ARRANGE
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
@@ -84,7 +143,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_asks_service_for_existence_of_missing_item()
+        public void Powershell_asks_service_for_existence_of_missing_item()
         {
             // ACT
             // test for a missing item
@@ -104,7 +163,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_asks_service_for_existence_of_exiting_item()
+        public void Powershell_asks_service_for_existence_of_exiting_item()
         {
             // ARRANGE
 
@@ -132,7 +191,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Get-Item > ItemExists, GetItem
 
         [Test]
-        public void Provider_retrieves_missing_root_item()
+        public void Powershell_retrieves_missing_root_item()
         {
             // ACT
             // getting a missing item fails
@@ -152,7 +211,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_retrieves_existing_root_item()
+        public void Powershell_retrieves_existing_root_item()
         {
             // ARRANGE
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
@@ -181,7 +240,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Set-Item > ItemExists, SetItem
 
         [Test]
-        public void Provider_sets_missing_root_item()
+        public void Powershell_sets_missing_root_item()
         {
             // ACT
             // setting a missing item fails
@@ -201,7 +260,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_sets_root_item()
+        public void Powershell_sets_root_item()
         {
             // ARRANGE
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
@@ -228,7 +287,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Clear-Item > ItemExists, ClearItem
 
         [Test]
-        public void Provider_clears_missing_root_item()
+        public void Powershell_clears_missing_root_item()
         {
             // ACT
             // getting a missing item fails
@@ -248,12 +307,12 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Provider_clears_existing_root_item()
+        public void Powershell_clears_existing_root_item()
         {
             // ARRANGE
 
             this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
-           
+
             // ACT
             // getting a missing item fails
 
