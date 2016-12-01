@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Treesor.PSDriveProvider
 {
     public class TreesorItem
     {
-        public TreesorItem(TreesorNodePath path)
+        public TreesorItem(TreesorNodePath path, Guid id)
         {
             this.Path = path;
+            this.Id = id;
         }
+
+        public Guid Id { get; }
+
         public bool IsContainer => true;
 
         public TreesorNodePath Path { get; }

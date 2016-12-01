@@ -40,8 +40,6 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        
-
         #region Remove-Item > RemoveItem
 
         [Test]
@@ -140,13 +138,15 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
+            Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid() ));
 
+            Guid id_child;
             this.treesorService
                 .Setup(s => s.GetChildItems(TreesorNodePath.Create("item")))
-                .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child")) });
+                .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child"), id_child = Guid.NewGuid()) });
 
             // ACT
 
@@ -158,7 +158,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
             // the result cotains the single child item of 'item'
-
+            
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());
@@ -174,15 +174,18 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
+            Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
 
+            Guid id_child;
+            Guid id_grandchild;
             this.treesorService
                 .Setup(s => s.GetDescendants(TreesorNodePath.Create("item")))
                 .Returns(new[] {
-                    new TreesorItem(TreesorNodePath.Create("child")),
-                    new TreesorItem(TreesorNodePath.Create("grandchild"))
+                    new TreesorItem(TreesorNodePath.Create("child"),id_child = Guid.NewGuid()),
+                    new TreesorItem(TreesorNodePath.Create("grandchild"), id_grandchild = Guid.NewGuid())
                 });
 
             // ACT

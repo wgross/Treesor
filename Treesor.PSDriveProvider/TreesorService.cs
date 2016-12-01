@@ -1,7 +1,9 @@
-﻿using Elementary.Hierarchy.Collections;
+﻿using Elementary.Hierarchy;
+using Elementary.Hierarchy.Collections;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Treesor.PSDriveProvider
 {
@@ -56,22 +58,27 @@ namespace Treesor.PSDriveProvider
 
         public bool ItemExists(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            Guid id;
+            return this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id);
         }
 
         public TreesorItem GetItem(TreesorNodePath rootPath)
         {
-            throw new NotImplementedException();
+            Guid id;
+            if (this.hierarchy.TryGetValue(rootPath.HierarchyPath, out id))
+                return new TreesorItem(rootPath, id);
+            else return null;
         }
 
-        public void SetItem(TreesorNodePath rootPath, object value)
+        public void SetItem(TreesorNodePath treesorNodePath, object value)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
         }
 
         public void ClearItem(TreesorNodePath rootPath)
         {
-            throw new NotImplementedException();
+            // currently function isn't implmented.
+            return;
         }
 
         public TreesorItem NewItem(TreesorNodePath treesorNodePath, object newItemValue)
@@ -82,14 +89,15 @@ namespace Treesor.PSDriveProvider
             if (newItemValue != null)
                 throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
 
-            this.hierarchy.Add(treesorNodePath.HierarchyPath, Guid.NewGuid());
+            Guid id;
+            this.hierarchy.Add(treesorNodePath.HierarchyPath, id = Guid.NewGuid());
 
-            return new TreesorItem(treesorNodePath);
+            return new TreesorItem(treesorNodePath, id);
         }
 
         public void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)
         {
-            throw new NotImplementedException();
+            this.hierarchy.RemoveNode(treesorNodePath.HierarchyPath, recurse);
         }
 
         public bool HasChildItems(TreesorNodePath treesorNodePath)
@@ -99,22 +107,47 @@ namespace Treesor.PSDriveProvider
 
         public IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            return this.hierarchy
+                .Traverse(treesorNodePath.HierarchyPath)
+                .Children()
+                .Select(n => new TreesorItem(TreesorNodePath.Create(n.Path), n.Value));
         }
 
         public IEnumerable<TreesorItem> GetDescendants(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            return this.hierarchy
+                .Traverse(treesorNodePath.HierarchyPath)
+                .Descendants()
+                .Select(n => new TreesorItem(TreesorNodePath.Create(n.Path), n.Value));
         }
 
         public void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
         {
-            throw new NotImplementedException();
+            Guid id;
+            if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
+            {
+                Guid destinationId;
+                if (this.hierarchy.TryGetValue(destinationPath.HierarchyPath, out destinationId))
+                {
+                    // try create new item under existing destination
+                    if (!this.hierarchy.TryGetValue(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), out destinationId))
+                        this.hierarchy.Add(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), destinationId = Guid.NewGuid());
+                }
+                else
+                {
+                    // create new item at destiontinPath
+                    this.hierarchy.Add(destinationPath.HierarchyPath, destinationId = Guid.NewGuid());
+                }
+            }
         }
 
         public void RenameItem(TreesorNodePath treesorNodePath, string newName)
         {
-            throw new NotImplementedException();
+            Guid id;
+            if (this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id))
+                if (!this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath.Parent().Join(newName), out id))
+                    if (this.hierarchy.Remove(treesorNodePath.HierarchyPath))
+                        this.hierarchy.Add(treesorNodePath.HierarchyPath.Parent().Join(newName), id);
         }
 
         public void MoveItem(TreesorNodePath path, TreesorNodePath destination)

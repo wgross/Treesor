@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -49,9 +50,10 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.RootPath))
                 .Returns(true);
 
+            Guid id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath));
+                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = Guid.NewGuid()));
 
             // ACT
 
@@ -79,9 +81,10 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.RootPath))
                 .Returns(true);
 
+            Guid id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath));
+                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = Guid.NewGuid()));
 
             this.powershell
                 .AddStatement()
@@ -113,9 +116,10 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
+            Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item=Guid.NewGuid()));
 
             // ACT
 
@@ -143,9 +147,10 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
+            Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item")));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
 
             this.powershell
                 .AddStatement()
