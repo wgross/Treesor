@@ -135,8 +135,14 @@ namespace Treesor.PSDriveProvider
                 }
                 else
                 {
-                    // create new item at destiontinPath
+                    // create new item at destiontionPath
                     this.hierarchy.Add(destinationPath.HierarchyPath, destinationId = Guid.NewGuid());
+                    if (recurse)
+                    {
+                        // copy child nodes of source to destination
+                        foreach (var source in this.hierarchy.Traverse(path.HierarchyPath).Descendants(depthFirst: false))
+                            this.hierarchy.Add(destinationPath.HierarchyPath.Join(source.Path.RelativeToAncestor(path.HierarchyPath)), Guid.NewGuid());
+                    }
                 }
             }
         }
@@ -150,9 +156,30 @@ namespace Treesor.PSDriveProvider
                         this.hierarchy.Add(treesorNodePath.HierarchyPath.Parent().Join(newName), id);
         }
 
-        public void MoveItem(TreesorNodePath path, TreesorNodePath destination)
+        public void MoveItem(TreesorNodePath path, TreesorNodePath destinationPath)
         {
-            throw new NotImplementedException();
+            Guid id;
+            Guid destinationId;
+            if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
+                if (this.hierarchy.TryGetValue(destinationPath.HierarchyPath, out destinationId))
+                {
+                    // try create item under existing destination item
+                    if (!this.hierarchy.TryGetValue(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), out destinationId))
+                        this.hierarchy.Add(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), id);
+
+                    // finally remove the source
+                    this.hierarchy.Remove(path.HierarchyPath);
+                }
+                else
+                {
+                    this.hierarchy.Add(destinationPath.HierarchyPath, id);
+                    // move item and its descendants to the destination
+                    foreach (var source in this.hierarchy.Traverse(path.HierarchyPath).Descendants(depthFirst: false))
+                        this.hierarchy.Add(destinationPath.HierarchyPath.Join(source.Path.RelativeToAncestor(path.HierarchyPath)), source.Value);
+
+                    // finally remove the source
+                    this.hierarchy.Remove(path.HierarchyPath);
+                }
         }
     }
 }
