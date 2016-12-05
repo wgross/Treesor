@@ -654,6 +654,40 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
+        [Test]
+        public void MoveItem_doesnt_do_anything_if_all_possible_destinations_exist()
+        {
+            // ARRANGE
+            // item and item2 exist, item2/item exists
+
+            Guid id = Guid.NewGuid();
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
+                .Returns(true);
+
+            Guid destination_id = Guid.NewGuid();
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
+                .Returns(true);
+
+            Guid new_destination_id = Guid.NewGuid();
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("item2", "item"), out new_destination_id))
+                .Returns(true);
+
+            // ACT
+
+            this.treesorService.MoveItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"));
+
+            // ASSERT
+
+            this.hierarchyMock.Verify(h => h.Remove(It.IsAny<HierarchyPath<string>>(), null), Times.Never());
+            this.hierarchyMock.Verify(h => h.Remove(It.IsAny<HierarchyPath<string>>(), It.IsAny<int>()), Times.Never());
+            this.hierarchyMock.Verify(h => h.Add(It.IsAny<HierarchyPath<string>>(), It.IsAny<Guid>()), Times.Never());
+            this.hierarchyMock.VerifyAll();
+        }
+
+
         #endregion MoveItem > TryGetValue,NewValue,Remove
     }
 }

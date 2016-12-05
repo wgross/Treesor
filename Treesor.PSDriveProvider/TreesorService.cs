@@ -165,10 +165,12 @@ namespace Treesor.PSDriveProvider
                 {
                     // try create item under existing destination item
                     if (!this.hierarchy.TryGetValue(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), out destinationId))
+                    {
                         this.hierarchy.Add(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), id);
 
-                    // finally remove the source
-                    this.hierarchy.Remove(path.HierarchyPath);
+                        // finally remove the source
+                        this.hierarchy.Remove(path.HierarchyPath);
+                    }
                 }
                 else
                 {
