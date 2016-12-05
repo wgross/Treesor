@@ -102,7 +102,9 @@ namespace Treesor.PSDriveProvider
 
         public bool HasChildItems(TreesorNodePath treesorNodePath)
         {
-            throw new NotImplementedException();
+            // Result of Travesr is never null.
+            // hierachy throws KeyNotFindException in this case.
+            return this.hierarchy.Traverse(treesorNodePath.HierarchyPath).HasChildNodes;
         }
 
         public IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath)

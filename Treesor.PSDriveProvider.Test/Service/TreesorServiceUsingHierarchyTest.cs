@@ -3,6 +3,7 @@ using Elementary.Hierarchy.Collections;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Treesor.PSDriveProvider.Test.Service
@@ -632,7 +633,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             item.Setup(n => n.HasChildNodes).Returns(false);
             item.Setup(n => n.Value).Returns(id);
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
-            
+
             Guid destination_id = Guid.NewGuid();
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
@@ -687,7 +688,79 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-
         #endregion MoveItem > TryGetValue,NewValue,Remove
+
+        #region HasChildItems > Traverse
+
+        [Test]
+        public void HasChildItems_check_item_under_root_returns_false()
+        {
+            // ARRANGE
+
+            var item = new Mock<IHierarchyNode<string, Guid>>();
+            item.Setup(n => n.HasChildNodes).Returns(false);
+            Guid id = Guid.NewGuid();
+            
+            this.hierarchyMock
+                .Setup(h => h.Traverse(HierarchyPath.Create("item")))
+                .Returns(item.Object);
+
+            // ACT
+
+            var result = this.treesorService.HasChildItems(TreesorNodePath.Create("item"));
+
+            // ASSERT
+
+            Assert.IsFalse(result);
+
+            this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
+            this.hierarchyMock.VerifyAll();
+        }
+
+        [Test]
+        public void HasChildItems_check_item_under_root_returns_true()
+        {
+            // ARRANGE
+            
+            var item = new Mock<IHierarchyNode<string, Guid>>();
+            item.Setup(n => n.HasChildNodes).Returns(true);
+            Guid id = Guid.NewGuid();
+
+            this.hierarchyMock
+                .Setup(h => h.Traverse(HierarchyPath.Create("item")))
+                .Returns(item.Object);
+
+            // ACT
+
+            var result = this.treesorService.HasChildItems(TreesorNodePath.Create("item"));
+
+            // ASSERT
+
+            Assert.IsTrue(result);
+
+            this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
+            this.hierarchyMock.VerifyAll();
+        }
+
+        [Test]
+        public void HasChildItems_check_missing_item_throws_KeyNotFoundException()
+        {
+            // ARRANGE
+            
+            this.hierarchyMock
+                .Setup(h => h.Traverse(HierarchyPath.Create("item")))
+                .Throws(new KeyNotFoundException());
+
+            // ACT
+
+            var result = Assert.Throws<KeyNotFoundException>(()=> this.treesorService.HasChildItems(TreesorNodePath.Create("item")));
+
+            // ASSERT
+            
+            this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
+            this.hierarchyMock.VerifyAll();
+        }
+
+        #endregion HasChildItems > Traverse
     }
 }
