@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System;
 using System.IO;
-using System.Linq;
 using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Test
@@ -141,7 +140,7 @@ namespace Treesor.PSDriveProvider.Test
             Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid() ));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
 
             Guid id_child;
             this.treesorService
@@ -158,7 +157,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
             // the result cotains the single child item of 'item'
-            
+
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());

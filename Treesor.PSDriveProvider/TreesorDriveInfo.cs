@@ -2,9 +2,9 @@
 {
     using NLog;
     using NLog.Fluent;
-    using System.Management.Automation;
     using System;
     using System.Collections.Generic;
+    using System.Management.Automation;
 
     public class TreesorDriveInfo : PSDriveInfo
     {
@@ -54,7 +54,7 @@
         {
             if (recurse)
                 return this.treesorService.GetDescendants(treesorNodePath);
-            else 
+            else
                 return this.treesorService.GetChildItems(treesorNodePath);
         }
 

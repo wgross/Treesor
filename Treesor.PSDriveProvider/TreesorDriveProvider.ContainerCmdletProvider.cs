@@ -106,7 +106,7 @@ namespace Treesor.PSDriveProvider
         }
 
         #endregion Override ContainerCmdletProvider methods
-        
+
         //#region IPropertyCmdletProvider Members
 
         //public void ClearProperty(string path, Collection<string> propertyToClear)

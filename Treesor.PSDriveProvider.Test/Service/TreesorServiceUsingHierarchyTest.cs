@@ -700,7 +700,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             var item = new Mock<IHierarchyNode<string, Guid>>();
             item.Setup(n => n.HasChildNodes).Returns(false);
             Guid id = Guid.NewGuid();
-            
+
             this.hierarchyMock
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))
                 .Returns(item.Object);
@@ -721,7 +721,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         public void HasChildItems_check_item_under_root_returns_true()
         {
             // ARRANGE
-            
+
             var item = new Mock<IHierarchyNode<string, Guid>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
             Guid id = Guid.NewGuid();
@@ -746,17 +746,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         public void HasChildItems_check_missing_item_throws_KeyNotFoundException()
         {
             // ARRANGE
-            
+
             this.hierarchyMock
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))
                 .Throws(new KeyNotFoundException());
 
             // ACT
 
-            var result = Assert.Throws<KeyNotFoundException>(()=> this.treesorService.HasChildItems(TreesorNodePath.Create("item")));
+            var result = Assert.Throws<KeyNotFoundException>(() => this.treesorService.HasChildItems(TreesorNodePath.Create("item")));
 
             // ASSERT
-            
+
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
             this.hierarchyMock.VerifyAll();
         }

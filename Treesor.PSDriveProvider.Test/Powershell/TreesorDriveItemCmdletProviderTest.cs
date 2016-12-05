@@ -269,7 +269,7 @@ namespace Treesor.PSDriveProvider.Test
         #endregion Get-Item > ItemExists, GetItem
 
         #region Set-Item > ItemExists, SetItem
-        
+
         [Test]
         public void Powershell_sets_root_item()
         {
@@ -279,7 +279,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService
                 .Setup(s => s.SetItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
                 .Throws<NotSupportedException>();
-            
+
             // ACT
             // setting a missing item fails
 

@@ -119,7 +119,7 @@ namespace Treesor.PSDriveProvider.Test
             Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item=Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
 
             // ACT
 
@@ -203,6 +203,5 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Move-Item > MoveItem
-
     }
 }

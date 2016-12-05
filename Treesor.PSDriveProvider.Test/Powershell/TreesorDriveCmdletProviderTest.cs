@@ -106,7 +106,7 @@ namespace Treesor.PowershellDriveProvider.Test
                 .AddParameter("Name", "custTree")
                 .AddParameter("PsProvider", "Treesor")
                 .AddParameter("Root", @"\");
-                
+
             // ACT
             // drive is remove
 
@@ -118,7 +118,7 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
             // drive is no longer there and service was called.
-            
+
             Assert.IsFalse(this.powershell.HadErrors);
             treesorService.Verify(s => s.Dispose(), Times.Once());
         }
@@ -143,14 +143,14 @@ namespace Treesor.PowershellDriveProvider.Test
                     .AddParameter("Name", "custTree")
                     .AddParameter("PsProvider", "Treesor")
                     .AddParameter("Root", @"\");
-            
+
             // ACT
-            // get drive info from powershell 
+            // get drive info from powershell
 
             this.powershell
                 .AddStatement()
                 .AddCommand("Get-PsDrive").AddParameter("Name", "custTree");
-            
+
             var result = this.powershell.Invoke();
 
             Assert.IsNotNull(result);
