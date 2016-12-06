@@ -130,9 +130,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Service\TreesorServiceUsingHierarchyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TreesorDriveCmdletProviderTest.cs" />
-    <Compile Include="TreesorNodePathTest.cs" />
+    <Compile Include="Powershell\TreesorDriveCmdletProviderTest.cs" />
+    <Compile Include="Powershell\TreesorDriveContainerCmdletProviderTest.cs" />
+    <Compile Include="Powershell\TreesorDriveItemCmdletProviderTest.cs" />
+    <Compile Include="Powershell\TreesorDriveNavigationCmdletProviderTest.cs" />
+    <Compile Include="Powershell\TreesorNodePathTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Treesor.PSDriveProvider\Treesor.PSDriveProvider.csproj">
