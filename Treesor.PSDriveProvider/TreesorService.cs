@@ -11,17 +11,31 @@ namespace Treesor.PSDriveProvider
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public static Func<string, ITreesorService> Factory { get; set; }
+        public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
 
-        #region IDisposable Support
+        private static ITreesorService DefaultFactoryDelegate(string type)
+        {
+            var hierarchy = new MutableHierarchy<string, Guid>();
+            Guid id = default(Guid);
+            if (!hierarchy.TryGetValue(HierarchyPath.Create<string>(), out id))
+                hierarchy.Add(HierarchyPath.Create<string>(), Guid.NewGuid());
+            return new TreesorService(hierarchy);
+        }
 
-        private bool disposedValue = false; // To detect redundant calls
+        #region Construction and initialization of this instance
+
         private IHierarchy<string, Guid> hierarchy;
 
         public TreesorService(IHierarchy<string, Guid> hierarchy)
         {
             this.hierarchy = hierarchy;
         }
+
+        #endregion Construction and initialization of this instance
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
