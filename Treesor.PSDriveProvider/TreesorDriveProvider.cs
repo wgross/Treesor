@@ -7,7 +7,7 @@
     using System.Management.Automation;
     using System.Management.Automation.Provider;
 
-    [CmdletProvider("Treesor", ProviderCapabilities.None)]
+    [CmdletProvider("Treesor", ProviderCapabilities.ExpandWildcards)]
     public partial class TreesorDriveProvider : NavigationCmdletProvider
     //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
     {

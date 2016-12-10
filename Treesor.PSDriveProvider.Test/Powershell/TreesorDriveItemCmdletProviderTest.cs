@@ -314,7 +314,7 @@ namespace Treesor.PSDriveProvider.Test
             var result = this.powershell.Invoke();
 
             // ASSERT
-            // clearing an item is donw always
+            // clearing an item is done always
 
             Assert.IsTrue(this.powershell.HadErrors);
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Once());
@@ -346,5 +346,76 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Clear-Item > ItemExists, ClearItem
+
+        #region Resolve-Path > ExpandPath, GetChildItems
+
+        [Test]
+        public void Powershell_resolves_wildcard_under_root_node()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetChildItemsByWildcard(TreesorNodePath.Create("*")))
+                .Returns(new[]
+                {
+                    new TreesorItem(TreesorNodePath.Create("a"), Guid.NewGuid()),
+                    new TreesorItem(TreesorNodePath.Create("b"), Guid.NewGuid())
+                });
+
+            // ACT
+            // request expansioon fo the wild card by the provider
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Resolve-Path").AddParameter("Path", "custTree:*");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // treesorservice is resolving the wildcard with the two prepared items
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(3, result.Count);
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(1).ImmediateBaseObject);
+
+            var pathInfo = (PathInfo)result.ElementAt(1).ImmediateBaseObject;
+
+            Assert.AreEqual("custTree", pathInfo.Drive.Name);
+            Assert.AreEqual(@"custTree:\a", pathInfo.Path);
+            Assert.AreEqual("a", pathInfo.ProviderPath);
+
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(2).ImmediateBaseObject);
+
+            pathInfo = (PathInfo)result.ElementAt(2).ImmediateBaseObject;
+
+            Assert.AreEqual("custTree", pathInfo.Drive.Name);
+            Assert.AreEqual(@"custTree:\b", pathInfo.Path);
+            Assert.AreEqual("b", pathInfo.ProviderPath);
+
+            this.treesorService.Verify(s => s.GetChildItemsByWildcard(TreesorNodePath.Create("*")), Times.Once());
+            this.treesorService.VerifyAll();
+        }
+
+        [Test]
+        public void Powershell_resolves_wildcard_under_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Resolve-Path").AddParameter("Path", @"custTree:item\t*");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // treesorservice is resolving the wildcard
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.GetChildItemsByWildcard(TreesorNodePath.Create(@"item/t*")), Times.Once());
+            this.treesorService.VerifyAll();
+        }
+
+        #endregion Resolve-Path > ExpandPath, GetChildItems
     }
 }

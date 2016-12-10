@@ -121,6 +121,11 @@ namespace Treesor.PSDriveProvider
             return this.hierarchy.Traverse(treesorNodePath.HierarchyPath).HasChildNodes;
         }
 
+        public IEnumerable<TreesorItem> GetChildItemsByWildcard(TreesorNodePath treesorNodePath)
+        {
+            throw new InvalidOperationException();
+        }
+
         public IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath)
         {
             return this.hierarchy

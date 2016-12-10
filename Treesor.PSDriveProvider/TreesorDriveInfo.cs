@@ -4,6 +4,7 @@
     using NLog.Fluent;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Management.Automation;
 
     public class TreesorDriveInfo : PSDriveInfo
@@ -78,9 +79,11 @@
             this.treesorService.Dispose();
         }
 
-        internal IEnumerable<object> GetChildNames(TreesorNodePath treesorNodePath, ReturnContainers returnContainers)
+        internal IEnumerable<string> GetChildNames(TreesorNodePath treesorNodePath, ReturnContainers returnContainers)
         {
-            throw new NotImplementedException();
+            return this.treesorService
+                .GetChildItemsByWildcard(treesorNodePath)
+                .Select(ci => ci.Path.HierarchyPath.Leaf().Items.Last());
         }
 
         #endregion Get notified of end of life

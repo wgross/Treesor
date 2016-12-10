@@ -1,5 +1,8 @@
-﻿using NLog.Fluent;
+﻿using Elementary.Hierarchy;
+using NLog.Fluent;
 using System;
+using System.Linq;
+using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider
 {
@@ -27,7 +30,9 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ExpandPath)}({nameof(path)}={path})").Write();
 
-            throw new NotImplementedException("ExpandPath");
+            return this.GetTreesorDriveInfo()
+                .GetChildNames(TreesorNodePath.Create(path), ReturnContainers.ReturnMatchingContainers)
+                .ToArray();
         }
 
         protected override void GetItem(string path)
