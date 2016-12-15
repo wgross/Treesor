@@ -23,16 +23,21 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ClearItem)}({nameof(path)}={path})").Write();
 
-            this.GetTreesorDriveInfo().ClearItem(TreesorNodePath.Parse(path));
+            this.DriveInfo.Service.ClearItem(TreesorNodePath.Parse(path));
         }
 
         protected override string[] ExpandPath(string path)
         {
             log.Trace().Message($"{nameof(ExpandPath)}({nameof(path)}={path})").Write();
 
-            return this.GetTreesorDriveInfo()
-                .ExpandPath(new WildcardPattern(path))
-                .ToArray();
+            var filter = new WildcardPattern(path);
+
+            var tmp = from i in this.DriveInfo.Service.GetDescendants(TreesorNodePath.RootPath)
+                      let itemPath = i.Path.ToString()
+                      where filter.IsMatch(itemPath)
+                      select itemPath;
+            var tmp2 = tmp.ToArray();
+            return tmp2;
         }
 
         protected override void GetItem(string path)
@@ -41,7 +46,7 @@ namespace Treesor.PSDriveProvider
 
             var treesorNodePath = TreesorNodePath.Parse(path);
 
-            var item = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
+            var item = this.DriveInfo.Service.GetItem(treesorNodePath);
 
             log.Debug()
                 .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item.GetHashCode)}={item?.GetHashCode()},{nameof(item.Path)}={item?.Path},{nameof(item.IsContainer)}={item?.IsContainer})")
@@ -54,14 +59,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}={path})").Write();
 
-            return this.GetTreesorDriveInfo().ItemExists(TreesorNodePath.Parse(path));
+            return this.DriveInfo.Service.ItemExists(TreesorNodePath.Parse(path));
         }
 
         protected override void SetItem(string path, object value)
         {
             log.Trace().Message($"{nameof(SetItem)}({nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
 
-            this.GetTreesorDriveInfo().SetItem(TreesorNodePath.Parse(path), value);
+            this.DriveInfo.Service.SetItem(TreesorNodePath.Parse(path), value);
         }
 
         #endregion Override ItemCmdletProvider methods

@@ -10,9 +10,9 @@ namespace Treesor.PSDriveProvider
 
         protected override void MoveItem(string path, string destination)
         {
-            log.Trace().Message($"{nameof(MoveItem)}({path}, {destination})").Write();
-
-            this.GetTreesorDriveInfo().MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
+            log.Trace().Message($"{nameof(MoveItem)}({nameof(path)}={path}, {nameof(destination)}={destination})").Write();
+         
+            this.DriveInfo.Service.MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
         }
 
         protected override string GetChildName(string path)
@@ -49,7 +49,7 @@ namespace Treesor.PSDriveProvider
             else
                 result = root;
 
-            log.Debug().Message($"{nameof(GetParentPath)}({nameof(path)}='{path}',{nameof(root)}='{root}')->'{result}'").Write();
+            log.Trace().Message($"{nameof(GetParentPath)}({nameof(path)}='{path}',{nameof(root)}='{root}')->'{result}'").Write();
             return result;
         }
 
@@ -57,7 +57,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
 
-            return (this.GetTreesorDriveInfo().GetItem(TreesorNodePath.Parse(path))?.IsContainer ?? false);
+            return (this.DriveInfo.Service.GetItem(TreesorNodePath.Parse(path))?.IsContainer ?? false);
         }
 
         #endregion Override NavigationCmdletProvider methods

@@ -13,22 +13,18 @@
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private TreesorDriveInfo GetTreesorDriveInfo()
-        {
-            return (TreesorDriveInfo)this.PSDriveInfo;
-        }
+        private TreesorDriveInfo DriveInfo => (TreesorDriveInfo)this.PSDriveInfo;
 
         #region Override DriveCmdletProvider methods
 
         protected override PSDriveInfo NewDrive(PSDriveInfo drive)
         {
-            log.Trace().Message($"{nameof(NewDrive)}(drive.Root='{drive.Root}',drive.Name='{drive.Name}')").Write();
+            log.Trace().Message($"{nameof(NewDrive)}({nameof(drive)}.Root='{drive.Root}',{nameof(drive)}.Name='{drive.Name}')").Write();
 
             // Check if the drive object is null.
             if (drive == null)
             {
-                this.WriteError(new ErrorRecord(new ArgumentNullException("drive"), "NullDrive", ErrorCategory.InvalidArgument, targetObject: null));
-
+                this.WriteError(new ErrorRecord(new ArgumentNullException(nameof(drive)), "NullDrive", ErrorCategory.InvalidArgument, targetObject: null));
                 return null;
             }
 
@@ -45,25 +41,23 @@
             //    return null;
             //}
 
-            TreesorDriveInfo treesorDriveInfo = drive as TreesorDriveInfo;
-
-            if (treesorDriveInfo == null)
-            {
-                treesorDriveInfo = new TreesorDriveInfo(drive);
-            }
-
-            return treesorDriveInfo;
+            return drive as TreesorDriveInfo ?? new TreesorDriveInfo(drive);
         }
 
         protected override Collection<PSDriveInfo> InitializeDefaultDrives()
         {
             log.Trace().Message($"{nameof(InitializeDefaultDrives)}()").Write();
 
-            return new Collection<PSDriveInfo> { TreesorDriveInfo.CreateDefault(this.ProviderInfo) };
+            return new Collection<PSDriveInfo>
+            {
+                TreesorDriveInfo.CreateDefault(this.ProviderInfo)
+            };
         }
 
         protected override PSDriveInfo RemoveDrive(PSDriveInfo drive)
         {
+            log.Trace().Message($"{nameof(InitializeDefaultDrives)}:Removing drive").Write();
+
             TreesorDriveInfo treesorDriveInfo = drive as TreesorDriveInfo;
 
             if (treesorDriveInfo == null)
@@ -72,7 +66,7 @@
                 return null;
             }
 
-            treesorDriveInfo.RemovingDrive();
+            DriveInfo.Service.Dispose();
 
             return treesorDriveInfo;
         }

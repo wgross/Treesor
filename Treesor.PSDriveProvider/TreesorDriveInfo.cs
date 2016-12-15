@@ -27,30 +27,7 @@
            ));
         }
 
-        internal void MoveItem(TreesorNodePath path, TreesorNodePath destination)
-        {
-            this.treesorService.MoveItem(path, destination);
-        }
-
-        internal IEnumerable<string> ExpandPath(WildcardPattern wildcardPattern)
-        {
-            var tmp = from i in this.treesorService.GetDescendants(TreesorNodePath.RootPath)
-                   let path = i.Path.ToString()
-                   where wildcardPattern.IsMatch(path)
-                   select path;
-            var tmp2 = tmp.ToArray();
-            return tmp2;
-        }
-
-        internal void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
-        {
-            this.treesorService.CopyItem(path, destinationPath, recurse);
-        }
-
-        internal void ClearItem(TreesorNodePath treesorNodePath)
-        {
-            this.treesorService.ClearItem(treesorNodePath);
-        }
+        internal ITreesorService Service => this.treesorService;
 
         #region Creation and initialization of this instance
 
@@ -66,11 +43,6 @@
                 return this.treesorService.GetDescendants(treesorNodePath);
             else
                 return this.treesorService.GetChildItems(treesorNodePath);
-        }
-
-        internal TreesorItem GetItem(TreesorNodePath treesorNodePath)
-        {
-            return this.treesorService.GetItem(treesorNodePath);
         }
 
         //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
@@ -96,39 +68,5 @@
         }
 
         #endregion Get notified of end of life
-
-        #region Implement ItemCmdletProvider methods
-
-        internal bool ItemExists(TreesorNodePath treesorNodePath)
-        {
-            return this.treesorService.ItemExists(treesorNodePath);
-        }
-
-        internal void SetItem(TreesorNodePath treesorNodePath, object value)
-        {
-            this.treesorService.SetItem(treesorNodePath, value);
-        }
-
-        internal TreesorItem NewItem(TreesorNodePath treesorNodePath, string itemTypeName, object newItemValue)
-        {
-            return this.treesorService.NewItem(treesorNodePath, newItemValue);
-        }
-
-        internal void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)
-        {
-            this.treesorService.RemoveItem(treesorNodePath, recurse);
-        }
-
-        internal bool HasChildItems(TreesorNodePath treesorNodePath)
-        {
-            return this.treesorService.HasChildItems(treesorNodePath);
-        }
-
-        internal void RenameItem(TreesorNodePath treesorNodePath, string newName)
-        {
-            this.treesorService.RenameItem(treesorNodePath, newName);
-        }
-
-        #endregion Implement ItemCmdletProvider methods
     }
 }
