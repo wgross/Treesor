@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Elementary.Hierarchy, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elementary.Hierarchy.1.6.0\lib\netstandard1.0\Elementary.Hierarchy.dll</HintPath>
+      <HintPath>..\packages\Elementary.Hierarchy.1.7.0\lib\netstandard1.1\Elementary.Hierarchy.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Elementary.Hierarchy.Collections, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">

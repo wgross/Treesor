@@ -82,7 +82,7 @@
 
         public override string ToString()
         {
-            return this.HierarchyPath.ToString();
+            return this.HierarchyPath.ToString(@"\");
         }
 
         #endregion Override object behaviour

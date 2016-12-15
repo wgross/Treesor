@@ -45,11 +45,7 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_sets_location_to_root_container()
         {
             // ARRANGE
-
-            this.treesorService
-                .Setup(s => s.ItemExists(TreesorNodePath.RootPath))
-                .Returns(true);
-
+            
             Guid id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
@@ -67,7 +63,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Once());
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Never());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
             this.treesorService.VerifyAll();
         }
@@ -76,10 +72,6 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_gets_location_from_root_container()
         {
             // ARRANGE
-
-            this.treesorService
-                .Setup(s => s.ItemExists(TreesorNodePath.RootPath))
-                .Returns(true);
 
             Guid id_root;
             this.treesorService
@@ -111,11 +103,7 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_set_location_to_container_under_root()
         {
             // ARRANGE
-
-            this.treesorService
-                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
-                .Returns(true);
-
+            
             Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
@@ -133,7 +121,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.VerifyAll();
         }
@@ -142,11 +130,7 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_gets_location_from_container_under_root()
         {
             // ARRANGE
-
-            this.treesorService
-                .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
-                .Returns(true);
-
+            
             Guid id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))

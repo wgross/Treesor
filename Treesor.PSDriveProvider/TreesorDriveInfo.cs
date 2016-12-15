@@ -2,7 +2,6 @@
 {
     using NLog;
     using NLog.Fluent;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
@@ -31,6 +30,16 @@
         internal void MoveItem(TreesorNodePath path, TreesorNodePath destination)
         {
             this.treesorService.MoveItem(path, destination);
+        }
+
+        internal IEnumerable<string> ExpandPath(WildcardPattern wildcardPattern)
+        {
+            var tmp = from i in this.treesorService.GetDescendants(TreesorNodePath.RootPath)
+                   let path = i.Path.ToString()
+                   where wildcardPattern.IsMatch(path)
+                   select path;
+            var tmp2 = tmp.ToArray();
+            return tmp2;
         }
 
         internal void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
@@ -82,7 +91,7 @@
         internal IEnumerable<string> GetChildNames(TreesorNodePath treesorNodePath, ReturnContainers returnContainers)
         {
             return this.treesorService
-                .GetChildItemsByWildcard(treesorNodePath)
+                .GetChildItems(treesorNodePath)
                 .Select(ci => ci.Path.HierarchyPath.Leaf().Items.Last());
         }
 

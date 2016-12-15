@@ -30,7 +30,8 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')").Write();
 
-            var result = TreesorNodePath.Create(TreesorNodePath.Parse(parent).HierarchyPath.Join(TreesorNodePath.Parse(child).HierarchyPath).Items.ToArray()).HierarchyPath.ToString();
+            var result = TreesorNodePath.Create(
+                TreesorNodePath.Parse(parent).HierarchyPath.Join(TreesorNodePath.Parse(child).HierarchyPath).Items.ToArray()).ToString();
 
             log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')->'{result}'").Write();
 

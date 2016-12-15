@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider
             log.Trace().Message($"{nameof(ExpandPath)}({nameof(path)}={path})").Write();
 
             return this.GetTreesorDriveInfo()
-                .GetChildNames(TreesorNodePath.Create(path), ReturnContainers.ReturnMatchingContainers)
+                .ExpandPath(new WildcardPattern(path))
                 .ToArray();
         }
 
@@ -44,7 +44,7 @@ namespace Treesor.PSDriveProvider
             var item = this.GetTreesorDriveInfo().GetItem(treesorNodePath);
 
             log.Debug()
-                .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item)}.GetHashCode={item?.GetHashCode()},{nameof(item.Path)}={item.Path},isContainer={item.IsContainer})")
+                .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item.GetHashCode)}={item?.GetHashCode()},{nameof(item.Path)}={item?.Path},{nameof(item.IsContainer)}={item?.IsContainer})")
                 .Write();
 
             this.WriteItemObject(item, path, isContainer: item.IsContainer);
