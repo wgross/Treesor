@@ -24,11 +24,14 @@ namespace Treesor.PSDriveProvider
 
         #region Construction and initialization of this instance
 
-        private IHierarchy<string, Guid> hierarchy;
+        private readonly IHierarchy<string, Guid> hierarchy;
+
+        private readonly IDictionary<string, TreesorColumn> columns;
 
         public TreesorService(IHierarchy<string, Guid> hierarchy)
         {
             this.hierarchy = hierarchy;
+            this.columns = new Dictionary<string, TreesorColumn>();
         }
 
         #endregion Construction and initialization of this instance
@@ -204,5 +207,24 @@ namespace Treesor.PSDriveProvider
                     this.hierarchy.Remove(path.HierarchyPath);
                 }
         }
+
+        #region Column Handling
+
+        public TreesorColumn CreateColumn(string name)
+        {
+            var tmp = new TreesorColumn
+            {
+                Name = name
+            };
+            this.columns.Add(name, tmp);
+            return tmp;
+        }
+
+        public TreesorColumn GetColumn(string name)
+        {
+            return this.columns[name];
+        }
+
+        #endregion Column Handling
     }
 }
