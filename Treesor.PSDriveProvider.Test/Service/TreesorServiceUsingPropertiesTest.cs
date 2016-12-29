@@ -1,4 +1,5 @@
 ﻿using Elementary.Hierarchy.Collections;
+using Elementary.Properties.Sparse;
 using Moq;
 using NUnit.Framework;
 using System;

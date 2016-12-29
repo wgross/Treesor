@@ -212,10 +212,7 @@ namespace Treesor.PSDriveProvider
 
         public TreesorColumn CreateColumn(string name)
         {
-            var tmp = new TreesorColumn
-            {
-                Name = name
-            };
+            var tmp = new TreesorColumn(name);
             this.columns.Add(name, tmp);
             return tmp;
         }

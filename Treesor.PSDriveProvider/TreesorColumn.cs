@@ -1,19 +1,27 @@
-﻿using System;
+﻿using Elementary.Properties.Sparse;
 
 namespace Treesor.PSDriveProvider
 {
     public class TreesorColumn
     {
-        public string Name { get; set; }
+        public TreesorColumn(string name)
+        {
+            this.Name = name;
+            this.propertyAccessor = SparsePropertyAccessorFactory<object>.Create();
+        }
+
+        private readonly SparsePropertyAccessor<object> propertyAccessor;
+
+        public string Name { get; }
 
         public void SetValue(TreesorItem nodeItem, object v)
         {
-            throw new NotImplementedException();
+            this.propertyAccessor.SetValue(nodeItem, v);
         }
 
         public object GetValue(TreesorItem nodeItem)
         {
-            throw new NotImplementedException();
+            return this.propertyAccessor.GetValue(nodeItem);
         }
     }
 }
