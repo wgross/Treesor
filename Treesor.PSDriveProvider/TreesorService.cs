@@ -212,6 +212,9 @@ namespace Treesor.PSDriveProvider
 
         public TreesorColumn CreateColumn(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
             var tmp = new TreesorColumn(name);
             this.columns.Add(name, tmp);
             return tmp;

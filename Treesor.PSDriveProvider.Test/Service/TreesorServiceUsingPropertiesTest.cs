@@ -20,7 +20,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void Create_a_column_by_name()
+        public void Create_column_by_name()
         {
             // ACT
 
@@ -30,6 +30,18 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             Assert.IsNotNull(result);
             Assert.AreEqual("test", result.Name);
+        }
+
+        [Test]
+        public void Create_column_with_null_name_throws_ArgumentNullException()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(()=> this.treesorService.CreateColumn(name: null));
+
+            // ASSERT
+
+            Assert.AreEqual("name", result.ParamName);
         }
 
         [Test]
