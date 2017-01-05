@@ -235,6 +235,11 @@ namespace Treesor.PSDriveProvider
             throw new NotImplementedException();
         }
 
+        public void ClearPropertyValue(TreesorNodePath treesorNodePath, string name)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Column Handling
     }
 }

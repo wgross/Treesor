@@ -141,5 +141,61 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Get-ItemProperty > GetPropertyValue
+
+        #region Clear-ItemProperty > ClearPropertyValue
+
+        [Test]
+        public void Powershell_clears_root_property_value()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ClearPropertyValue(TreesorNodePath.RootPath, "p"));
+
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Clear-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.RootPath, "p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_clears_inner_node_property_value()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.ClearPropertyValue(TreesorNodePath.Create("a"), "p"));
+
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Clear-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.Create("a"), "p"), Times.Once());
+        }
+
+        #endregion Get-ItemProperty > GetPropertyValue
     }
 }

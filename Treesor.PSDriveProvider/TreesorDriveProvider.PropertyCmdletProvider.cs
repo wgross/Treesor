@@ -41,12 +41,16 @@ namespace Treesor.PSDriveProvider
 
         public void ClearProperty(string path, Collection<string> propertyToClear)
         {
-            throw new NotImplementedException();
+            log.Trace().Message($"{nameof(ClearProperty)}({nameof(path)}='{path}',{nameof(propertyToClear)}='{propertyToClear}')").Write();
+
+            this.DriveInfo.Service.ClearPropertyValue(TreesorNodePath.Parse(path), propertyToClear.First());
         }
 
         public object ClearPropertyDynamicParameters(string path, Collection<string> propertyToClear)
         {
-            throw new NotImplementedException();
+            log.Trace().Message($"{nameof(ClearPropertyDynamicParameters)}({nameof(path)}='{path}',{nameof(propertyToClear)}='{propertyToClear}')").Write();
+
+            return null;
         }
     }
 }

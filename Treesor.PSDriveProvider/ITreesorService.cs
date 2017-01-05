@@ -37,5 +37,7 @@ namespace Treesor.PSDriveProvider
         void SetPropertyValue(TreesorNodePath rootPath, string name, object value);
 
         object GetPropertyValue(TreesorNodePath rootPath, string name);
+
+        void ClearPropertyValue(TreesorNodePath treesorNodePath, string name);
     }
 }
