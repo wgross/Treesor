@@ -225,6 +225,11 @@ namespace Treesor.PSDriveProvider
             return this.columns[name];
         }
 
+        public void SetPropertyValue(TreesorNodePath rootPath, string name, object value)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Column Handling
     }
 }

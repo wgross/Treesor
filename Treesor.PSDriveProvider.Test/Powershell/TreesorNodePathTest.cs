@@ -112,5 +112,15 @@ namespace Treesor.PowershellDriveProvider.Test
             Assert.IsFalse(result2);
             Assert.AreNotEqual(left.GetHashCode(), right.GetHashCode());
         }
+
+        [Test]
+        public void TreesotNodePath_empty_is_root_path()
+        {
+            // ASSERT
+
+            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Create());
+            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Create(""));
+            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Parse(@"\"));
+        }
     }
 }

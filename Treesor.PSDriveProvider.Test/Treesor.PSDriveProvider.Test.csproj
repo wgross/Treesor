@@ -143,6 +143,7 @@
     <Compile Include="Powershell\TreesorDriveNavigationCmdletProviderTest.cs" />
     <Compile Include="Powershell\TreesorNodePathTest.cs" />
     <Compile Include="Service\TreesorServiceUsingPropertiesTest.cs" />
+    <Compile Include="Powershell\TreesorDrivePropertyCmdletProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Treesor.PSDriveProvider\Treesor.PSDriveProvider.csproj">
