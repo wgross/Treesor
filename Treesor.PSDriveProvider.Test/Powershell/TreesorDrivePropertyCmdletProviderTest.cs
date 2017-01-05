@@ -1,12 +1,8 @@
 ﻿using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Treesor.PSDriveProvider.Test
 {
@@ -42,15 +38,18 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
+        #region Set-ItemProperty > SetPropertyValue
+
         [Test]
         public void Powershell_creates_property_at_root_node()
         {
             // ACT
+
             object value = "test";
             this.powershell
                 .AddStatement()
                 .AddCommand("Set-ItemProperty")
-                .AddParameter("Path", @"treesor:\").AddParameter("Name","p").AddParameter("Value", value);
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p").AddParameter("Value", value);
 
             var result = this.powershell.Invoke();
 
@@ -58,7 +57,89 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.SetPropertyValue(It.IsAny<TreesorNodePath>(),"p", value), Times.Once());
+            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.RootPath, "p", value), Times.Once());
         }
+
+        [Test]
+        public void Powershell_creates_property_at_inner_node()
+        {
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Set-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p").AddParameter("Value", value);
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", value), Times.Once());
+        }
+
+        #endregion Set-ItemProperty > SetPropertyValue
+
+        #region Get-ItemProperty > GetPropertyValue
+
+        [Test]
+        public void Powershell_retrieves_root_property_value()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetPropertyValue(TreesorNodePath.RootPath, "p"))
+                .Returns((object)5);
+
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Get-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(5, (int)(result.Last().BaseObject));
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.GetPropertyValue(TreesorNodePath.RootPath, "p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_retrieves_inner_node_property_value()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetPropertyValue(TreesorNodePath.Create("a"), "p"))
+                .Returns((object)5);
+
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Get-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(5, (int)(result.Last().BaseObject));
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.GetPropertyValue(TreesorNodePath.Create("a"), "p"), Times.Once());
+        }
+
+        #endregion Get-ItemProperty > GetPropertyValue
     }
 }

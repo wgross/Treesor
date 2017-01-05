@@ -230,6 +230,11 @@ namespace Treesor.PSDriveProvider
             throw new NotImplementedException();
         }
 
+        public object GetPropertyValue(TreesorNodePath rootPath, string name)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion Column Handling
     }
 }
