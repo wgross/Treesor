@@ -26,7 +26,7 @@ namespace Treesor.PSDriveProvider
 
         public void ClearValue(TreesorItem nodeItem)
         {
-            this.propertyAccessor.SetValue(nodeItem.IdRef, null);
+            this.propertyAccessor.UnsetValue(nodeItem.IdRef);
         }
     }
 }
