@@ -15,20 +15,20 @@ namespace Treesor.PSDriveProvider
 
         private static ITreesorService DefaultFactoryDelegate(string type)
         {
-            var hierarchy = new MutableHierarchy<string, Guid>();
-            Guid id = default(Guid);
+            var hierarchy = new MutableHierarchy<string, ValueReference<Guid>>();
+            ValueReference<Guid> id;
             if (!hierarchy.TryGetValue(HierarchyPath.Create<string>(), out id))
-                hierarchy.Add(HierarchyPath.Create<string>(), Guid.NewGuid());
+                hierarchy.Add(HierarchyPath.Create<string>(), new ValueReference<Guid>(Guid.NewGuid()));
             return new TreesorService(hierarchy);
         }
 
         #region Construction and initialization of this instance
 
-        private readonly IHierarchy<string, Guid> hierarchy;
+        private readonly IHierarchy<string, ValueReference<Guid>> hierarchy;
 
         private readonly IDictionary<string, TreesorColumn> columns;
 
-        public TreesorService(IHierarchy<string, Guid> hierarchy)
+        public TreesorService(IHierarchy<string, ValueReference<Guid>> hierarchy)
         {
             this.hierarchy = hierarchy;
             this.columns = new Dictionary<string, TreesorColumn>();
@@ -75,13 +75,13 @@ namespace Treesor.PSDriveProvider
 
         public bool ItemExists(TreesorNodePath treesorNodePath)
         {
-            Guid id;
+            ValueReference<Guid> id;
             return this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id);
         }
 
         public TreesorItem GetItem(TreesorNodePath rootPath)
         {
-            Guid id;
+            ValueReference<Guid> id;
             if (this.hierarchy.TryGetValue(rootPath.HierarchyPath, out id))
                 return new TreesorItem(rootPath, id);
             else return null;
@@ -106,8 +106,8 @@ namespace Treesor.PSDriveProvider
             if (newItemValue != null)
                 throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
 
-            Guid id;
-            this.hierarchy.Add(treesorNodePath.HierarchyPath, id = Guid.NewGuid());
+            ValueReference<Guid> id;
+            this.hierarchy.Add(treesorNodePath.HierarchyPath, id = new ValueReference<Guid>(Guid.NewGuid()));
 
             return new TreesorItem(treesorNodePath, id);
         }
@@ -147,25 +147,25 @@ namespace Treesor.PSDriveProvider
 
         public void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
         {
-            Guid id;
+            ValueReference<Guid> id;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
             {
-                Guid destinationId;
+                ValueReference<Guid> destinationId;
                 if (this.hierarchy.TryGetValue(destinationPath.HierarchyPath, out destinationId))
                 {
                     // try create new item under existing destination
                     if (!this.hierarchy.TryGetValue(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), out destinationId))
-                        this.hierarchy.Add(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), destinationId = Guid.NewGuid());
+                        this.hierarchy.Add(destinationPath.HierarchyPath.Join(path.HierarchyPath.Leaf()), destinationId = new ValueReference<Guid>(Guid.NewGuid()));
                 }
                 else
                 {
                     // create new item at destiontionPath
-                    this.hierarchy.Add(destinationPath.HierarchyPath, destinationId = Guid.NewGuid());
+                    this.hierarchy.Add(destinationPath.HierarchyPath, destinationId = new ValueReference<Guid>(Guid.NewGuid()));
                     if (recurse)
                     {
                         // copy child nodes of source to destination
                         foreach (var source in this.hierarchy.Traverse(path.HierarchyPath).Descendants(depthFirst: false))
-                            this.hierarchy.Add(destinationPath.HierarchyPath.Join(source.Path.RelativeToAncestor(path.HierarchyPath)), Guid.NewGuid());
+                            this.hierarchy.Add(destinationPath.HierarchyPath.Join(source.Path.RelativeToAncestor(path.HierarchyPath)), new ValueReference<Guid>(Guid.NewGuid()));
                     }
                 }
             }
@@ -173,7 +173,7 @@ namespace Treesor.PSDriveProvider
 
         public void RenameItem(TreesorNodePath treesorNodePath, string newName)
         {
-            Guid id;
+            ValueReference<Guid> id;
             if (this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id))
                 if (!this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath.Parent().Join(newName), out id))
                     if (this.hierarchy.Remove(treesorNodePath.HierarchyPath))
@@ -182,8 +182,7 @@ namespace Treesor.PSDriveProvider
 
         public void MoveItem(TreesorNodePath path, TreesorNodePath destinationPath)
         {
-            Guid id;
-            Guid destinationId;
+            ValueReference<Guid> id, destinationId;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
                 if (this.hierarchy.TryGetValue(destinationPath.HierarchyPath, out destinationId))
                 {
@@ -219,15 +218,14 @@ namespace Treesor.PSDriveProvider
             this.columns.Add(name, tmp);
             return tmp;
         }
-
-        public TreesorColumn GetColumn(string name)
+        
+        public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
-            return this.columns[name];
-        }
+            TreesorColumn column = null;
+            if(!this.columns.TryGetValue(name, out column))
+                column = this.CreateColumn(name);
 
-        public void SetPropertyValue(TreesorNodePath rootPath, string name, object value)
-        {
-            throw new NotImplementedException();
+            column.SetValue(this.GetItem(path), value);
         }
 
         public object GetPropertyValue(TreesorNodePath rootPath, string name)
