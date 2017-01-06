@@ -4,16 +4,6 @@ namespace Treesor.PSDriveProvider
 {
     public class TreesorColumn
     {
-        internal class Ref<T> where T : struct
-        {
-            public Ref(T referencedValue)
-            {
-                ReferencedValue = referencedValue;
-            }
-
-            internal readonly T ReferencedValue;
-        }
-
         public TreesorColumn(string name)
         {
             this.Name = name;
@@ -31,7 +21,12 @@ namespace Treesor.PSDriveProvider
 
         public object GetValue(TreesorItem nodeItem)
         {
-            return this.propertyAccessor.GetValue(nodeItem);
+            return this.propertyAccessor.GetValue(nodeItem.IdRef);
+        }
+
+        public void ClearValue(TreesorItem nodeItem)
+        {
+            this.propertyAccessor.SetValue(nodeItem.IdRef, null);
         }
     }
 }

@@ -9,22 +9,22 @@ namespace Treesor.PSDriveProvider.Test.Service
     [TestFixture]
     public class TreesorServiceUsingPropertiesTest
     {
-        private Mock<IHierarchy<string, ValueReference<Guid>>> hierarchyMock;
+        private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
         private TreesorService treesorService;
 
         [SetUp]
         public void ArrangeAllTests()
         {
-            this.hierarchyMock = new Mock<IHierarchy<string, ValueReference<Guid>>>();
+            this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
             this.treesorService = new TreesorService(this.hierarchyMock.Object);
         }
 
         [Test]
-        public void Get_înner_nodes_property_value()
+        public void Get_inner_nodes_property_value()
         {
             // ARRANGE
 
-            var id = Guid.NewGuid();
+            var id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
@@ -45,8 +45,12 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var nodeItem = this.treesorService.NewItem(TreesorNodePath.Create("a"), newItemValue: null);
-            this.treesorService.CreateColumn(name: "test").SetValue(nodeItem, 5);
+            var id = new Reference<Guid>(Guid.NewGuid());
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
+                .Returns(true);
+
+            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5);
 
             // ACT
 

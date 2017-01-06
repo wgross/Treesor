@@ -45,11 +45,11 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_sets_location_to_root_container()
         {
             // ARRANGE
-            
-            Guid id_root;
+
+            Reference<Guid> id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
 
             // ACT
 
@@ -73,10 +73,10 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_root;
+            Reference<Guid> id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
 
             this.powershell
                 .AddStatement()
@@ -103,11 +103,11 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_set_location_to_container_under_root()
         {
             // ARRANGE
-            
-            Guid id_item;
+
+            Reference<Guid> id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
 
             // ACT
 
@@ -130,11 +130,11 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_gets_location_from_container_under_root()
         {
             // ARRANGE
-            
-            Guid id_item;
+
+            Reference<Guid> id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
 
             this.powershell
                 .AddStatement()

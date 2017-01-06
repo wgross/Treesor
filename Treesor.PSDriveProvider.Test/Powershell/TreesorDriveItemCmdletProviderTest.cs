@@ -46,7 +46,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_item = Guid.NewGuid();
+            Reference<Guid> id_item = new Reference<Guid>(Guid.NewGuid());
             this.treesorService
                 .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
                 .Returns<TreesorNodePath, object>((p, v) => new TreesorItem(p, id_item));
@@ -64,7 +64,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
             Assert.IsInstanceOf<TreesorItem>(result.Last().BaseObject);
-            Assert.AreEqual(id_item, ((TreesorItem)result.Last().BaseObject).Id);
+            Assert.AreEqual(id_item.Value, ((TreesorItem)result.Last().BaseObject).Id);
             Assert.AreEqual(@"TreesorDriveProvider\Treesor::item", result.Last().Properties["PSPath"].Value);
 
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
@@ -77,7 +77,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_item = Guid.NewGuid();
+            Reference<Guid> id_item = new Reference<Guid>(Guid.NewGuid());
             this.treesorService
                 .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
                 .Returns<TreesorNodePath, object>((p, v) => new TreesorItem(p, id_item));
@@ -95,7 +95,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
             Assert.IsInstanceOf<TreesorItem>(result.Last().BaseObject);
-            Assert.AreEqual(id_item, ((TreesorItem)result.Last().BaseObject).Id);
+            Assert.AreEqual(id_item.Value, ((TreesorItem)result.Last().BaseObject).Id);
             Assert.AreEqual(@"TreesorDriveProvider\Treesor::item\a", result.Last().Properties["PSPath"].Value);
             Assert.AreEqual(@"TreesorDriveProvider\Treesor::item", result.Last().Properties["PSParentPath"].Value);
 
@@ -279,8 +279,8 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_root;
-            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = Guid.NewGuid()));
+            Reference<Guid> id_root;
+            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
 
             // ACT
             // test for a missing item
@@ -307,10 +307,10 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_root;
+            Reference<Guid> id_root;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item", "a")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item", "a"), id_root = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item", "a"), id_root = new Reference<Guid>(Guid.NewGuid())));
 
             // ACT
             // test for a missing item
@@ -333,7 +333,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService.VerifyAll();
         }
 
-        #endregion Get-Item > ItemExists, GetItem, MakePath
+        #endregion Get-Item > GetItem, MakePath
 
         #region Set-Item > ItemExists, SetItem
 
