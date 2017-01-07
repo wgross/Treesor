@@ -7,8 +7,10 @@ using System.Management.Automation.Provider;
 
 namespace Treesor.PSDriveProvider
 {
-    public partial class TreesorDriveProvider : IPropertyCmdletProvider
+    public partial class TreesorDriveProvider : IDynamicPropertyCmdletProvider
     {
+        #region IPropertyCmdletProvider Members
+
         public void GetProperty(string path, Collection<string> providerSpecificPickList)
         {
             log.Trace().Message($"{nameof(GetProperty)}({nameof(path)}='{path}',{nameof(providerSpecificPickList)}='{string.Join(",", providerSpecificPickList)}')").Write();
@@ -52,5 +54,62 @@ namespace Treesor.PSDriveProvider
 
             return null;
         }
+
+        #endregion IPropertyCmdletProvider Members
+
+        #region IDynamicPropertyCmdltProvider Members
+
+        public void NewProperty(string path, string propertyName, string propertyTypeName, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object NewPropertyDynamicParameters(string path, string propertyName, string propertyTypeName, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveProperty(string path, string propertyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object RemovePropertyDynamicParameters(string path, string propertyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RenameProperty(string path, string sourceProperty, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object RenamePropertyDynamicParameters(string path, string sourceProperty, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyProperty(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object CopyPropertyDynamicParameters(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveProperty(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object MovePropertyDynamicParameters(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion IDynamicPropertyCmdltProvider Members
+
     }
 }
