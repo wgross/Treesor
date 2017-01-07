@@ -11,7 +11,7 @@ namespace Treesor.PSDriveProvider
         protected override void MoveItem(string path, string destination)
         {
             log.Trace().Message($"{nameof(MoveItem)}({nameof(path)}={path}, {nameof(destination)}={destination})").Write();
-         
+
             this.DriveInfo.Service.MoveItem(path: TreesorNodePath.Parse(path), destination: TreesorNodePath.Parse(destination));
         }
 

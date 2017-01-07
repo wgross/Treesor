@@ -1,6 +1,4 @@
-﻿using Elementary.Hierarchy;
-using NLog.Fluent;
-using System;
+﻿using NLog.Fluent;
 using System.Linq;
 using System.Management.Automation;
 
