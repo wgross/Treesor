@@ -38,6 +38,50 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
+        #region New-ItemProperty > NewProperty
+
+        [Test]
+        public void Powershell_creates_new_property_at_root_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p")
+                .AddParameter("PropertyType", "type").AddParameter("Value", "value");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.NewProperty(TreesorNodePath.RootPath, "p", "type", "value"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_creates_new_property_at_inner_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p")
+                .AddParameter("PropertyType", "type").AddParameter("Value", "value");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.NewProperty(TreesorNodePath.Create("a"), "p", "type", "value"), Times.Once());
+        }
+
+        #endregion New-ItemProperty > NewProperty
+
         #region Set-ItemProperty > SetPropertyValue
 
         [Test]
@@ -165,7 +209,7 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
 
             Assert.IsFalse(this.powershell.HadErrors);
-            
+
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.RootPath, "p"), Times.Once());
         }
@@ -191,11 +235,185 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
 
             Assert.IsFalse(this.powershell.HadErrors);
-            
+
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.Create("a"), "p"), Times.Once());
         }
 
-        #endregion Get-ItemProperty > GetPropertyValue
+        #endregion Clear-ItemProperty > ClearPropertyValue
+
+        #region Copy-ItemProperty > CopyPropertyValue
+
+        [Test]
+        public void Powershell_copies_property_value_from_root_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Copy-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p")
+                .AddParameter("Destination", @"treesor:\a");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_copies_property_value_from_inner_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Copy-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p")
+                .AddParameter("Destination", @"treesor:\");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.CopyPropertyValue(TreesorNodePath.Create("a"), "p", TreesorNodePath.RootPath, "p"), Times.Once());
+        }
+
+        #endregion Copy-ItemProperty > CopyPropertyValue
+
+        #region Move-ItemProperty > MovePropertyValue
+
+        [Test]
+        public void Powershell_moves_property_value_from_root_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Move-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p")
+                .AddParameter("Destination", @"treesor:\a");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_moves_property_value_from_inner_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Move-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p")
+                .AddParameter("Destination", @"treesor:\");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.MovePropertyValue(TreesorNodePath.Create("a"), "p", TreesorNodePath.RootPath, "p"), Times.Once());
+        }
+
+        #endregion Move-ItemProperty > MovePropertyValue
+
+        #region Remove-ItemProperty > RemoveProperty
+
+        [Test]
+        public void Powershell_removesProperty_from_root_node()
+        {
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.RootPath, "p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_removesProperty_from_inner_node()
+        {
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.Create("a"), "p"), Times.Once());
+        }
+
+        #endregion Remove-ItemProperty > RemoveProperty
+
+        #region Rename-ItemProperty > RenameProperty
+
+        [Test]
+        public void Powershell_renames_property_at_root_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p").AddParameter("NewName", "q");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.RootPath, "p", "q"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_renames_property_at_inner_node()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-ItemProperty")
+                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p").AddParameter("NewName", "q");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.Create("a"), "p", "q"), Times.Once());
+        }
+
+        #endregion Rename-ItemProperty > RenameProperty
     }
 }

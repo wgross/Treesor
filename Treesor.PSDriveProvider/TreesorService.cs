@@ -257,7 +257,32 @@ namespace Treesor.PSDriveProvider
             TreesorItem item;
             if (this.columns.TryGetValue(name, out column))
                 if (this.TryGetItem(path, out item))
-                   column.ClearValue(item);
+                    column.ClearValue(item);
+        }
+
+        public void NewProperty(TreesorNodePath treesorNodePath, string propertyName, string propertyTypeName, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveProperty(TreesorNodePath path, string propertyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RenameProperty(TreesorNodePath path, string sourceProperty, string destinationProperty)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion Column Handling
