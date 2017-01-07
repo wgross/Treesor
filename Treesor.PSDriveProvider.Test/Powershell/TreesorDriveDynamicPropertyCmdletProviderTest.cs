@@ -6,7 +6,7 @@ using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Test
 {
-    public class TreesorDrivePropertyCmdletProviderTest
+    public class TreesorDriveDynamicPropertyCmdletProviderTest
     {
         private Mock<ITreesorService> treesorService;
         private PowerShell powershell;
