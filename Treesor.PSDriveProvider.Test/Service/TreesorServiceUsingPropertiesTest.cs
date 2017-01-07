@@ -19,6 +19,59 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.treesorService = new TreesorService(this.hierarchyMock.Object);
         }
 
+        #region CreateColumn
+
+        [Test]
+        public void Create_property_type_string()
+        {
+            // ACT
+
+            var result = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("p", result.Name);
+            Assert.AreEqual(typeof(string).Name, result.TypeName);
+        }
+
+        [Test]
+        public void Create_same_property_twice_is_accepted()
+        {
+            // ARRANGE
+
+            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+
+            // ACT
+
+            var result = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+
+            // ASSERT
+
+            Assert.IsNotNull(result);
+            Assert.AreSame(column, result);
+            Assert.AreEqual("p", result.Name);
+            Assert.AreEqual(typeof(string).Name, result.TypeName);
+        }
+
+        [Test]
+        public void Create_same_property_twice_fails_with_different_type()
+        {
+            // ARRANGE
+
+            this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.CreateColumn(name: "p", typename: typeof(int).Name));
+
+            // ASSERT
+
+            Assert.IsTrue(result.Message.Equals($"Column: 'p' already defined with type: '{typeof(string).Name}'"));
+        }
+
+        #endregion CreateProperty
+
         [Test]
         public void Get_inner_nodes_property_value()
         {

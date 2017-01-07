@@ -38,30 +38,10 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region New-ItemProperty > NewProperty
+        #region New-ItemProperty > CreateColumns/SetPropertyValue
 
         [Test]
-        public void Powershell_creates_new_property_at_root_node()
-        {
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("New-ItemProperty")
-                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p")
-                .AddParameter("PropertyType", "type").AddParameter("Value", "value");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.NewProperty(TreesorNodePath.RootPath, "p", "type", "value"), Times.Once());
-        }
-
-        [Test]
-        public void Powershell_creates_new_property_at_inner_node()
+        public void Powershell_creates_new_column_at_any_node()
         {
             // ACT
 
@@ -77,10 +57,11 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.NewProperty(TreesorNodePath.Create("a"), "p", "type", "value"), Times.Once());
+            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Once());
+            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Once());
         }
 
-        #endregion New-ItemProperty > NewProperty
+        #endregion New-ItemProperty > CreateColumns/SetPropertyValue
 
         #region Set-ItemProperty > SetPropertyValue
 

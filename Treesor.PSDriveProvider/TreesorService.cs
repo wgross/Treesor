@@ -220,23 +220,11 @@ namespace Treesor.PSDriveProvider
                 }
         }
 
-        #region Column Handling
-
-        public TreesorColumn CreateColumn(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name));
-
-            var tmp = new TreesorColumn(name);
-            this.columns.Add(name, tmp);
-            return tmp;
-        }
-
         public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
             TreesorColumn column = null;
             if (!this.columns.TryGetValue(name, out column))
-                column = this.CreateColumn(name);
+                column = this.CreateColumn(name, value.GetType().Name);
 
             column.SetValue(this.GetItem(path), value);
         }
@@ -260,10 +248,27 @@ namespace Treesor.PSDriveProvider
                     column.ClearValue(item);
         }
 
-        public void NewProperty(TreesorNodePath treesorNodePath, string propertyName, string propertyTypeName, object value)
+        #region Create a new columns in treesor data model
+
+        public TreesorColumn CreateColumn(string name, string typename)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
+            TreesorColumn column;
+            if (this.columns.TryGetValue(name, out column))
+            {
+                if (StringComparer.Ordinal.Equals(typename, column.TypeName))
+                    return column;
+
+                throw new InvalidOperationException($"Column: '{name}' already defined with type: '{column.TypeName}'");
+            }
+
+            this.columns.Add(name, column = new TreesorColumn(name, typename));
+            return column;
         }
+
+        #endregion Create a new columns in treesor data model
 
         public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
         {
@@ -284,7 +289,5 @@ namespace Treesor.PSDriveProvider
         {
             throw new NotImplementedException();
         }
-
-        #endregion Column Handling
     }
 }

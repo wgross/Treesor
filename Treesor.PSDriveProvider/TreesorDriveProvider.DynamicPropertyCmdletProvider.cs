@@ -62,7 +62,8 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(NewProperty)}({nameof(path)}='{path}',{nameof(propertyName)}='{propertyName}',{nameof(propertyTypeName)}='{propertyTypeName}')").Write();
 
-            this.DriveInfo.Service.NewProperty(TreesorNodePath.Parse(path), propertyName, propertyTypeName, value);
+            this.DriveInfo.Service.CreateColumn(propertyName, propertyTypeName);
+            this.DriveInfo.Service.SetPropertyValue(TreesorNodePath.Parse(path), propertyName, value);
         }
 
         public object NewPropertyDynamicParameters(string path, string propertyName, string propertyTypeName, object value)
