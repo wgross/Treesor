@@ -81,6 +81,9 @@ namespace Treesor.PSDriveProvider
 
         public TreesorItem GetItem(TreesorNodePath path)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
             Reference<Guid> id;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
                 return new TreesorItem(path, id);
@@ -222,28 +225,59 @@ namespace Treesor.PSDriveProvider
 
         public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
+            TreesorItem item;
+            if (!this.TryGetItem(path, out item))
+                throw new InvalidOperationException($"Node '{path}' doesn't exist");
+
             TreesorColumn column = null;
-            if (this.columns.TryGetValue(name, out column))
-                column.SetValue(this.GetItem(path).IdRef, value);
+            if (!this.columns.TryGetValue(name, out column))
+                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+
+            column.SetValue(this.GetItem(path).IdRef, value);
         }
 
         public object GetPropertyValue(TreesorNodePath path, string name)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
             TreesorColumn column = null;
+            if (!this.columns.TryGetValue(name, out column))
+                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+
             TreesorItem item;
-            if (this.columns.TryGetValue(name, out column))
-                if (this.TryGetItem(path, out item))
-                    return column.GetValue(item.IdRef);
-            return null;
+            if (!this.TryGetItem(path, out item))
+                throw new InvalidOperationException($"Node '{path}' doesn't exist");
+
+            return column.GetValue(item.IdRef);
         }
 
         public void ClearPropertyValue(TreesorNodePath path, string name)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
             TreesorColumn column = null;
+            if (!this.columns.TryGetValue(name, out column))
+                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+
             TreesorItem item;
-            if (this.columns.TryGetValue(name, out column))
-                if (this.TryGetItem(path, out item))
-                    column.ClearValue(item);
+            if (!this.TryGetItem(path, out item))
+                throw new InvalidOperationException($"Node '{path}' doesn't exist");
+
+            column.ClearValue(item);
         }
 
         #region Create a new columns in treesor data model

@@ -159,6 +159,18 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.Verify(s => s.TryGetValue(HierarchyPath.Create("item"), out id), Times.Once());
         }
 
+        [Test]
+        public void GetItem_fails_on_missing_node_path()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.GetItem(null));
+
+            // ASSERT
+
+            Assert.AreEqual("path", result.ParamName);
+        }
+
         #endregion GetItem > TryGetValue
 
         #region SetItem: NotSupported
