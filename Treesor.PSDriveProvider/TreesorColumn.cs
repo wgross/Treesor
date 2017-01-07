@@ -16,12 +16,17 @@ namespace Treesor.PSDriveProvider
 
         public void SetValue(TreesorItem nodeItem, object v)
         {
-            this.propertyAccessor.SetValue(nodeItem, v);
+            this.propertyAccessor.SetValue(nodeItem.IdRef, v);
         }
 
         public object GetValue(TreesorItem nodeItem)
         {
-            return this.propertyAccessor.GetValue(nodeItem);
+            return this.propertyAccessor.GetValue(nodeItem.IdRef);
+        }
+
+        public void ClearValue(TreesorItem nodeItem)
+        {
+            this.propertyAccessor.UnsetValue(nodeItem.IdRef);
         }
     }
 }

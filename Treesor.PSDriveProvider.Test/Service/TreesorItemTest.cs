@@ -11,7 +11,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var id = Guid.NewGuid();
+            var id = new Reference<Guid>(Guid.NewGuid());
             var a = new TreesorItem(TreesorNodePath.Create("a"), id);
             var b = new TreesorItem(TreesorNodePath.Create("b"), id);
 
@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var id = Guid.NewGuid();
+            var id = new Reference<Guid>(Guid.NewGuid());
             var a = new TreesorItem(TreesorNodePath.Create("a"), id);
             var b = new TreesorItem(TreesorNodePath.Create("b"), id);
 
@@ -42,8 +42,8 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual(id.GetHashCode(), result_a);
-            Assert.AreEqual(id.GetHashCode(), result_b);
+            Assert.AreEqual(id.Value.GetHashCode(), result_a);
+            Assert.AreEqual(id.Value.GetHashCode(), result_b);
         }
     }
 }

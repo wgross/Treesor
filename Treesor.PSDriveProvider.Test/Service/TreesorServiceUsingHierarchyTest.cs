@@ -11,13 +11,13 @@ namespace Treesor.PSDriveProvider.Test.Service
     [TestFixture]
     public class TreesorServiceUsingHierarchyTest
     {
-        private Mock<IHierarchy<string, Guid>> hierarchyMock;
+        private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
         private TreesorService treesorService;
 
         [SetUp]
         public void ArrangeAllTests()
         {
-            this.hierarchyMock = new Mock<IHierarchy<string, Guid>>();
+            this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
             this.treesorService = new TreesorService(this.hierarchyMock.Object);
         }
 
@@ -32,7 +32,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Guid>()), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Reference<Guid>>()), Times.Once());
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
 
             this.hierarchyMock
-                .Setup(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Guid>()))
+                .Setup(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Reference<Guid>>()))
                 .Throws(new ArgumentException());
 
             // ACT
@@ -74,7 +74,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var value = Guid.NewGuid();
+            var value = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out value))
                 .Returns(true);
@@ -94,7 +94,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var value = Guid.NewGuid();
+            var value = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out value))
                 .Returns(false);
@@ -117,7 +117,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
 
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
@@ -132,7 +132,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             Assert.NotNull(result);
             Assert.IsTrue(result.IsContainer);
             Assert.AreEqual(TreesorNodePath.Create("item"), result.Path);
-            Assert.AreEqual(id, result.Id);
+            Assert.AreEqual(id.Value, result.Id);
 
             this.hierarchyMock.Verify(s => s.TryGetValue(HierarchyPath.Create("item"), out id), Times.Once());
         }
@@ -142,7 +142,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            Guid id = Guid.Empty;
+            Reference<Guid> id = new Reference<Guid>(Guid.Empty);
 
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
@@ -229,36 +229,36 @@ namespace Treesor.PSDriveProvider.Test.Service
             //             / \
             //            c   d
 
-            var a = new Mock<IHierarchyNode<string, Guid>>();
+            var a = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             a.Setup(n => n.HasChildNodes).Returns(false);
-            Guid a_value;
-            a.Setup(n => n.Value).Returns(a_value = Guid.NewGuid());
+            Reference<Guid> a_value;
+            a.Setup(n => n.Value).Returns(a_value = new Reference<Guid>(Guid.NewGuid()));
             a.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "a"));
 
-            var c = new Mock<IHierarchyNode<string, Guid>>();
+            var c = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             c.Setup(n => n.HasChildNodes).Returns(false);
-            Guid c_value;
-            c.Setup(n => n.Value).Returns(c_value = Guid.NewGuid());
+            Reference<Guid> c_value;
+            c.Setup(n => n.Value).Returns(c_value = new Reference<Guid>(Guid.NewGuid()));
             c.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "c"));
 
-            var d = new Mock<IHierarchyNode<string, Guid>>();
+            var d = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             d.Setup(n => n.HasChildNodes).Returns(false);
-            Guid d_value;
-            d.Setup(n => n.Value).Returns(d_value = Guid.NewGuid());
+            Reference<Guid> d_value;
+            d.Setup(n => n.Value).Returns(d_value = new Reference<Guid>(Guid.NewGuid()));
             d.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "d"));
 
-            var b = new Mock<IHierarchyNode<string, Guid>>();
+            var b = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             b.Setup(n => n.HasChildNodes).Returns(true);
             b.Setup(n => n.ChildNodes).Returns(new[] { c.Object, d.Object });
-            Guid b_value;
-            b.Setup(n => n.Value).Returns(b_value = Guid.NewGuid());
+            Reference<Guid> b_value;
+            b.Setup(n => n.Value).Returns(b_value = new Reference<Guid>(Guid.NewGuid()));
             b.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b"));
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
             item.Setup(n => n.ChildNodes).Returns(new[] { a.Object, b.Object });
-            Guid item_value;
-            item.Setup(n => n.Value).Returns(item_value = Guid.NewGuid());
+            Reference<Guid> item_value;
+            item.Setup(n => n.Value).Returns(item_value = new Reference<Guid>(Guid.NewGuid()));
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
 
             this.hierarchyMock
@@ -288,36 +288,36 @@ namespace Treesor.PSDriveProvider.Test.Service
             //             / \
             //            c   d
 
-            var a = new Mock<IHierarchyNode<string, Guid>>();
+            var a = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             a.Setup(n => n.HasChildNodes).Returns(false);
-            Guid a_value;
-            a.Setup(n => n.Value).Returns(a_value = Guid.NewGuid());
+            Reference<Guid> a_value;
+            a.Setup(n => n.Value).Returns(a_value = new Reference<Guid>(Guid.NewGuid()));
             a.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "a"));
 
-            var c = new Mock<IHierarchyNode<string, Guid>>();
+            var c = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             c.Setup(n => n.HasChildNodes).Returns(false);
-            Guid c_value;
-            c.Setup(n => n.Value).Returns(c_value = Guid.NewGuid());
+            Reference<Guid> c_value;
+            c.Setup(n => n.Value).Returns(c_value = new Reference<Guid>(Guid.NewGuid()));
             c.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b", "c"));
 
-            var d = new Mock<IHierarchyNode<string, Guid>>();
+            var d = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             d.Setup(n => n.HasChildNodes).Returns(false);
-            Guid d_value;
-            d.Setup(n => n.Value).Returns(d_value = Guid.NewGuid());
+            Reference<Guid> d_value;
+            d.Setup(n => n.Value).Returns(d_value = new Reference<Guid>(Guid.NewGuid()));
             d.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b", "d"));
 
-            var b = new Mock<IHierarchyNode<string, Guid>>();
+            var b = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             b.Setup(n => n.HasChildNodes).Returns(true);
             b.Setup(n => n.ChildNodes).Returns(new[] { c.Object, d.Object });
-            Guid b_value;
-            b.Setup(n => n.Value).Returns(b_value = Guid.NewGuid());
+            Reference<Guid> b_value;
+            b.Setup(n => n.Value).Returns(b_value = new Reference<Guid>(Guid.NewGuid()));
             b.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b"));
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
             item.Setup(n => n.ChildNodes).Returns(new[] { a.Object, b.Object });
-            Guid item_value;
-            item.Setup(n => n.Value).Returns(item_value = Guid.NewGuid());
+            Reference<Guid> item_value;
+            item.Setup(n => n.Value).Returns(item_value = new Reference<Guid>(Guid.NewGuid()));
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
 
             this.hierarchyMock
@@ -348,7 +348,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRAMGE
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
 
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
@@ -369,12 +369,12 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Guid id_read;
+            Reference<Guid> id_read;
 
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("item"), out id_read), Times.Once());
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("item2"), out id_read), Times.Once());
             this.hierarchyMock.Verify(h => h.Remove(HierarchyPath.Create("item"), null), Times.Once());
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.IsAny<Guid>()), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.IsAny<Reference<Guid>>()), Times.Once());
         }
 
         #endregion RenameItem > TryGetValue,Remove,Add
@@ -386,12 +386,12 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            Guid id = Guid.NewGuid();
+            var id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
 
-            Guid destination_id;
+            Reference<Guid> destination_id;
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(false);
@@ -402,7 +402,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.Is<Guid>(g => g != id)), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.Is<Reference<Guid>>(g => g.Value != id.Value)), Times.Once());
             this.hierarchyMock.VerifyAll();
         }
 
@@ -414,35 +414,35 @@ namespace Treesor.PSDriveProvider.Test.Service
             //        /    \
             //       a      b
 
-            var a = new Mock<IHierarchyNode<string, Guid>>();
+            var a = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             a.Setup(n => n.HasChildNodes).Returns(false);
-            Guid a_value;
-            a.Setup(n => n.Value).Returns(a_value = Guid.NewGuid());
+            Reference<Guid> a_value;
+            a.Setup(n => n.Value).Returns(a_value = new Reference<Guid>(Guid.NewGuid()));
             a.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "a"));
 
-            var b = new Mock<IHierarchyNode<string, Guid>>();
+            var b = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             b.Setup(n => n.HasChildNodes).Returns(false);
-            Guid b_value;
-            b.Setup(n => n.Value).Returns(b_value = Guid.NewGuid());
+            Reference<Guid> b_value;
+            b.Setup(n => n.Value).Returns(b_value = new Reference<Guid>(Guid.NewGuid()));
             b.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b"));
 
-            Guid item_id = Guid.NewGuid();
+            Reference<Guid> item_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out item_id))
                 .Returns(true);
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
             item.Setup(n => n.ChildNodes).Returns(new[] { a.Object, b.Object });
-            Guid item_value;
-            item.Setup(n => n.Value).Returns(item_value = Guid.NewGuid());
+            Reference<Guid> item_value;
+            item.Setup(n => n.Value).Returns(item_value = new Reference<Guid>(Guid.NewGuid()));
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
 
             this.hierarchyMock
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))
                 .Returns(item.Object);
 
-            Guid destination_id;
+            Reference<Guid> destination_id;
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(false);
@@ -453,9 +453,9 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.Is<Guid>(g => g != item_id)), Times.Once());
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "a"), It.Is<Guid>(g => g != a_value)), Times.Once());
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "b"), It.Is<Guid>(g => g != b_value)), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2"), It.Is<Reference<Guid>>(g => g.Value != item_id.Value)), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "a"), It.Is<Reference<Guid>>(g => g.Value != a_value.Value)), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "b"), It.Is<Reference<Guid>>(g => g.Value != b_value.Value)), Times.Once());
             this.hierarchyMock.VerifyAll();
         }
 
@@ -465,17 +465,17 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
             // item and item2 exist, item2/item doesn't exists
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
 
-            Guid destination_id = Guid.NewGuid();
+            Reference<Guid> destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(true);
 
-            Guid new_destination_id = Guid.NewGuid();
+            Reference<Guid> new_destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2", "item"), out new_destination_id))
                 .Returns(false);
@@ -486,7 +486,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "item"), It.Is<Guid>(g => g != id)), Times.Once());
+            this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item2", "item"), It.Is<Reference<Guid>>(g => g.Value != id.Value)), Times.Once());
             this.hierarchyMock.VerifyAll();
         }
 
@@ -496,17 +496,17 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
             // item and item2 exist, item2/item exists
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
 
-            Guid destination_id = Guid.NewGuid();
+            Reference<Guid> destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(true);
 
-            Guid new_destination_id = Guid.NewGuid();
+            Reference<Guid> new_destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2", "item"), out new_destination_id))
                 .Returns(true);
@@ -517,7 +517,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            this.hierarchyMock.Verify(h => h.Add(It.IsAny<HierarchyPath<string>>(), It.IsAny<Guid>()), Times.Never());
+            this.hierarchyMock.Verify(h => h.Add(It.IsAny<HierarchyPath<string>>(), It.IsAny<Reference<Guid>>()), Times.Never());
             this.hierarchyMock.VerifyAll();
         }
 
@@ -530,7 +530,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
@@ -543,7 +543,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.Remove(HierarchyPath.Create("item"), null))
                 .Returns(true);
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(false);
             item.Setup(n => n.Value).Returns(id);
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
@@ -572,24 +572,24 @@ namespace Treesor.PSDriveProvider.Test.Service
             //        /    \
             //       a      b
 
-            var a = new Mock<IHierarchyNode<string, Guid>>();
+            var a = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             a.Setup(n => n.HasChildNodes).Returns(false);
-            Guid a_value;
-            a.Setup(n => n.Value).Returns(a_value = Guid.NewGuid());
+            Reference<Guid> a_value;
+            a.Setup(n => n.Value).Returns(a_value = new Reference<Guid>(Guid.NewGuid()));
             a.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "a"));
 
-            var b = new Mock<IHierarchyNode<string, Guid>>();
+            var b = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             b.Setup(n => n.HasChildNodes).Returns(false);
-            Guid b_value;
-            b.Setup(n => n.Value).Returns(b_value = Guid.NewGuid());
+            Reference<Guid> b_value;
+            b.Setup(n => n.Value).Returns(b_value = new Reference<Guid>(Guid.NewGuid()));
             b.Setup(n => n.Path).Returns(HierarchyPath.Create("item", "b"));
 
-            Guid item_value = Guid.NewGuid();
+            Reference<Guid> item_value = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out item_value))
                 .Returns(true);
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
             item.Setup(n => n.ChildNodes).Returns(new[] { a.Object, b.Object });
             item.Setup(n => n.Value).Returns(item_value);
@@ -599,7 +599,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))
                 .Returns(item.Object);
 
-            Guid destination_id;
+            Reference<Guid> destination_id;
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(false);
@@ -624,22 +624,22 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
             // item and item2 exist, item2/item doesn't exists
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(false);
             item.Setup(n => n.Value).Returns(id);
             item.Setup(n => n.Path).Returns(HierarchyPath.Create("item"));
 
-            Guid destination_id = Guid.NewGuid();
+            Reference<Guid> destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(true);
 
-            Guid new_destination_id = Guid.NewGuid();
+            Reference<Guid> new_destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2", "item"), out new_destination_id))
                 .Returns(false);
@@ -661,17 +661,17 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
             // item and item2 exist, item2/item exists
 
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item"), out id))
                 .Returns(true);
 
-            Guid destination_id = Guid.NewGuid();
+            Reference<Guid> destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2"), out destination_id))
                 .Returns(true);
 
-            Guid new_destination_id = Guid.NewGuid();
+            Reference<Guid> new_destination_id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("item2", "item"), out new_destination_id))
                 .Returns(true);
@@ -684,7 +684,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             this.hierarchyMock.Verify(h => h.Remove(It.IsAny<HierarchyPath<string>>(), null), Times.Never());
             this.hierarchyMock.Verify(h => h.Remove(It.IsAny<HierarchyPath<string>>(), It.IsAny<int>()), Times.Never());
-            this.hierarchyMock.Verify(h => h.Add(It.IsAny<HierarchyPath<string>>(), It.IsAny<Guid>()), Times.Never());
+            this.hierarchyMock.Verify(h => h.Add(It.IsAny<HierarchyPath<string>>(), It.IsAny<Reference<Guid>>()), Times.Never());
             this.hierarchyMock.VerifyAll();
         }
 
@@ -697,9 +697,9 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(false);
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
 
             this.hierarchyMock
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))
@@ -722,9 +722,9 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var item = new Mock<IHierarchyNode<string, Guid>>();
+            var item = new Mock<IHierarchyNode<string, Reference<Guid>>>();
             item.Setup(n => n.HasChildNodes).Returns(true);
-            Guid id = Guid.NewGuid();
+            Reference<Guid> id = new Reference<Guid>(Guid.NewGuid());
 
             this.hierarchyMock
                 .Setup(h => h.Traverse(HierarchyPath.Create("item")))

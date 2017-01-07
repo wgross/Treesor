@@ -4,13 +4,15 @@ namespace Treesor.PSDriveProvider
 {
     public class TreesorItem
     {
-        public TreesorItem(TreesorNodePath path, Guid id)
+        public TreesorItem(TreesorNodePath path, Reference<Guid> id)
         {
             this.Path = path;
-            this.Id = id;
+            this.IdRef = id;
         }
 
-        public Guid Id { get; }
+        internal Reference<Guid> IdRef { get; }
+
+        public Guid Id => this.IdRef.Value;
 
         public bool IsContainer => true;
 

@@ -136,15 +136,15 @@ namespace Treesor.PSDriveProvider.Test
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
-            Guid id_item;
+            Reference<Guid> id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
 
-            Guid id_child;
+            Reference<Guid> id_child;
             this.treesorService
                 .Setup(s => s.GetChildItems(TreesorNodePath.Create("item")))
-                .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child"), id_child = Guid.NewGuid()) });
+                .Returns(new[] { new TreesorItem(TreesorNodePath.Create("child"), id_child = new Reference<Guid>(Guid.NewGuid())) });
 
             // ACT
 
@@ -167,19 +167,19 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_retrieves_grandchildren_items_of_item_under_root()
         {
             // ARRANGE
-            
-            Guid id_item;
+
+            Reference<Guid> id_item;
             this.treesorService
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = Guid.NewGuid()));
+                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
 
-            Guid id_child;
-            Guid id_grandchild;
+            Reference<Guid> id_child;
+            Reference<Guid> id_grandchild;
             this.treesorService
                 .Setup(s => s.GetDescendants(TreesorNodePath.Create("item")))
                 .Returns(new[] {
-                    new TreesorItem(TreesorNodePath.Create("child"),id_child = Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("grandchild"), id_grandchild = Guid.NewGuid())
+                    new TreesorItem(TreesorNodePath.Create("child"),id_child = new Reference<Guid>( Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("grandchild"), id_grandchild = new Reference<Guid>( Guid.NewGuid()))
                 });
 
             // ACT
@@ -299,13 +299,12 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Guid id_a;
-            Guid id_b;
+            Reference<Guid> id_a, id_b;
             this.treesorService
                 .Setup(s => s.GetDescendants(TreesorNodePath.RootPath))
                 .Returns(new[] {
-                    new TreesorItem(TreesorNodePath.Create("a"), id_a = Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("b"), id_b = Guid.NewGuid()),
+                    new TreesorItem(TreesorNodePath.Create("a"), id_a = new Reference<Guid>(Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("b"), id_b = new Reference<Guid>( Guid.NewGuid())),
                 });
 
             // ACT
@@ -351,11 +350,11 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService
                 .Setup(s => s.GetDescendants(TreesorNodePath.RootPath))
                 .Returns(new[] {
-                    new TreesorItem(TreesorNodePath.Create("item"), Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("item2"), Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("item","a1"), Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("item","a2"), Guid.NewGuid()),
-                    new TreesorItem(TreesorNodePath.Create("item","b"), Guid.NewGuid()),
+                    new TreesorItem(TreesorNodePath.Create("item"), new Reference<Guid>( Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("item2"), new Reference<Guid>( Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("item","a1"), new Reference<Guid>( Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("item","a2"), new Reference<Guid>( Guid.NewGuid())),
+                    new TreesorItem(TreesorNodePath.Create("item","b"), new Reference<Guid>( Guid.NewGuid())),
                 });
 
             // ACT
@@ -383,7 +382,7 @@ namespace Treesor.PSDriveProvider.Test
             pathInfo = (PathInfo)result.ElementAt(2).ImmediateBaseObject;
 
             Assert.AreEqual(@"custTree:\item\a2", pathInfo.Path);
-            
+
             this.treesorService.Verify(s => s.GetDescendants(TreesorNodePath.RootPath), Times.Once());
             this.treesorService.VerifyAll();
         }

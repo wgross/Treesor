@@ -30,6 +30,9 @@
 
         public static TreesorNodePath Create(params string[] pathItems)
         {
+            if (pathItems.Count() == 1 && string.IsNullOrEmpty(pathItems.First()))
+                return RootPath;
+
             return new TreesorNodePath(Elementary.Hierarchy.HierarchyPath.Create(pathItems));
         }
 
