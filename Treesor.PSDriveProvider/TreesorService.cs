@@ -223,10 +223,8 @@ namespace Treesor.PSDriveProvider
         public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
             TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                column = this.CreateColumn(name, value.GetType().Name);
-
-            column.SetValue(this.GetItem(path), value);
+            if (this.columns.TryGetValue(name, out column))
+                column.SetValue(this.GetItem(path).IdRef, value);
         }
 
         public object GetPropertyValue(TreesorNodePath path, string name)
@@ -235,7 +233,7 @@ namespace Treesor.PSDriveProvider
             TreesorItem item;
             if (this.columns.TryGetValue(name, out column))
                 if (this.TryGetItem(path, out item))
-                    return column.GetValue(item);
+                    return column.GetValue(item.IdRef);
             return null;
         }
 

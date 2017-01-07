@@ -1,4 +1,5 @@
 ﻿using Elementary.Properties.Sparse;
+using System;
 
 namespace Treesor.PSDriveProvider
 {
@@ -16,14 +17,17 @@ namespace Treesor.PSDriveProvider
         public string Name { get; }
         public string TypeName { get; }
 
-        public void SetValue(TreesorItem nodeItem, object v)
+        public void SetValue(Reference<Guid> id, object value)
         {
-            this.propertyAccessor.SetValue(nodeItem.IdRef, v);
+            if (!StringComparer.Ordinal.Equals(this.TypeName, value.GetType().Name))
+                throw new InvalidOperationException($"Couldn't assign value '{value}' to property '{this.Name}' at node '{id.Value}': value.GetType().Name must be '{this.TypeName}'");
+
+            this.propertyAccessor.SetValue(id, value);
         }
 
-        public object GetValue(TreesorItem nodeItem)
+        public object GetValue(Reference<Guid> id)
         {
-            return this.propertyAccessor.GetValue(nodeItem.IdRef);
+            return this.propertyAccessor.GetValue(id);
         }
 
         public void ClearValue(TreesorItem nodeItem)
