@@ -96,6 +96,38 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #endregion CreateColumn
 
+        #region RemoveColumn - NotSupported
+
+        [Test]
+        public void RemoveColumn_isnt_supported()
+        {
+            // ACT
+
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RemoveProperty(TreesorNodePath.Create("a"), "p"));
+
+            // ASSERT
+
+            Assert.AreEqual("Removal of columns is currently not supported", result.Message);
+        }
+
+        #endregion RemoveColumn - NotSupported
+
+        #region RenameColumns - NotSuported
+
+        [Test]
+        public void RenameColumn_isnt_supported()
+        {
+            // ACT
+
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RenameProperty(TreesorNodePath.Create("a"), "p", "q"));
+
+            // ASSERT
+
+            Assert.AreEqual("Renaming columns is currently not supported", result.Message);
+        }
+
+        #endregion RenameColumns - NotSuported
+
         #region SetPropertyValue
 
         [Test]
@@ -425,22 +457,6 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #endregion ClearPropertyValue
 
-        #region RemoveColumn - NotSupported
-
-        [Test]
-        public void RemoveColumn_is_not_supported()
-        {
-            // ACT
-
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RemoveProperty(TreesorNodePath.Create("a"), "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("Removal of columns is currently not supported", result.Message);
-        }
-
-        #endregion RemoveColumn - NotSupported
-
         #region CopyPropertyValue
 
         [Test]
@@ -470,6 +486,32 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
             Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+
+            this.hierarchyMock.VerifyAll();
+        }
+
+        [Test]
+        public void CopyPropertyValue_at_same_node()
+        {
+            // ARRANGE
+
+            var id_root = new Reference<Guid>(Guid.NewGuid());
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
+                .Returns(true);
+
+            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+
+            // ACT
+
+            this.treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.RootPath, "q");
+
+            // ASSERT
+
+            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -678,6 +720,32 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
             Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+
+            this.hierarchyMock.VerifyAll();
+        }
+
+        [Test]
+        public void MovePropertyValue_at_same_node()
+        {
+            // ARRANGE
+
+            var id_root = new Reference<Guid>(Guid.NewGuid());
+            this.hierarchyMock
+                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
+                .Returns(true);
+
+            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+
+            // ACT
+
+            this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.RootPath, "q");
+
+            // ASSERT
+
+            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
 
             this.hierarchyMock.VerifyAll();
         }

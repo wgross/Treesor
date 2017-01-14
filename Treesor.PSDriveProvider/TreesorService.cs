@@ -320,7 +320,7 @@ namespace Treesor.PSDriveProvider
 
         public void RenameProperty(TreesorNodePath path, string sourceProperty, string destinationProperty)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Renaming columns is currently not supported");
         }
     }
 }
