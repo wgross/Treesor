@@ -277,7 +277,7 @@ namespace Treesor.PSDriveProvider
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            column.ClearValue(item);
+            column.UnsetValue(item);
         }
 
         #region Create a new columns in treesor data model
@@ -309,12 +309,19 @@ namespace Treesor.PSDriveProvider
 
         public void RemoveProperty(TreesorNodePath path, string propertyName)
         {
-            throw new NotSupportedException("Removal of columns is currently not suppoerted");
+            TreesorItem item;
+            this.TryGetItem(path, out item);
+
+            TreesorColumn column = null;
+            this.columns.TryGetValue(propertyName, out column);
+
+            column.UnsetValue(item);
         }
 
         public void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
         {
-            throw new NotImplementedException();
+            this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
+            this.RemoveProperty(sourcePath, sourceProperty);
         }
 
         public void RenameProperty(TreesorNodePath path, string sourceProperty, string destinationProperty)

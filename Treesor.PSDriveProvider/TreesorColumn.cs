@@ -30,7 +30,7 @@ namespace Treesor.PSDriveProvider
             return this.propertyAccessor.GetValue(id);
         }
 
-        public void ClearValue(TreesorItem nodeItem)
+        public void UnsetValue(TreesorItem nodeItem)
         {
             this.propertyAccessor.UnsetValue(nodeItem.IdRef);
         }
