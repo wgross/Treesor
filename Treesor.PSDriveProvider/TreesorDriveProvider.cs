@@ -7,10 +7,12 @@
     using System.Management.Automation;
     using System.Management.Automation.Provider;
 
-    [CmdletProvider("Treesor", ProviderCapabilities.ExpandWildcards)]
+    [CmdletProvider(TreesorDriveProvider.Id, ProviderCapabilities.ExpandWildcards)]
     public partial class TreesorDriveProvider : NavigationCmdletProvider
     //, IPropertyCmdletProvider, IDynamicPropertyCmdletProvider
     {
+        public const string Id = "Treesor";
+
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private TreesorDriveInfo DriveInfo => (TreesorDriveInfo)this.PSDriveInfo;
