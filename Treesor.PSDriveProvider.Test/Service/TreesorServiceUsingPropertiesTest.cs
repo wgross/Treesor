@@ -436,7 +436,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual("Removal of columns is currently not suppoerted", result.Message);
+            Assert.AreEqual("Removal of columns is currently not supported", result.Message);
         }
 
         #endregion RemoveColumn - NotSupported
