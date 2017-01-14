@@ -304,12 +304,12 @@ namespace Treesor.PSDriveProvider
 
         public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
         {
-            throw new NotImplementedException();
+            this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
         }
 
         public void RemoveProperty(TreesorNodePath path, string propertyName)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("Removal of columns is currently not suppoerted");
         }
 
         public void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
