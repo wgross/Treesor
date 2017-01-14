@@ -38,10 +38,10 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region New-ItemProperty > CreateColumns/SetPropertyValue
+        #region New-ItemProperty - Not Supported
 
         [Test]
-        public void Powershell_creates_new_column_at_any_node()
+        public void Powershell_fails_on_NewItemProperty()
         {
             // ACT
 
@@ -55,13 +55,13 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.IsTrue(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Once());
-            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Once());
+            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Never());
+            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Never());
         }
 
-        #endregion New-ItemProperty > CreateColumns/SetPropertyValue
+        #endregion New-ItemProperty - Not Supported
 
         #region Set-ItemProperty > SetPropertyValue
 
@@ -311,10 +311,10 @@ namespace Treesor.PSDriveProvider.Test
 
         #endregion Move-ItemProperty > MovePropertyValue
 
-        #region Remove-ItemProperty > RemoveProperty
+        #region Remove-ItemProperty - Not Supported
 
         [Test]
-        public void Powershell_removesProperty_from_root_node()
+        public void Powershell_fails_on_RemoveItemProperty()
         {
             // ACT
 
@@ -328,37 +328,17 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.IsTrue(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.RootPath, "p"), Times.Once());
+            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.RootPath, "p"), Times.Never());
         }
 
-        [Test]
-        public void Powershell_removesProperty_from_inner_node()
-        {
-            // ACT
+        #endregion Remove-ItemProperty - Not Supported
 
-            object value = "test";
-            this.powershell
-                .AddStatement()
-                .AddCommand("Remove-ItemProperty")
-                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.Create("a"), "p"), Times.Once());
-        }
-
-        #endregion Remove-ItemProperty > RemoveProperty
-
-        #region Rename-ItemProperty > RenameProperty
+        #region Rename-ItemProperty - NotSupported
 
         [Test]
-        public void Powershell_renames_property_at_root_node()
+        public void Powershell_fails_on_RenameProperty()
         {
             // ACT
 
@@ -371,30 +351,11 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.IsTrue(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.RootPath, "p", "q"), Times.Once());
+            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.RootPath, "p", "q"), Times.Never());
         }
 
-        [Test]
-        public void Powershell_renames_property_at_inner_node()
-        {
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Rename-ItemProperty")
-                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p").AddParameter("NewName", "q");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.Create("a"), "p", "q"), Times.Once());
-        }
-
-        #endregion Rename-ItemProperty > RenameProperty
+        #endregion Rename-ItemProperty - NotSupported
     }
 }

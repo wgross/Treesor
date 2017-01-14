@@ -62,8 +62,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(NewProperty)}({nameof(path)}='{path}',{nameof(propertyName)}='{propertyName}',{nameof(propertyTypeName)}='{propertyTypeName}')").Write();
 
-            this.DriveInfo.Service.CreateColumn(propertyName, propertyTypeName);
-            this.DriveInfo.Service.SetPropertyValue(TreesorNodePath.Parse(path), propertyName, value);
+            this.WriteError(new ErrorRecord(
+                exception: new PSNotSupportedException("Treesor provider doesn't support property creation"),
+                errorId: "newItemPropertyNotSupported",
+                errorCategory: ErrorCategory.NotImplemented,
+                targetObject: path)
+            {
+                ErrorDetails = new ErrorDetails("To create properties use New-TreesorColumn to allocate a new property for all items.")
+            });
         }
 
         public object NewPropertyDynamicParameters(string path, string propertyName, string propertyTypeName, object value)
@@ -77,7 +83,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(RemoveProperty)}({nameof(path)}='{path}',{nameof(propertyName)}='{propertyName}')").Write();
 
-            this.DriveInfo.Service.RemoveProperty(TreesorNodePath.Parse(path), propertyName);
+            this.WriteError(new ErrorRecord(
+              exception: new PSNotSupportedException("Treesor provider doesn't support property removal"),
+              errorId: "removeItemPropertyNotSupported",
+              errorCategory: ErrorCategory.NotImplemented,
+              targetObject: path)
+            {
+                ErrorDetails = new ErrorDetails("To remove properties use Remove-TreesorColumn to deallocate a property from all items or clear the property value at a specific item.")
+            });
         }
 
         public object RemovePropertyDynamicParameters(string path, string propertyName)
@@ -91,7 +104,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(RenameProperty)}({nameof(path)}='{path}',{nameof(sourceProperty)}='{sourceProperty}',{nameof(destinationProperty)}='{destinationProperty}')").Write();
 
-            this.DriveInfo.Service.RenameProperty(TreesorNodePath.Parse(path), sourceProperty, destinationProperty);
+            this.WriteError(new ErrorRecord(
+              exception: new PSNotSupportedException("Treesor provider doesn't support property renaming"),
+              errorId: "renameItemPropertyNotSupported",
+              errorCategory: ErrorCategory.NotImplemented,
+              targetObject: path)
+            {
+                ErrorDetails = new ErrorDetails("To rename properties use Rename-TreesorColumn whichs changes ths name of this property at all items.")
+            });
         }
 
         public object RenamePropertyDynamicParameters(string path, string sourceProperty, string destinationProperty)
