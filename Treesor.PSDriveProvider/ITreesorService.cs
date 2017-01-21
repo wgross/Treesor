@@ -42,7 +42,7 @@ namespace Treesor.PSDriveProvider
 
         TreesorColumn CreateColumn(string propertyName, string propertyTypeName);
 
-        void RemoveColumn(string propertyName);
+        bool RemoveColumn(string propertyName);
 
         void RenameColumn(string name, string newName);
 

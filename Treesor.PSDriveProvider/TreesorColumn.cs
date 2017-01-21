@@ -6,10 +6,14 @@ namespace Treesor.PSDriveProvider
     public class TreesorColumn
     {
         public TreesorColumn(string name, string typeName)
+            : this(name, typeName, SparsePropertyAccessorFactory<object>.Create())
+        { }
+
+        internal TreesorColumn(string name, string typeName, SparsePropertyAccessor<object> propertyAccessor)
         {
             this.Name = name;
             this.TypeName = typeName;
-            this.propertyAccessor = SparsePropertyAccessorFactory<object>.Create();
+            this.propertyAccessor = propertyAccessor;
         }
 
         private readonly SparsePropertyAccessor<object> propertyAccessor;
