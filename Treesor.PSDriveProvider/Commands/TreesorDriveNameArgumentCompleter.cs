@@ -4,7 +4,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 
-namespace Treesor.PSDriveProvider.Test.Powershell
+namespace Treesor.PSDriveProvider.Commands
 {
     public class TreesorDriveNameCompleter : IArgumentCompleter
     {

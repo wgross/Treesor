@@ -5,7 +5,7 @@ using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Test
 {
-    public class TreesorDriveColumnCmdletProviderTest
+    public class TreesorDriveDynamicColumnCmdletProviderTest
     {
         private PowerShell powershell;
         private Mock<ITreesorService> treesorService;
@@ -40,7 +40,7 @@ namespace Treesor.PSDriveProvider.Test
         #region New-TreesorColumn > CreateColumn
 
         [Test]
-        public void Powershell_creates_new_columnin_named_drive()
+        public void Powershell_creates_new_columnn_to_drive()
         {
             // ACT
 
@@ -61,6 +61,51 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string).Name), Times.Once());
         }
 
-        #endregion New-Item > NewItem, MakePath
+        #endregion New-TreesorColumn > CreateColumn
+
+        #region Remove-TreesorColumn > RemoveColumn
+
+        [Test]
+        public void Powershell_removes_existing_column_from_drive_by_name()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-TreesorColumn")
+                    .AddParameter("DriveName", "custTree")
+                    .AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
+        }
+
+        #endregion Remove-TreesorColumn > RemoveColumn
+
+        #region Rename-TreesorColumn > RenameColumn
+
+        [Test]
+        public void Powershell_renames_existing_column_by_name()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-TreesorColumn")
+                    .AddParameter("DriveName", "custTree")
+                    .AddParameter("Name", "p")
+                    .AddParameter("NewName", "q");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
+        }
+
+        #endregion Rename-TreesorColumn > RenameColumn
     }
 }

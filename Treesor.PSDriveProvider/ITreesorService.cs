@@ -42,12 +42,12 @@ namespace Treesor.PSDriveProvider
 
         TreesorColumn CreateColumn(string propertyName, string propertyTypeName);
 
-        void RemoveProperty(TreesorNodePath treesorNodePath, string propertyName);
+        void RemoveColumn(string propertyName);
+
+        void RenameColumn(string name, string newName);
 
         void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty);
 
         void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty);
-
-        void RenameProperty(TreesorNodePath path, string sourceProperty, string destinationProperty);
     }
 }

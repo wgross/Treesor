@@ -103,7 +103,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RemoveProperty(TreesorNodePath.Create("a"), "p"));
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RemoveColumn("p"));
 
             // ASSERT
 
@@ -119,7 +119,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RenameProperty(TreesorNodePath.Create("a"), "p", "q"));
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.RenameColumn("p", "q"));
 
             // ASSERT
 
