@@ -38,10 +38,10 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region New-ItemProperty > CreateColumns/SetPropertyValue
+        #region New-ItemProperty - Not Supported
 
         [Test]
-        public void Powershell_creates_new_column_at_any_node()
+        public void Powershell_fails_on_NewItemProperty()
         {
             // ACT
 
@@ -55,13 +55,60 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.IsTrue(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Once());
-            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Once());
+            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Never());
+            this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Never());
         }
 
-        #endregion New-ItemProperty > CreateColumns/SetPropertyValue
+        #endregion New-ItemProperty - Not Supported
+
+        #region Remove-ItemProperty - Not Supported
+
+        [Test]
+        public void Powershell_fails_on_RemoveItemProperty()
+        {
+            // ACT
+
+            object value = "test";
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsTrue(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Never());
+        }
+
+        #endregion Remove-ItemProperty - Not Supported
+
+        #region Rename-ItemProperty - NotSupported
+
+        [Test]
+        public void Powershell_fails_on_RenameProperty()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-ItemProperty")
+                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p").AddParameter("NewName", "q");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsTrue(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Never());
+        }
+
+        #endregion Rename-ItemProperty - NotSupported
 
         #region Set-ItemProperty > SetPropertyValue
 
@@ -310,91 +357,5 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Move-ItemProperty > MovePropertyValue
-
-        #region Remove-ItemProperty > RemoveProperty
-
-        [Test]
-        public void Powershell_removesProperty_from_root_node()
-        {
-            // ACT
-
-            object value = "test";
-            this.powershell
-                .AddStatement()
-                .AddCommand("Remove-ItemProperty")
-                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.RootPath, "p"), Times.Once());
-        }
-
-        [Test]
-        public void Powershell_removesProperty_from_inner_node()
-        {
-            // ACT
-
-            object value = "test";
-            this.powershell
-                .AddStatement()
-                .AddCommand("Remove-ItemProperty")
-                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RemoveProperty(TreesorNodePath.Create("a"), "p"), Times.Once());
-        }
-
-        #endregion Remove-ItemProperty > RemoveProperty
-
-        #region Rename-ItemProperty > RenameProperty
-
-        [Test]
-        public void Powershell_renames_property_at_root_node()
-        {
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Rename-ItemProperty")
-                .AddParameter("Path", @"treesor:\").AddParameter("Name", "p").AddParameter("NewName", "q");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.RootPath, "p", "q"), Times.Once());
-        }
-
-        [Test]
-        public void Powershell_renames_property_at_inner_node()
-        {
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Rename-ItemProperty")
-                .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p").AddParameter("NewName", "q");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.IsFalse(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.RenameProperty(TreesorNodePath.Create("a"), "p", "q"), Times.Once());
-        }
-
-        #endregion Rename-ItemProperty > RenameProperty
     }
 }

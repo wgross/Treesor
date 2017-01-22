@@ -134,7 +134,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Powershell\TreesorDriveDynamicColumnCmdletTest.cs" />
     <Compile Include="Service\TreesorItemTest.cs" />
+    <Compile Include="Service\TreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Service\TreesorServiceUsingHierarchyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Powershell\TreesorDriveCmdletProviderTest.cs" />

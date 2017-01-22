@@ -307,20 +307,31 @@ namespace Treesor.PSDriveProvider
             this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
         }
 
-        public void RemoveProperty(TreesorNodePath path, string propertyName)
-        {
-            throw new NotSupportedException("Removal of columns is currently not supported");
-        }
-
         public void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
         {
             this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
             this.ClearPropertyValue(sourcePath, sourceProperty);
         }
 
-        public void RenameProperty(TreesorNodePath path, string sourceProperty, string destinationProperty)
+        public void RenameColumn(string name, string newName)
         {
-            throw new NotSupportedException("Renaming columns is currently not supported");
+            TreesorColumn column;
+            if (!this.columns.TryGetValue(name, out column))
+                return;
+
+            this.columns.Remove(name);
+            this.columns.Add(newName, new TreesorColumn(newName, column.TypeName));
+
+        }
+
+        public bool RemoveColumn(string propertyName)
+        {
+            return this.columns.Remove(propertyName);
+        }
+
+        public IEnumerable<TreesorColumn> GetColumns()
+        {
+            return this.columns.Select(kv => kv.Value);
         }
     }
 }

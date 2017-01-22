@@ -126,7 +126,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\RemoveTreesorColumnCommand.cs" />
+    <Compile Include="Commands\RenameTreesorColumnCommand.cs" />
     <Compile Include="ITreesorService.cs" />
+    <Compile Include="Commands\NewTreesorColumnCommand.cs" />
+    <Compile Include="Commands\TreesorDriveNameArgumentCompleter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreesorColumn.cs" />
     <Compile Include="TreesorDriveProvider.ContainerCmdletProvider.cs" />
@@ -136,6 +140,7 @@
     <Compile Include="TreesorDriveProvider.NavigationCmdletProvider.cs" />
     <Compile Include="TreesorItem.cs" />
     <Compile Include="TreesorNodePath.cs" />
+    <Compile Include="TreesorProviderIntrinsics.cs" />
     <Compile Include="TreesorService.cs" />
     <Compile Include="TreesorDriveProvider.DynamicPropertyCmdletProvider.cs" />
     <Compile Include="Reference.cs" />
