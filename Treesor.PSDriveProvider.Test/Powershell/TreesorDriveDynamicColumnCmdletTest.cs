@@ -40,7 +40,7 @@ namespace Treesor.PSDriveProvider.Test
         #region New-TreesorColumn > CreateColumn
 
         [Test]
-        public void Powershell_creates_new_columnn_to_drive()
+        public void Powershell_adds_new_column_to_drive()
         {
             // ACT
 
@@ -49,7 +49,7 @@ namespace Treesor.PSDriveProvider.Test
                 .AddCommand("New-TreesorColumn")
                     .AddParameter("DriveName", "custTree")
                     .AddParameter("Name", "p")
-                    .AddParameter("TypeName", typeof(string).Name);
+                    .AddParameter("TypeName", typeof(string).ToString());
 
             var result = this.powershell.Invoke();
 
@@ -58,7 +58,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsFalse(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", typeof(string).Name), Times.Once());
+            this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
         #endregion New-TreesorColumn > CreateColumn

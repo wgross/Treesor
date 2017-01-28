@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Commands
@@ -27,7 +28,7 @@ namespace Treesor.PSDriveProvider.Commands
                 .OfType<TreesorDriveInfo>()
                 .FirstOrDefault(p => p.Name.Equals(this.DriveName, System.StringComparison.OrdinalIgnoreCase));
 
-            driveToUse.Service.CreateColumn(this.Name, TypeName);
+            driveToUse.Service.CreateColumn(this.Name, Type.GetType(this.TypeName, throwOnError: true, ignoreCase: true));
         }
     }
 }

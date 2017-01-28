@@ -26,13 +26,13 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var result = this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ASSERT
 
             Assert.IsNotNull(result);
             Assert.AreEqual("p", result.Name);
-            Assert.AreEqual(typeof(string).Name, result.TypeName);
+            Assert.AreEqual(typeof(string), result.Type);
             Assert.AreSame(result, this.treesorService.GetColumns().Single());
         }
 
@@ -41,18 +41,18 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ACT
 
-            var result = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var result = this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ASSERT
 
             Assert.IsNotNull(result);
             Assert.AreSame(column, result);
             Assert.AreEqual("p", result.Name);
-            Assert.AreEqual(typeof(string).Name, result.TypeName);
+            Assert.AreEqual(typeof(string), result.Type);
             Assert.AreSame(column, this.treesorService.GetColumns().Single());
         }
 
@@ -61,23 +61,23 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.CreateColumn(name: "p", typename: typeof(int).Name));
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.CreateColumn(name: "p", type: typeof(int)));
 
             // ASSERT
 
-            Assert.AreEqual($"Column: 'p' already defined with type: '{typeof(string).Name}'", result.Message);
+            Assert.AreEqual($"Column: 'p' already defined with type: '{typeof(string)}'", result.Message);
         }
 
         [Test]
-        public void CreateColumns_fails_on_missing_name()
+        public void CreateColumn_fails_on_missing_name()
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, "type"));
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, typeof(string)));
 
             // ASSERT
 
@@ -85,15 +85,15 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void CreateColumns_fails_on_missing()
+        public void CreateColumn_fails_on_missing_type()
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, "type"));
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn("name", null));
 
             // ASSERT
 
-            Assert.AreEqual("name", result.ParamName);
+            Assert.AreEqual("type", result.ParamName);
         }
 
         #endregion CreateColumn
@@ -117,7 +117,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            this.treesorService.CreateColumn("p", typeof(string).Name);
+            this.treesorService.CreateColumn("p", typeof(string));
 
             // ACT
 
@@ -146,7 +146,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            this.treesorService.CreateColumn("p", typeof(string).Name);
+            this.treesorService.CreateColumn("p", typeof(string));
 
             // ACT
 
@@ -162,8 +162,8 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ARRANGE
 
-            this.treesorService.CreateColumn("p", typeof(string).Name);
-            this.treesorService.CreateColumn("q", typeof(string).Name);
+            this.treesorService.CreateColumn("p", typeof(string));
+            this.treesorService.CreateColumn("q", typeof(string));
 
             // ACT
 

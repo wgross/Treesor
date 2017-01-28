@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
 
-            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ACT
 
@@ -54,7 +54,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
 
-            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
             column.SetValue(id, "test");
 
             // ACT
@@ -78,7 +78,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
 
-            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
             column.SetValue(id, "value");
 
             // ACT
@@ -88,7 +88,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ASSERT
 
             Assert.AreEqual("value", column.GetValue(id));
-            Assert.AreEqual($"Couldn't assign value '5' to property 'p' at node '{id.Value}': value.GetType().Name must be 'String'", result.Message);
+            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'p' at node '{id.Value}': value.GetType() must be 'System.String'", result.Message);
 
             this.hierarchyMock.VerifyAll();
         }
@@ -124,7 +124,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(false);
 
-            var column = this.treesorService.CreateColumn(name: "p", typename: typeof(string).Name);
+            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
 
             // ACT
 
@@ -175,7 +175,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5);
 
             // ACT
@@ -214,7 +214,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(false);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
 
             // ACT
 
@@ -266,7 +266,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5);
 
             // ACT
@@ -309,7 +309,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(false);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
 
             // ACT
 
@@ -365,8 +365,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -391,8 +391,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -422,8 +422,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: 5);
 
             // ACT
@@ -448,8 +448,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -479,7 +479,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -504,8 +504,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
 
             // ACT
 
@@ -530,7 +530,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("q", typeof(int));
 
             // ACT
 
@@ -562,8 +562,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(double).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(double));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -573,7 +573,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '5' to property 'q' at node '{id_a.Value.ToString()}': value.GetType().Name must be 'Double'", result.Message);
+            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
             Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
             Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
@@ -599,8 +599,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -625,8 +625,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -656,8 +656,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: 5);
 
             // ACT
@@ -682,8 +682,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -713,7 +713,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -738,8 +738,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(int));
 
             // ACT
 
@@ -764,7 +764,7 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("q", typeof(int).Name);
+            this.treesorService.CreateColumn("q", typeof(int));
 
             // ACT
 
@@ -796,8 +796,8 @@ namespace Treesor.PSDriveProvider.Test.Service
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int).Name);
-            this.treesorService.CreateColumn("q", typeof(double).Name);
+            this.treesorService.CreateColumn("p", typeof(int));
+            this.treesorService.CreateColumn("q", typeof(double));
             this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
 
             // ACT
@@ -807,7 +807,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '5' to property 'q' at node '{id_a.Value.ToString()}': value.GetType().Name must be 'Double'", result.Message);
+            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
             Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
             Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 

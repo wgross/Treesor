@@ -5,26 +5,27 @@ namespace Treesor.PSDriveProvider
 {
     public class TreesorColumn
     {
-        public TreesorColumn(string name, string typeName)
-            : this(name, typeName, SparsePropertyAccessorFactory<object>.Create())
+        public TreesorColumn(string name, Type type)
+            : this(name, type, SparsePropertyAccessorFactory<object>.Create())
         { }
 
-        internal TreesorColumn(string name, string typeName, SparsePropertyAccessor<object> propertyAccessor)
+        internal TreesorColumn(string name, Type type, SparsePropertyAccessor<object> propertyAccessor)
         {
             this.Name = name;
-            this.TypeName = typeName;
+            this.Type = type;
             this.propertyAccessor = propertyAccessor;
         }
 
         private readonly SparsePropertyAccessor<object> propertyAccessor;
 
         public string Name { get; }
-        public string TypeName { get; }
+
+        public Type Type { get; }
 
         public void SetValue(Reference<Guid> id, object value)
         {
-            if (!StringComparer.Ordinal.Equals(this.TypeName, value.GetType().Name))
-                throw new InvalidOperationException($"Couldn't assign value '{value}' to property '{this.Name}' at node '{id.Value}': value.GetType().Name must be '{this.TypeName}'");
+            if (!this.Type.Equals(value.GetType()))
+                throw new InvalidOperationException($"Couldn't assign value '{value}'(type='{value.GetType()}') to property '{this.Name}' at node '{id.Value}': value.GetType() must be '{this.Type}'");
 
             this.propertyAccessor.SetValue(id, value);
         }
