@@ -20,6 +20,7 @@ namespace Treesor.PSDriveProvider.Test
             TreesorService.Factory = uri => treesorService.Object;
 
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
+
             this.powershell
                 .AddStatement()
                 .AddCommand("Set-Location")
@@ -28,9 +29,13 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell
                 .AddStatement()
                 .AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll");
+
             this.powershell
                 .AddStatement()
                 .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
+
+            this.powershell.Invoke();
+            this.powershell.Commands.Clear();
         }
 
         [TearDown]
@@ -39,6 +44,35 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Stop();
             this.powershell.Dispose();
         }
+
+        #region Set-Location > GetItem > IsContainer
+
+        [Test]
+        public void SetLocation_checks_if_item_is_container()
+        {
+            // ARRANGE
+
+            TreesorItem rootItem = new TreesorItem(TreesorNodePath.RootPath, new Reference<Guid>(Guid.NewGuid()));
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.RootPath))
+                .Returns(rootItem);
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Set-Location").AddParameter("Path", @"custTree:\");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
+        }
+
+        #endregion Set-Location > GetItem > IsContainer
 
         #region Remove-Item > RemoveItem
 
@@ -320,18 +354,18 @@ namespace Treesor.PSDriveProvider.Test
             // Drive info is resolving the wildcard correctly
 
             Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(3, result.Count);
-            Assert.IsInstanceOf<PathInfo>(result.ElementAt(1).ImmediateBaseObject);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(0).ImmediateBaseObject);
 
-            var pathInfo = (PathInfo)result.ElementAt(1).ImmediateBaseObject;
+            var pathInfo = (PathInfo)result.ElementAt(0).ImmediateBaseObject;
 
             Assert.AreEqual("custTree", pathInfo.Drive.Name);
             Assert.AreEqual(@"custTree:\a", pathInfo.Path);
             Assert.AreEqual("a", pathInfo.ProviderPath);
 
-            Assert.IsInstanceOf<PathInfo>(result.ElementAt(2).ImmediateBaseObject);
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(1).ImmediateBaseObject);
 
-            pathInfo = (PathInfo)result.ElementAt(2).ImmediateBaseObject;
+            pathInfo = (PathInfo)result.ElementAt(1).ImmediateBaseObject;
 
             Assert.AreEqual("custTree", pathInfo.Drive.Name);
             Assert.AreEqual(@"custTree:\b", pathInfo.Path);
@@ -370,16 +404,16 @@ namespace Treesor.PSDriveProvider.Test
             // Drive info is resolving the wildcard correctly
 
             Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(3, result.Count);
-            Assert.IsInstanceOf<PathInfo>(result.ElementAt(1).ImmediateBaseObject);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(0).ImmediateBaseObject);
 
-            var pathInfo = (PathInfo)result.ElementAt(1).ImmediateBaseObject;
+            var pathInfo = (PathInfo)result.ElementAt(0).ImmediateBaseObject;
 
             Assert.AreEqual(@"custTree:\item\a1", pathInfo.Path);
 
-            Assert.IsInstanceOf<PathInfo>(result.ElementAt(2).ImmediateBaseObject);
+            Assert.IsInstanceOf<PathInfo>(result.ElementAt(1).ImmediateBaseObject);
 
-            pathInfo = (PathInfo)result.ElementAt(2).ImmediateBaseObject;
+            pathInfo = (PathInfo)result.ElementAt(1).ImmediateBaseObject;
 
             Assert.AreEqual(@"custTree:\item\a2", pathInfo.Path);
 

@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Management.Automation;
 
@@ -16,6 +17,9 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService = new Mock<ITreesorService>();
             TreesorService.Factory = uri => treesorService.Object;
 
+            // there is always a root node (for Set-Location)
+            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, new Reference<System.Guid>(Guid.NewGuid())));
+
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
             this.powershell
                 .AddStatement()
@@ -28,6 +32,9 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell
                 .AddStatement()
                 .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
+
+            this.powershell.Invoke();
+            this.powershell.Commands.Clear();
         }
 
         [TearDown]
@@ -40,7 +47,7 @@ namespace Treesor.PSDriveProvider.Test
         #region New-TreesorColumn > CreateColumn
 
         [Test]
-        public void Powershell_adds_new_column_to_drive()
+        public void Powershell_adds_new_column_to_named_drive()
         {
             // ACT
 
@@ -61,12 +68,40 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
+        [Test]
+        public void Powershell_adds_new_column_to_current_drive()
+        {
+            // ARRANGE
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", @"custTree:\");
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("New-TreesorColumn")
+                        .AddParameter("Name", "p")
+                        .AddParameter("TypeName", typeof(string).ToString());
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // provider write new item on output pipe
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
+        }
+
         #endregion New-TreesorColumn > CreateColumn
 
         #region Remove-TreesorColumn > RemoveColumn
 
         [Test]
-        public void Powershell_removes_existing_column_from_drive_by_name()
+        public void Powershell_removes_existing_column_from_named_drive()
         {
             // ACT
 
@@ -80,6 +115,37 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_removes_existing_column_from_current_drive()
+        {
+            // ARRANGE
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", @"custTree:\");
+
+            this.powershell.Invoke();
+            this.powershell.Commands.Clear();
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Remove-TreesorColumn")
+                    .AddParameter("Name", "p");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
             this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
         }
 
@@ -88,7 +154,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Rename-TreesorColumn > RenameColumn
 
         [Test]
-        public void Powershell_renames_existing_column_by_name()
+        public void Powershell_renames_existing_column_at_named_drive()
         {
             // ACT
 
@@ -102,6 +168,38 @@ namespace Treesor.PSDriveProvider.Test
             var result = this.powershell.Invoke();
 
             // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_renames_existing_column_at_current_drive()
+        {
+            // ARRANGE
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", @"custTree:\");
+
+            this.powershell.Invoke();
+            this.powershell.Commands.Clear();
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("Rename-TreesorColumn")
+                    .AddParameter("Name", "p")
+                    .AddParameter("NewName", "q");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
         }
