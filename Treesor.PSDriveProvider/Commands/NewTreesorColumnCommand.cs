@@ -3,8 +3,8 @@ using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Commands
 {
-    [Cmdlet(VerbsCommon.New, "TreesorColumn", DefaultParameterSetName = TreesorColumnCommandBase.currentDrive)]
-    public class NewTreesorColumnCommand : TreesorColumnCommandBase
+    [Cmdlet(VerbsCommon.New, "TreesorColumn", DefaultParameterSetName = currentDrive)]
+    public class NewTreesorColumnCommand : TreesorNamedColumnCommandBase
     {
         [Parameter(ParameterSetName = currentDrive, Mandatory = true, Position = 2, ValueFromPipelineByPropertyName = true)]
         [Parameter(ParameterSetName = otherDrive, Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]

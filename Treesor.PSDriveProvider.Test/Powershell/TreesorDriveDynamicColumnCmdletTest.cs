@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 
 namespace Treesor.PSDriveProvider.Test
@@ -205,5 +206,95 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         #endregion Rename-TreesorColumn > RenameColumn
+
+        #region Get-TreesorColumn > GetColumn
+
+        [Test]
+        public void Powershell_retrieves_empty_column_set_from_named_drive()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetColumns()).Returns(Enumerable.Empty<TreesorColumn>());
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Get-TreesorColumn").AddParameter("DriveName", "custTree");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(0, result.Count());
+
+            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_retrieves_column_set_from_named_drive()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetColumns()).Returns(new[] { new TreesorColumn("p", typeof(string)) });
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Get-TreesorColumn").AddParameter("DriveName", "custTree");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+
+            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_retrieves_column_set_from_current_drive()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.GetColumns()).Returns(new[] { new TreesorColumn("p", typeof(string)) });
+
+            // ARRANGE
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", @"custTree:\");
+
+            this.powershell.Invoke();
+            this.powershell.Commands.Clear();
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Get-TreesorColumn").AddParameter("DriveName", "custTree");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+
+            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+        }
+
+        #endregion Get-TreesorColumn > GetColumn
     }
 }

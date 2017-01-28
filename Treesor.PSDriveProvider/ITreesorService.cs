@@ -46,6 +46,8 @@ namespace Treesor.PSDriveProvider
 
         void RenameColumn(string name, string newName);
 
+        IEnumerable<TreesorColumn> GetColumns();
+
         void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty);
 
         void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty);

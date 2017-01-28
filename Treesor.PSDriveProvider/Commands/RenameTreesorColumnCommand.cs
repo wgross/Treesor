@@ -2,8 +2,8 @@
 
 namespace Treesor.PSDriveProvider.Commands
 {
-    [Cmdlet(VerbsCommon.Rename, "TreesorColumn", DefaultParameterSetName = TreesorColumnCommandBase.currentDrive)]
-    public class RenameTreesorColumnCommand : TreesorColumnCommandBase
+    [Cmdlet(VerbsCommon.Rename, "TreesorColumn", DefaultParameterSetName = currentDrive)]
+    public class RenameTreesorColumnCommand : TreesorNamedColumnCommandBase
     {
         [Parameter(ParameterSetName = currentDrive, Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]
         [Parameter(ParameterSetName = otherDrive, Mandatory = true, Position = 2, ValueFromPipelineByPropertyName = true)]

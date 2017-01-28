@@ -13,11 +13,6 @@ namespace Treesor.PSDriveProvider.Commands
         [ArgumentCompleter(typeof(TreesorDriveNameCompleter))]
         public string DriveName { get; set; } = null;
 
-        [Parameter(ParameterSetName = currentDrive, Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]
-        [Parameter(ParameterSetName = otherDrive, Mandatory = true, Position = 0, ValueFromPipelineByPropertyName = true)]
-        [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
-
         protected string GetDriveName()
         {
             // if a drive isn't specified explicitely, splt the current path
@@ -32,5 +27,13 @@ namespace Treesor.PSDriveProvider.Commands
                 .OfType<TreesorDriveInfo>()
                 .FirstOrDefault(p => p.Name.Equals(treesorDriveName, System.StringComparison.OrdinalIgnoreCase));
         }
+    }
+
+    public class TreesorNamedColumnCommandBase : TreesorColumnCommandBase
+    {
+        [Parameter(ParameterSetName = currentDrive, Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]
+        [Parameter(ParameterSetName = otherDrive, Mandatory = true, Position = 0, ValueFromPipelineByPropertyName = true)]
+        [ValidateNotNullOrEmpty]
+        public string Name { get; set; }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Treesor.PSDriveProvider.Commands
 {
-    [Cmdlet(VerbsCommon.Remove, "TreesorColumn", DefaultParameterSetName = TreesorColumnCommandBase.currentDrive)]
-    public class RemoveTreesorColumnCommand : TreesorColumnCommandBase
+    [Cmdlet(VerbsCommon.Remove, "TreesorColumn", DefaultParameterSetName = currentDrive)]
+    public class RemoveTreesorColumnCommand : TreesorNamedColumnCommandBase
     {
         protected override void ProcessRecord()
         {
