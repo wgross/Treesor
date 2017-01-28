@@ -126,8 +126,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\GetTreesorColumnCommand.cs" />
     <Compile Include="Commands\RemoveTreesorColumnCommand.cs" />
     <Compile Include="Commands\RenameTreesorColumnCommand.cs" />
+    <Compile Include="Commands\TreesorColumnCommandBase.cs" />
     <Compile Include="ITreesorService.cs" />
     <Compile Include="Commands\NewTreesorColumnCommand.cs" />
     <Compile Include="Commands\TreesorDriveNameArgumentCompleter.cs" />

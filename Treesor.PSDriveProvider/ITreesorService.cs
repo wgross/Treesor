@@ -40,11 +40,13 @@ namespace Treesor.PSDriveProvider
 
         void ClearPropertyValue(TreesorNodePath treesorNodePath, string name);
 
-        TreesorColumn CreateColumn(string propertyName, string propertyTypeName);
+        TreesorColumn CreateColumn(string propertyName, Type type);
 
         bool RemoveColumn(string propertyName);
 
         void RenameColumn(string name, string newName);
+
+        IEnumerable<TreesorColumn> GetColumns();
 
         void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty);
 

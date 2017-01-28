@@ -1,5 +1,6 @@
 ﻿using Moq;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
@@ -49,7 +50,7 @@ namespace Treesor.PSDriveProvider.Test
                 .AddStatement()
                 .AddCommand("New-ItemProperty")
                 .AddParameter("Path", @"treesor:\a").AddParameter("Name", "p")
-                .AddParameter("PropertyType", "type").AddParameter("Value", "value");
+                .AddParameter("PropertyType", "string").AddParameter("Value", "value");
 
             var result = this.powershell.Invoke();
 
@@ -57,7 +58,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.IsTrue(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", "type"), Times.Never());
+            this.treesorService.Verify(s => s.CreateColumn("p", It.IsAny<Type>()), Times.Never());
             this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Never());
         }
 

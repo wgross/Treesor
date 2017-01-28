@@ -282,21 +282,24 @@ namespace Treesor.PSDriveProvider
 
         #region Create a new columns in treesor data model
 
-        public TreesorColumn CreateColumn(string name, string typename)
+        public TreesorColumn CreateColumn(string name, Type type)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
             TreesorColumn column;
             if (this.columns.TryGetValue(name, out column))
             {
-                if (StringComparer.Ordinal.Equals(typename, column.TypeName))
+                if (type.Equals(column.Type))
                     return column;
 
-                throw new InvalidOperationException($"Column: '{name}' already defined with type: '{column.TypeName}'");
+                throw new InvalidOperationException($"Column: '{name}' already defined with type: '{column.Type}'");
             }
 
-            this.columns.Add(name, column = new TreesorColumn(name, typename));
+            this.columns.Add(name, column = new TreesorColumn(name, type));
             return column;
         }
 
@@ -320,8 +323,7 @@ namespace Treesor.PSDriveProvider
                 return;
 
             this.columns.Remove(name);
-            this.columns.Add(newName, new TreesorColumn(newName, column.TypeName));
-
+            this.columns.Add(newName, new TreesorColumn(newName, column.Type));
         }
 
         public bool RemoveColumn(string propertyName)
