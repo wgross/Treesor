@@ -143,7 +143,7 @@
     <Compile Include="TreesorItem.cs" />
     <Compile Include="TreesorNodePath.cs" />
     <Compile Include="TreesorProviderIntrinsics.cs" />
-    <Compile Include="TreesorService.cs" />
+    <Compile Include="Services\InMemoryTreesorService.cs" />
     <Compile Include="TreesorDriveProvider.DynamicPropertyCmdletProvider.cs" />
     <Compile Include="Reference.cs" />
   </ItemGroup>

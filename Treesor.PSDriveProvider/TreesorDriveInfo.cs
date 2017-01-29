@@ -34,7 +34,7 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorService.Factory(driveInfo.Root);
+            this.treesorService = InMemoryTreesorService.Factory(driveInfo.Root);
         }
 
         internal IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath, bool recurse)

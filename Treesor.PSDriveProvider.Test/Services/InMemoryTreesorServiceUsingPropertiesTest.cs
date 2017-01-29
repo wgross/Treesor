@@ -7,16 +7,16 @@ using System;
 namespace Treesor.PSDriveProvider.Test.Service
 {
     [TestFixture]
-    public class TreesorServiceUsingPropertiesTest
+    public class InMemoryTreesorServiceUsingPropertiesTest
     {
         private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        private TreesorService treesorService;
+        private InMemoryTreesorService treesorService;
 
         [SetUp]
         public void ArrangeAllTests()
         {
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
-            this.treesorService = new TreesorService(this.hierarchyMock.Object);
+            this.treesorService = new InMemoryTreesorService(this.hierarchyMock.Object);
         }
 
         #region SetPropertyValue

@@ -64,7 +64,7 @@ namespace Treesor.PowershellDriveProvider.Test
             var treesorService = new Mock<ITreesorService>();
 
             string givenUri = null;
-            TreesorService.Factory = uri =>
+            InMemoryTreesorService.Factory = uri =>
             {
                 givenUri = @"\";
                 return treesorService.Object;
@@ -98,7 +98,7 @@ namespace Treesor.PowershellDriveProvider.Test
             var treesorService = new Mock<ITreesorService>();
             treesorService.Setup(s => s.Dispose());
 
-            TreesorService.Factory = uri => treesorService.Object;
+            InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             this.powershell.AddStatement().AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll").Invoke();
             this.powershell.AddStatement()
@@ -131,7 +131,7 @@ namespace Treesor.PowershellDriveProvider.Test
             var treesorService = new Mock<ITreesorService>();
             treesorService.Setup(s => s.Dispose());
 
-            TreesorService.Factory = uri => treesorService.Object;
+            InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             this.powershell
                 .AddStatement()

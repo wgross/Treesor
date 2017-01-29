@@ -9,16 +9,16 @@ using System.Linq;
 namespace Treesor.PSDriveProvider.Test.Service
 {
     [TestFixture]
-    public class TreesorServiceUsingHierarchyTest
+    public class LiteDbTreesorServiceUsingHierarchyTest
     {
         private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        private TreesorService treesorService;
+        private InMemoryTreesorService treesorService;
 
         [SetUp]
         public void ArrangeAllTests()
         {
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
-            this.treesorService = new TreesorService(this.hierarchyMock.Object);
+            this.treesorService = new InMemoryTreesorService(this.hierarchyMock.Object);
         }
 
         #region NewItem > Add

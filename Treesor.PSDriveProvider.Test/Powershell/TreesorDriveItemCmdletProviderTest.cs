@@ -16,7 +16,7 @@ namespace Treesor.PSDriveProvider.Test
         public void ArrangeAllTests()
         {
             this.treesorService = new Mock<ITreesorService>();
-            TreesorService.Factory = uri => treesorService.Object;
+            InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
             this.powershell

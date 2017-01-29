@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Treesor.PSDriveProvider
 {
-    public class TreesorService : ITreesorService
+    public class InMemoryTreesorService : ITreesorService
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -19,7 +19,7 @@ namespace Treesor.PSDriveProvider
             Reference<Guid> id;
             if (!hierarchy.TryGetValue(HierarchyPath.Create<string>(), out id))
                 hierarchy.Add(HierarchyPath.Create<string>(), new Reference<Guid>(Guid.NewGuid()));
-            return new TreesorService(hierarchy);
+            return new InMemoryTreesorService(hierarchy);
         }
 
         #region Construction and initialization of this instance
@@ -28,7 +28,7 @@ namespace Treesor.PSDriveProvider
 
         private readonly IDictionary<string, TreesorColumn> columns;
 
-        public TreesorService(IHierarchy<string, Reference<Guid>> hierarchy)
+        public InMemoryTreesorService(IHierarchy<string, Reference<Guid>> hierarchy)
         {
             this.hierarchy = hierarchy;
             this.columns = new Dictionary<string, TreesorColumn>();

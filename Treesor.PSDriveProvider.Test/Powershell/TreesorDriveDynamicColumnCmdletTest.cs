@@ -16,7 +16,7 @@ namespace Treesor.PSDriveProvider.Test
         public void ArrangeAllTests()
         {
             this.treesorService = new Mock<ITreesorService>();
-            TreesorService.Factory = uri => treesorService.Object;
+            InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             // there is always a root node (for Set-Location)
             this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, new Reference<System.Guid>(Guid.NewGuid())));
