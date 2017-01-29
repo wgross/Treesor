@@ -20,8 +20,8 @@ namespace Treesor.PSDriveProvider.Commands
             else
                 typeName = this.ColumnType.ToString();
             
-            this.GetTreesorDriveProvider(this.GetDriveName())?.Service
-                .CreateColumn(this.Name, Type.GetType(typeName, throwOnError: true, ignoreCase: true));
+            this.WriteObject(this.GetTreesorDriveProvider(this.GetDriveName())?
+                .Service.CreateColumn(this.Name, Type.GetType(typeName, throwOnError: true, ignoreCase: true)));
         }
     }
 }
