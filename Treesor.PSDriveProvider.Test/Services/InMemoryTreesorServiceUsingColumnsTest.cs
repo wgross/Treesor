@@ -129,6 +129,26 @@ namespace Treesor.PSDriveProvider.Test.Service
             Assert.IsFalse(this.treesorService.GetColumns().Any());
         }
 
+        [Test]
+        public void RemoveColumns_fails_on_null_columnName()
+        {
+            // ACT & ASSERT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(null));
+
+            Assert.AreEqual("columnName", result.ParamName);
+        }
+
+        [Test]
+        public void RemoveColumns_fails_on_empty_columnName()
+        {
+            // ACT & ASSERT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(""));
+
+            Assert.AreEqual("columnName", result.ParamName);
+        }
+
         #endregion RemoveColumn
 
         #region RenameColumn

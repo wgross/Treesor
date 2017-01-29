@@ -32,7 +32,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region CreateColumn
 
         [Test]
-        public void CreateColumn_type_string_in_LiteDb()
+        public void CreateColumn_type_string_in_memory_and_db()
         {
             // ACT
 
@@ -54,7 +54,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void CreateColumn_twice_is_accepted_and_not_stored_twice()
+        public void CreateColumn_twice_is_accepted_and_not_stored_twice_in_db()
         {
             // ARRANGE
 
@@ -141,7 +141,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void RemoveColumn_succeeds()
+        public void RemoveColumn_succeeds_in_memory_and_db()
         {
             // ARRANGE
 
@@ -152,9 +152,34 @@ namespace Treesor.PSDriveProvider.Test.Service
             var result = this.treesorService.RemoveColumn("p");
 
             // ASSERT
+            // column is remved from memory and db
 
             Assert.IsTrue(result);
             Assert.IsFalse(this.treesorService.GetColumns().Any());
+
+            var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
+
+            Assert.AreEqual(0, persistentCollections.Count());
+        }
+
+        [Test]
+        public void RemoveColumns_fails_on_null_columnName()
+        {
+            // ACT & ASSERT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(null));
+
+            Assert.AreEqual("columnName", result.ParamName);
+        }
+
+        [Test]
+        public void RemoveColumns_fails_on_empty_columnName()
+        {
+            // ACT & ASSERT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(""));
+
+            Assert.AreEqual("columnName", result.ParamName);
         }
 
         #endregion RemoveColumn

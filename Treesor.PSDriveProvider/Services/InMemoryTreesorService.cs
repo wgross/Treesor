@@ -326,9 +326,12 @@ namespace Treesor.PSDriveProvider
             this.columns.Add(newName, new TreesorColumn(newName, column.Type));
         }
 
-        public bool RemoveColumn(string propertyName)
+        public bool RemoveColumn(string columnName)
         {
-            return this.columns.Remove(propertyName);
+            if (string.IsNullOrEmpty(columnName))
+                throw new ArgumentNullException(nameof(columnName));
+
+            return this.columns.Remove(columnName);
         }
 
         public IEnumerable<TreesorColumn> GetColumns()

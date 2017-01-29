@@ -344,10 +344,21 @@ namespace Treesor.PSDriveProvider
             this.columns.Add(newName, new TreesorColumn(newName, column.Type));
         }
 
-        public bool RemoveColumn(string propertyName)
+        #region Remove a column from treesor
+
+        public bool RemoveColumn(string columnName)
         {
-            return this.columns.Remove(propertyName);
+            if (string.IsNullOrEmpty(columnName))
+                throw new ArgumentNullException(nameof(columnName));
+                
+            // remove from db first
+
+            var noOfDeleted = this.database.GetCollection<ColumnEntity>(column_collection).Delete(c => c.Name.Equals(columnName));
+            var existingColumns = this.database.GetCollection<ColumnEntity>(column_collection).Find(c => c.Name.Equals(columnName));
+            return this.columns.Remove(columnName);
         }
+
+        #endregion Remove a column from treesor
 
         public IEnumerable<TreesorColumn> GetColumns()
         {
