@@ -19,15 +19,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         public void ArrangeAllTests()
         {
             this.database = new LiteDatabase(new MemoryStream());
+            this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).EnsureIndex(c => c.Name);
+
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
             this.treesorService = new LiteDbTreesorService(this.hierarchyMock.Object, this.database);
         }
 
-        [TearDown]
-        public void CleanUpAllTests()
-        {
-            this.database.Dispose();
-        }
+        //[TearDown]
+        //public void CleanUpAllTests()
+        //{
+        //    this.database.Dispose();
+        //}
 
         #region CreateColumn
 
@@ -101,7 +103,19 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void CreateColumn_fails_on_missing_name()
+        public void CreateColumn_fails_on_null_name()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, typeof(string)));
+
+            // ASSERT
+
+            Assert.AreEqual("name", result.ParamName);
+        }
+
+        [Test]
+        public void CreateColumn_fails_on_empty_name()
         {
             // ACT
 
@@ -195,7 +209,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void RenameColumn_changes_the_column_name()
+        public void RenameColumn_changes_the_column_name_in_db_too()
         {
             // ARRANGE
 
@@ -208,6 +222,14 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ASSERT
 
             Assert.AreEqual("q", this.treesorService.GetColumns().Single().Name);
+
+            var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection);
+
+            Assert.IsFalse(persistentCollections.Find(c => c.Name.Equals("p")).Any());
+
+            var q = persistentCollections.Find(c => c.Name.Equals("q")).Single();
+
+            Assert.AreEqual(typeof(string).ToString(), q.TypeName);
         }
 
         [Test]
@@ -216,7 +238,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
 
             this.treesorService.CreateColumn("p", typeof(string));
-            this.treesorService.CreateColumn("q", typeof(string));
+            this.treesorService.CreateColumn("q", typeof(int));
 
             // ACT
 
@@ -225,6 +247,16 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ASSERT
 
             Assert.AreEqual("An item with the same key has already been added.", result.Message);
+
+            var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection);
+
+            var p = persistentCollections.Find(c => c.Name.Equals("p")).Single();
+
+            Assert.AreEqual(typeof(string).ToString(), p.TypeName);
+
+            var q = persistentCollections.Find(c => c.Name.Equals("q")).Single();
+
+            Assert.AreEqual(typeof(int).ToString(), q.TypeName);
         }
 
         #endregion RenameColumn

@@ -340,8 +340,15 @@ namespace Treesor.PSDriveProvider
             if (!this.columns.TryGetValue(name, out column))
                 return;
 
-            this.columns.Remove(name);
-            this.columns.Add(newName, new TreesorColumn(newName, column.Type));
+            // update db first
+            var columnsCollection = this.database.GetCollection<ColumnEntity>(column_collection);
+            foreach (var columnEntity in columnsCollection.Find(c => c.Name.Equals(name)))
+            {
+                this.columns.Remove(name);
+                this.columns.Add(newName, new TreesorColumn(newName, column.Type));
+                columnEntity.Name = newName;
+                columnsCollection.Update(columnEntity);
+            }
         }
 
         #region Remove a column from treesor
@@ -350,7 +357,7 @@ namespace Treesor.PSDriveProvider
         {
             if (string.IsNullOrEmpty(columnName))
                 throw new ArgumentNullException(nameof(columnName));
-                
+
             // remove from db first
 
             var noOfDeleted = this.database.GetCollection<ColumnEntity>(column_collection).Delete(c => c.Name.Equals(columnName));
