@@ -48,8 +48,14 @@ namespace Treesor.PSDriveProvider.Test
         #region New-TreesorColumn > CreateColumn
 
         [Test]
-        public void Powershell_adds_new_column_to_named_drive()
+        public void Powershell_adds_new_column_with_type_name_to_named_drive()
         {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.CreateColumn("p", typeof(string)))
+                .Returns(new TreesorColumn("p", typeof(string)));
+            
             // ACT
 
             this.powershell
@@ -57,20 +63,22 @@ namespace Treesor.PSDriveProvider.Test
                 .AddCommand("New-TreesorColumn")
                     .AddParameter("DriveName", "custTree")
                     .AddParameter("Name", "p")
-                    .AddParameter("TypeName", typeof(string).ToString());
+                    .AddParameter("ColumnType", typeof(string).ToString());
 
             var result = this.powershell.Invoke();
 
             // ASSERT
-            // provider write new item on output pipe
+            // provider write new column on output pipe
 
             Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
         [Test]
-        public void Powershell_adds_new_column_to_current_drive()
+        public void Powershell_adds_new_column_with_type_name_to_current_drive()
         {
             // ARRANGE
 
@@ -79,13 +87,17 @@ namespace Treesor.PSDriveProvider.Test
                     .AddCommand("Set-Location")
                         .AddParameter("Path", @"custTree:\");
 
+            this.treesorService
+                .Setup(s => s.CreateColumn("p", typeof(string)))
+                .Returns(new TreesorColumn("p", typeof(string)));
+
             // ACT
 
             this.powershell
                 .AddStatement()
                     .AddCommand("New-TreesorColumn")
                         .AddParameter("Name", "p")
-                        .AddParameter("TypeName", typeof(string).ToString());
+                        .AddParameter("ColumnType", typeof(string).ToString());
 
             var result = this.powershell.Invoke();
 
@@ -93,8 +105,40 @@ namespace Treesor.PSDriveProvider.Test
             // provider write new item on output pipe
 
             Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_adds_new_column_with_type_to_named_drive()
+        {
+            // ARRANGE
+
+            this.treesorService
+                .Setup(s => s.CreateColumn("p", typeof(int)))
+                .Returns(new TreesorColumn("p", typeof(int)));
+
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-TreesorColumn")
+                    .AddParameter("DriveName", "custTree")
+                    .AddParameter("Name", "p")
+                    .AddParameter("ColumnType", typeof(int));
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // provider write new item on output pipe
+
+            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.AreEqual(typeof(int), ((TreesorColumn)result.Single().BaseObject).Type);
+
+            this.treesorService.Verify(s => s.CreateColumn("p", typeof(int)), Times.Once());
         }
 
         #endregion New-TreesorColumn > CreateColumn
