@@ -46,6 +46,10 @@
       <HintPath>..\packages\Elementary.Properties.1.2.0\lib\net461\Elementary.Properties.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LiteDB, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.3.0.0\lib\net35\LiteDB.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.0.1\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
       <Private>True</Private>
@@ -135,7 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Powershell\TreesorDriveDynamicColumnCmdletTest.cs" />
-    <Compile Include="Services\LiteDbTreesorServiceUsingHierarchyTest.cs" />
+    <Compile Include="Services\LiteDbTreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Services\TreesorItemTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingHierarchyTest.cs" />
