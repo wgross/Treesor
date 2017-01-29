@@ -6,15 +6,22 @@ namespace Treesor.PSDriveProvider.Commands
     [Cmdlet(VerbsCommon.New, "TreesorColumn", DefaultParameterSetName = currentDrive)]
     public class NewTreesorColumnCommand : TreesorNamedColumnCommandBase
     {
-        [Parameter(ParameterSetName = currentDrive, Mandatory = true, Position = 2, ValueFromPipelineByPropertyName = true)]
-        [Parameter(ParameterSetName = otherDrive, Mandatory = true, Position = 1, ValueFromPipelineByPropertyName = true)]
+        [Parameter(Mandatory = true)]
         [ValidateNotNullOrEmpty]
-        public string TypeName { get; set; }
-
+        public object ColumnType { get; set; }
+        
         protected override void ProcessRecord()
         {
+            string typeName = null;
+            if (this.ColumnType is string)
+                typeName = (string)this.ColumnType;
+            else if (this.ColumnType is Type)
+                typeName = this.ColumnType.ToString();
+            else
+                typeName = this.ColumnType.ToString();
+            
             this.GetTreesorDriveProvider(this.GetDriveName())?.Service
-                .CreateColumn(this.Name, Type.GetType(this.TypeName, throwOnError: true, ignoreCase: true));
+                .CreateColumn(this.Name, Type.GetType(typeName, throwOnError: true, ignoreCase: true));
         }
     }
 }

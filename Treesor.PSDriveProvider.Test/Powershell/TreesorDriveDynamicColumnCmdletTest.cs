@@ -48,7 +48,7 @@ namespace Treesor.PSDriveProvider.Test
         #region New-TreesorColumn > CreateColumn
 
         [Test]
-        public void Powershell_adds_new_column_to_named_drive()
+        public void Powershell_adds_new_column_with_type_name_to_named_drive()
         {
             // ACT
 
@@ -57,7 +57,7 @@ namespace Treesor.PSDriveProvider.Test
                 .AddCommand("New-TreesorColumn")
                     .AddParameter("DriveName", "custTree")
                     .AddParameter("Name", "p")
-                    .AddParameter("TypeName", typeof(string).ToString());
+                    .AddParameter("ColumnType", typeof(string).ToString());
 
             var result = this.powershell.Invoke();
 
@@ -70,7 +70,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Test]
-        public void Powershell_adds_new_column_to_current_drive()
+        public void Powershell_adds_new_column_with_type_name_to_current_drive()
         {
             // ARRANGE
 
@@ -85,7 +85,7 @@ namespace Treesor.PSDriveProvider.Test
                 .AddStatement()
                     .AddCommand("New-TreesorColumn")
                         .AddParameter("Name", "p")
-                        .AddParameter("TypeName", typeof(string).ToString());
+                        .AddParameter("ColumnType", typeof(string).ToString());
 
             var result = this.powershell.Invoke();
 
@@ -95,6 +95,28 @@ namespace Treesor.PSDriveProvider.Test
             Assert.IsFalse(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
+        }
+
+        [Test]
+        public void Powershell_adds_new_column_with_type_to_named_drive()
+        {
+            // ACT
+
+            this.powershell
+                .AddStatement()
+                .AddCommand("New-TreesorColumn")
+                    .AddParameter("DriveName", "custTree")
+                    .AddParameter("Name", "p")
+                    .AddParameter("ColumnType", typeof(int));
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // provider write new item on output pipe
+
+            Assert.IsFalse(this.powershell.HadErrors);
+
+            this.treesorService.Verify(s => s.CreateColumn("p", typeof(int)), Times.Once());
         }
 
         #endregion New-TreesorColumn > CreateColumn
