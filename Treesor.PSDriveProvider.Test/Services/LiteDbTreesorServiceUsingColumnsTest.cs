@@ -5,11 +5,12 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
+using Treesor.PSDriveProvider.Test.Services.Base;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
     [TestFixture]
-    public class LiteDbTreesorServiceUsingColumnsTest
+    public class LiteDbTreesorServiceUsingColumnsTest : TreesorServiceUsesColumnsTestBase
     {
         private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
         private LiteDbTreesorService treesorService;
@@ -27,12 +28,6 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.treesorService = new LiteDbTreesorService(this.hierarchyMock.Object, this.database);
         }
 
-        //[TearDown]
-        //public void CleanUpAllTests()
-        //{
-        //    this.database.Dispose();
-        //}
-
         #region CreateColumn
 
         [Test]
@@ -40,15 +35,10 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = this.treesorService.CreateColumn(name: "p", type: typeof(string));
+            base.CreateColumn_type_string(this.treesorService);
 
             // ASSERT
             // columns was created and can be found in the database
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("p", result.Name);
-            Assert.AreEqual(typeof(string), result.Type);
-            Assert.AreEqual(result, this.treesorService.GetColumns().Single());
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -60,21 +50,11 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void CreateColumn_twice_is_accepted_and_not_stored_twice_in_db()
         {
-            // ARRANGE
-
-            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
-
             // ACT
 
-            var result = this.treesorService.CreateColumn(name: "p", type: typeof(string));
+            base.CreateColumn_twice_is_accepted(this.treesorService);
 
             // ASSERT
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(column, result);
-            Assert.AreEqual("p", result.Name);
-            Assert.AreEqual(typeof(string), result.Type);
-            Assert.AreEqual(column, this.treesorService.GetColumns().Single());
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -84,18 +64,11 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void CreateColumns_twice_fails_with_different_type()
         {
-            // ARRANGE
-
-            this.treesorService.CreateColumn(name: "p", type: typeof(string));
-
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.CreateColumn(name: "p", type: typeof(int)));
+            base.CreateColumns_twice_fails_with_different_type(this.treesorService);
 
             // ASSERT
-            // excetion is throne and DB is not changed
-
-            Assert.AreEqual($"Column: 'p' already defined with type: '{typeof(string)}'", result.Message);
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -105,27 +78,11 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void CreateColumn_fails_on_null_name()
+        public void CreateColumn_fails_on_missing_name()
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, typeof(string)));
-
-            // ASSERT
-
-            Assert.AreEqual("name", result.ParamName);
-        }
-
-        [Test]
-        public void CreateColumn_fails_on_empty_name()
-        {
-            // ACT
-
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn(null, typeof(string)));
-
-            // ASSERT
-
-            Assert.AreEqual("name", result.ParamName);
+            base.CreateColumn_fails_on_missing_name(this.treesorService);
         }
 
         [Test]
@@ -133,11 +90,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.CreateColumn("name", null));
-
-            // ASSERT
-
-            Assert.AreEqual("type", result.ParamName);
+            base.CreateColumn_fails_on_missing_type(this.treesorService);
         }
 
         #endregion CreateColumn
@@ -149,29 +102,18 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = this.treesorService.RemoveColumn("p");
-
-            // ASSERT
-
-            Assert.IsFalse(result);
+            base.RemoveColumn_unexisting_column_does_nothing(this.treesorService);
         }
 
         [Test]
         public void RemoveColumn_succeeds_in_memory_and_db()
         {
-            // ARRANGE
-
-            this.treesorService.CreateColumn("p", typeof(string));
-
             // ACT
 
-            var result = this.treesorService.RemoveColumn("p");
+            base.RemoveColumn_succeeds(this.treesorService);
 
             // ASSERT
             // column is remved from memory and db
-
-            Assert.IsTrue(result);
-            Assert.IsFalse(this.treesorService.GetColumns().Any());
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -181,21 +123,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void RemoveColumns_fails_on_null_columnName()
         {
-            // ACT & ASSERT
+            // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(null));
-
-            Assert.AreEqual("columnName", result.ParamName);
+            base.RemoveColumns_fails_on_null_columnName(this.treesorService);
         }
 
         [Test]
         public void RemoveColumns_fails_on_empty_columnName()
         {
-            // ACT & ASSERT
+            // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.RemoveColumn(""));
-
-            Assert.AreEqual("columnName", result.ParamName);
+            base.RemoveColumns_fails_on_empty_columnName(this.treesorService);
         }
 
         #endregion RemoveColumn
@@ -207,27 +145,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.RenameColumn("p", "q"));
-
-            // ASSERT
-
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
+            base.RenameColumn_throws_for_missing_column(this.treesorService);
         }
 
         [Test]
         public void RenameColumn_changes_the_column_name_in_db_too()
         {
-            // ARRANGE
-
-            this.treesorService.CreateColumn("p", typeof(string));
-
             // ACT
 
-            Assert.DoesNotThrow(() => this.treesorService.RenameColumn("p", "q"));
+            base.RenameColumn_changes_the_column_name(this.treesorService);
 
             // ASSERT
-
-            Assert.AreEqual("q", this.treesorService.GetColumns().Single().Name);
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection);
 
@@ -241,18 +169,11 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void RenameColumn_fails_is_column_name_is_used_already()
         {
-            // ARRANGE
-
-            this.treesorService.CreateColumn("p", typeof(string));
-            this.treesorService.CreateColumn("q", typeof(int));
-
             // ACT
 
-            var result = Assert.Throws<ArgumentException>(() => this.treesorService.RenameColumn("p", "q"));
+            base.RenameColumn_fails_is_column_name_is_used_already(this.treesorService);
 
             // ASSERT
-
-            Assert.AreEqual("An item with the same key has already been added.", result.Message);
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection);
 
@@ -262,7 +183,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             var q = persistentCollections.Find(c => c.Name.Equals("q")).Single();
 
-            Assert.AreEqual(typeof(int).ToString(), q.TypeName);
+            Assert.AreEqual(typeof(string).ToString(), q.TypeName);
         }
 
         #endregion RenameColumn

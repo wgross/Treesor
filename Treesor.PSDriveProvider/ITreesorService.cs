@@ -40,7 +40,7 @@ namespace Treesor.PSDriveProvider
 
         void ClearPropertyValue(TreesorNodePath treesorNodePath, string name);
 
-        TreesorColumn CreateColumn(string propertyName, Type type);
+        TreesorColumn CreateColumn(string name, Type type);
 
         bool RemoveColumn(string propertyName);
 
