@@ -154,11 +154,15 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region RenameColumn
 
         [Test]
-        public void RenameColumn_does_nothing_for_missing_column()
+        public void RenameColumn_throws_for_missing_column()
         {
             // ACT
 
-            Assert.DoesNotThrow(() => this.treesorService.RenameColumn("p", "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.RenameColumn("p", "q"));
+
+            // ASSERT
+
+            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
         }
 
         [Test]

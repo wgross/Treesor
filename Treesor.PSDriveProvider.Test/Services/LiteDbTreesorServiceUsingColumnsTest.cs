@@ -14,11 +14,13 @@ namespace Treesor.PSDriveProvider.Test.Service
         private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
         private LiteDbTreesorService treesorService;
         private LiteDatabase database;
+        private MemoryStream databaseStream;
 
         [SetUp]
         public void ArrangeAllTests()
         {
-            this.database = new LiteDatabase(new MemoryStream());
+            this.databaseStream = new MemoryStream();
+            this.database = new LiteDatabase(this.databaseStream);
             this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).EnsureIndex(c => c.Name);
 
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
@@ -46,7 +48,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             Assert.IsNotNull(result);
             Assert.AreEqual("p", result.Name);
             Assert.AreEqual(typeof(string), result.Type);
-            Assert.AreSame(result, this.treesorService.GetColumns().Single());
+            Assert.AreEqual(result, this.treesorService.GetColumns().Single());
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -69,10 +71,10 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ASSERT
 
             Assert.IsNotNull(result);
-            Assert.AreSame(column, result);
+            Assert.AreEqual(column, result);
             Assert.AreEqual("p", result.Name);
             Assert.AreEqual(typeof(string), result.Type);
-            Assert.AreSame(column, this.treesorService.GetColumns().Single());
+            Assert.AreEqual(column, this.treesorService.GetColumns().Single());
 
             var persistentCollections = this.database.GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection).FindAll();
 
@@ -201,11 +203,15 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region RenameColumn
 
         [Test]
-        public void RenameColumn_does_nothing_for_missing_column()
+        public void RenameColumn_throws_for_missing_column()
         {
             // ACT
 
-            Assert.DoesNotThrow(() => this.treesorService.RenameColumn("p", "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.RenameColumn("p", "q"));
+
+            // ASSERT
+
+            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
         }
 
         [Test]
@@ -260,5 +266,28 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         #endregion RenameColumn
+
+        #region Restore Columns from DB
+
+        [Test]
+        public void TreesorService_reads_column_definitions_from_DB()
+        {
+            // ARRANGE
+            // create columns at persietent storage
+
+            this.treesorService.CreateColumn(name: "p", type: typeof(string));
+
+            // ACT
+
+            var result = new LiteDbTreesorService(Mock.Of<IHierarchy<string, Reference<Guid>>>(), new LiteDatabase(this.databaseStream)).GetColumns();
+
+            // ASSERT
+
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("p", result.Single().Name);
+            Assert.AreEqual(typeof(string), result.Single().Type);
+        }
+
+        #endregion Restore Columns from DB
     }
 }

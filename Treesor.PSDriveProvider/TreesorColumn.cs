@@ -9,7 +9,7 @@ namespace Treesor.PSDriveProvider
             : this(name, type, SparsePropertyAccessorFactory<object>.Create())
         { }
 
-        internal TreesorColumn(string name, Type type, SparsePropertyAccessor<object> propertyAccessor)
+        private TreesorColumn(string name, Type type, SparsePropertyAccessor<object> propertyAccessor)
         {
             this.Name = name;
             this.Type = type;
@@ -38,6 +38,23 @@ namespace Treesor.PSDriveProvider
         public void UnsetValue(TreesorItem nodeItem)
         {
             this.propertyAccessor.UnsetValue(nodeItem.IdRef);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(this, obj))
+                return true;
+
+            var objAsTreesorColumn = obj as TreesorColumn;
+            if (objAsTreesorColumn == null)
+                return false;
+
+            return this.Name.Equals(objAsTreesorColumn.Name) && this.Type.Equals(objAsTreesorColumn.Type);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Name.GetHashCode() ^ this.Type.GetHashCode();
         }
     }
 }

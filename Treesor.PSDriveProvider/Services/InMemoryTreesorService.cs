@@ -223,6 +223,16 @@ namespace Treesor.PSDriveProvider
                 }
         }
 
+        #region Manage Item Property Values
+
+        private TreesorColumn GetColumnOrThrow(string name)
+        {
+            TreesorColumn column = null;
+            if (!this.columns.TryGetValue(name, out column))
+                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            return column;
+        }
+
         public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
             if (path == null)
@@ -235,9 +245,7 @@ namespace Treesor.PSDriveProvider
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             column.SetValue(this.GetItem(path).IdRef, value);
         }
@@ -250,9 +258,7 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
@@ -269,9 +275,7 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
@@ -279,6 +283,8 @@ namespace Treesor.PSDriveProvider
 
             column.UnsetValue(item);
         }
+
+        #endregion Manage Item Property Values
 
         #region Create a new columns in treesor data model
 
@@ -318,9 +324,7 @@ namespace Treesor.PSDriveProvider
 
         public void RenameColumn(string name, string newName)
         {
-            TreesorColumn column;
-            if (!this.columns.TryGetValue(name, out column))
-                return;
+            var column = this.GetColumnOrThrow(name);
 
             this.columns.Remove(name);
             this.columns.Add(newName, new TreesorColumn(newName, column.Type));

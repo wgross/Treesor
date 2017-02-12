@@ -12,6 +12,8 @@ namespace Treesor.PSDriveProvider
     {
         private static readonly NLog.Logger log = LogManager.GetCurrentClassLogger();
 
+        public static string column_collection = nameof(column_collection);
+
         public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
 
         private static ITreesorService DefaultFactoryDelegate(string type)
@@ -23,12 +25,12 @@ namespace Treesor.PSDriveProvider
             return new InMemoryTreesorService(hierarchy);
         }
 
+        private readonly IDictionary<string, TreesorColumn> columns;
+
         #region Construction and initialization of this instance
 
         // isn't readonly because is 'nulled' in Dispse
         private IHierarchy<string, Reference<Guid>> hierarchy;
-
-        private readonly IDictionary<string, TreesorColumn> columns;
 
         private LiteDatabase database;
 
@@ -36,6 +38,7 @@ namespace Treesor.PSDriveProvider
         {
             this.hierarchy = hierarchy;
             this.database = database;
+            this.database.GetCollection<ColumnEntity>(column_collection).EnsureIndex(ce => ce.Name, unique: true);
             this.columns = new Dictionary<string, TreesorColumn>();
         }
 
@@ -44,7 +47,6 @@ namespace Treesor.PSDriveProvider
         #region IDisposable Support
 
         private bool disposedValue = false; // To detect redundant calls
-        public static string column_collection = nameof(column_collection);
 
         protected virtual void Dispose(bool disposing)
         {
@@ -231,6 +233,27 @@ namespace Treesor.PSDriveProvider
                 }
         }
 
+        #region Manage Item Property Values
+
+        private TreesorColumn GetColumnOrThrow(string name)
+        {
+            var columnEntity = this.GetColumnEntityOrThrow(name);
+
+            return new TreesorColumn(name, Type.GetType(columnEntity.TypeName, throwOnError: true, ignoreCase: true));
+        }
+
+        private ColumnEntity GetColumnEntityOrThrow(string name)
+        {
+            var columnEntity = this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .FindOne(c => c.Name.Equals(name));
+
+            if (columnEntity == null)
+                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+
+            return columnEntity;
+        }
+
         public void SetPropertyValue(TreesorNodePath path, string name, object value)
         {
             if (path == null)
@@ -243,9 +266,7 @@ namespace Treesor.PSDriveProvider
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             column.SetValue(this.GetItem(path).IdRef, value);
         }
@@ -258,9 +279,7 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
@@ -277,9 +296,7 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            TreesorColumn column = null;
-            if (!this.columns.TryGetValue(name, out column))
-                throw new InvalidOperationException($"Property '{name}' doesn't exist");
+            var column = this.GetColumnOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
@@ -287,41 +304,6 @@ namespace Treesor.PSDriveProvider
 
             column.UnsetValue(item);
         }
-
-        #region Create a new columns in treesor data model
-
-        public TreesorColumn CreateColumn(string name, Type type)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException(nameof(name));
-
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            TreesorColumn column;
-            if (this.columns.TryGetValue(name, out column))
-            {
-                if (type.Equals(column.Type))
-                    return column;
-
-                throw new InvalidOperationException($"Column: '{name}' already defined with type: '{column.Type}'");
-            }
-
-            // write to Db and the in memory.
-            column = new TreesorColumn(name, type);
-
-            var documentId = this.database.GetCollection<ColumnEntity>(column_collection).Insert(new ColumnEntity
-            {
-                Name = column.Name,
-                TypeName = column.Type.ToString()
-            });
-
-            this.columns.Add(name, column);
-
-            return column;
-        }
-
-        #endregion Create a new columns in treesor data model
 
         public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
         {
@@ -334,42 +316,85 @@ namespace Treesor.PSDriveProvider
             this.ClearPropertyValue(sourcePath, sourceProperty);
         }
 
-        public void RenameColumn(string name, string newName)
-        {
-            TreesorColumn column;
-            if (!this.columns.TryGetValue(name, out column))
-                return;
+        #endregion Manage Item Property Values
 
-            // update db first
-            var columnsCollection = this.database.GetCollection<ColumnEntity>(column_collection);
-            foreach (var columnEntity in columnsCollection.Find(c => c.Name.Equals(name)))
-            {
-                this.columns.Remove(name);
-                this.columns.Add(newName, new TreesorColumn(newName, column.Type));
-                columnEntity.Name = newName;
-                columnsCollection.Update(columnEntity);
-            }
+        #region Manage Item Columns
+
+        public TreesorColumn CreateColumn(string name, Type type)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(nameof(name));
+
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            var existingColumn = this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .FindOne(ce => ce.Name.Equals(name));
+
+            // accept same name with same type
+
+            if (existingColumn != null && existingColumn.TypeName.Equals(type.ToString()))
+                return new TreesorColumn(existingColumn.Name, Type.GetType(existingColumn.TypeName, throwOnError: true, ignoreCase: true));
+
+            // throw on duplcate
+
+            if (existingColumn != null)
+                throw new InvalidOperationException($"Column: '{name}' already defined with type: '{existingColumn.TypeName}'");
+
+            // write to Db and the in memory.
+            var column = new TreesorColumn(name, type);
+
+            var documentId = this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .Insert(new ColumnEntity
+                {
+                    Name = column.Name,
+                    TypeName = column.Type.ToString()
+                });
+
+            return column;
         }
 
-        #region Remove a column from treesor
+        public void RenameColumn(string name, string newName)
+        {
+            var column = this.GetColumnEntityOrThrow(name);
+
+            var existingColumnEntity = this.database
+               .GetCollection<ColumnEntity>(column_collection)
+               .FindOne(c => c.Name.Equals(newName));
+
+            if (existingColumnEntity != null)
+                throw new ArgumentException("An item with the same key has already been added.");
+
+            column.Name = newName;
+
+            this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .Update(column);
+        }
 
         public bool RemoveColumn(string columnName)
         {
             if (string.IsNullOrEmpty(columnName))
                 throw new ArgumentNullException(nameof(columnName));
 
-            // remove from db first
+            var tmp = this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .Delete(c => c.Name == columnName);
 
-            var noOfDeleted = this.database.GetCollection<ColumnEntity>(column_collection).Delete(c => c.Name.Equals(columnName));
-            var existingColumns = this.database.GetCollection<ColumnEntity>(column_collection).Find(c => c.Name.Equals(columnName));
-            return this.columns.Remove(columnName);
+            return tmp > 0;
         }
-
-        #endregion Remove a column from treesor
 
         public IEnumerable<TreesorColumn> GetColumns()
         {
-            return this.columns.Select(kv => kv.Value);
+            return this.database
+                .GetCollection<ColumnEntity>(column_collection)
+                .FindAll()
+                .Select(ce => new TreesorColumn(ce.Name,
+                    Type.GetType(ce.TypeName, throwOnError: true, ignoreCase: true)));
         }
+
+        #endregion Manage Item Columns
     }
 }

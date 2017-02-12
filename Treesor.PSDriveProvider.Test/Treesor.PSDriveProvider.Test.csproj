@@ -140,6 +140,7 @@
   <ItemGroup>
     <Compile Include="Powershell\TreesorDriveDynamicColumnCmdletTest.cs" />
     <Compile Include="Services\LiteDbTreesorServiceUsingColumnsTest.cs" />
+    <Compile Include="Services\TreesorColumnTest.cs" />
     <Compile Include="Services\TreesorItemTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingHierarchyTest.cs" />
