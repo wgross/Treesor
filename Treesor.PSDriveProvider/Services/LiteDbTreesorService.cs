@@ -323,13 +323,21 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            var column = this.GetColumnOrThrow(name);
+            var column = this.GetColumnEntityOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            column.UnsetValue(item);
+            this.ClearPropertyValue(item.Id, column.Id);
+        }
+
+        private void ClearPropertyValue(Guid itemId, int columnId)
+        {
+            var collection = this.database.GetCollection(value_collection);
+            var bsonDocument = collection.FindById(new BsonValue(itemId));
+            bsonDocument.Remove(columnId.ToString());
+            collection.Update(bsonDocument);
         }
 
         public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)

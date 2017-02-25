@@ -105,187 +105,98 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #endregion SetPropertyValue
 
-        #region GetPropertyValue
+        #region GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
 
         [Test]
-        public void GetPropertyValue_inner_nodes_property_value()
+        public void InMemoryService_fails_on_GetPropertyValue_at_missing_column()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5);
-
-            // ACT
-
-            var result = this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p");
-
-            // ASSERT
-
-            Assert.AreEqual(5, (int)result);
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_GetPropertyValue_at_missing_column();
         }
 
         [Test]
-        public void GetPropertyValue_fails_for_missing_column()
+        public void InMemoryService_fails_on_GetPropertyValue_at_missing_node()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out id), Times.Never());
+            base.TreesorService_fails_on_GetPropertyValue_for_missing_node();
         }
 
         [Test]
-        public void GetPropertyValue_fails_for_missing_node()
+        public void InMemoryService_fails_on_GetPropertyValue_with_missing_property_name()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            Reference<Guid> id = null;
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(false);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_GetPropertyValue_with_missing_property_name();
         }
 
         [Test]
-        public void GetPropertyValue_fails_for_missing_property_name()
+        public void InMemoryService_GetPropertyValue_fails_with_missing_node_path()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), null));
-
-            // ASSERT
-
-            Assert.AreEqual("name", result.ParamName);
-            ;
+            base.TreesorService_fails_on_GetPropertyValue_with_missing_node_path();
         }
 
-        [Test]
-        public void GetPropertyValue_fails_for_missing_node_path()
-        {
-            // ACT
-
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.GetPropertyValue(null, "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("path", result.ParamName);
-        }
-
-        #endregion GetPropertyValue
+        #endregion GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
 
         #region ClearPropertyValue
 
         [Test]
-        public void ClearPropertyValue_at_existing_column()
+        public void InMemoryService_clears_property_value()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
 
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5);
+            // ACT & ASSSERT
 
-            // ACT
-
-            this.treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p");
-
-            // ASSERT
-
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_clears_property_value(id);
         }
 
         [Test]
-        public void ClearPropertyValue_fails_for_missing_column()
+        public void InMemoryService_clears_second_property_value()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
 
-            // ACT
+            // ACT & ASSSERT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
+            base.TreesorService_clears_second_property_value(id, 5, "value");
         }
 
         [Test]
-        public void ClearPropertyValue_fails_for_missing_node()
+        public void InMemoryService_fails_on_ClearPropertyValue_for_missing_column()
         {
-            // ARRANGE
+            // ACT & ARRANGE
 
-            Reference<Guid> id = null;
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(false);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p"));
-
-            // ASSERT
-
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_ClearPropertyValue_for_missing_column();
         }
 
         [Test]
-        public void ClearPropertyValue_fails_for_missing_columns_name()
+        public void InMemoryService_fails_on_ClearPropertyValue_at_missing_node()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), null));
-
-            // ASSERT
-
-            Assert.AreEqual("name", result.ParamName);
+            base.TreesorService_fails_on_ClearPropertyValue_at_missing_node();
         }
 
         [Test]
-        public void ClearPropertyValue_fails_for_missing_node_path()
+        public void InMemoryService_fails_ClearPropertyValue_fails_for_missing_column_name()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.ClearPropertyValue(null, "p"));
+            base.TreesorService_fails_on_ClearPropertyValue_with_missing_column_name();
+        }
 
-            // ASSERT
+        [Test]
+        public void InMemoryService_fails_on_ClearPropertyValue_with_missing_node_path()
+        {
+            // ACT & ASSERT
 
-            Assert.AreEqual("path", result.ParamName);
+            base.TreesorService_fails_on_ClearPropertyValue_with_missing_node_path();
         }
 
         #endregion ClearPropertyValue

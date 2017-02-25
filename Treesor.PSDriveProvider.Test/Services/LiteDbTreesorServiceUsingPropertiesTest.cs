@@ -216,5 +216,127 @@ namespace Treesor.PSDriveProvider.Test.Services
         }
 
         #endregion SetPropertyValue
+
+        #region GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
+
+        [Test]
+        public void LiteDbService_fails_on_GetPropertyValue_at_missing_column()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_GetPropertyValue_at_missing_column();
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_GetPropertyValue_at_missing_node()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_GetPropertyValue_for_missing_node();
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_GetPropertyValue_with_missing_property_name()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_GetPropertyValue_with_missing_property_name();
+        }
+
+        #endregion GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
+
+        #region ClearProperty
+
+        [Test]
+        public void LiteDbService_clears_property_value()
+        {
+            // ARRANGE
+
+            var id = new Reference<Guid>(Guid.NewGuid());
+
+            // ACT & ASSSERT
+
+            base.TreesorService_clears_property_value(id);
+
+            // ASSERT
+            // verify storage structure: single columns, no value
+
+            var column = this.database
+                .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
+                .FindAll()
+                .Single();
+
+            Assert.IsFalse(this.database
+                .GetCollection(LiteDbTreesorService.value_collection)
+                .FindAll()
+                .Single()
+                .ContainsKey(column.Id.ToString()));
+        }
+
+        [Test]
+        public void LiteDbService_clears_second_property_value()
+        {
+            // ARRANGE
+
+            var id = new Reference<Guid>(Guid.NewGuid());
+
+            // ACT & ASSSERT
+
+            base.TreesorService_clears_second_property_value(id, 5, "value");
+
+            // ASSERT
+            // verify storage structure: single columns, no value
+
+            var columns = this.database
+                .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
+                .FindAll().ToArray();
+
+            Assert.AreEqual(5, this.database
+                .GetCollection(LiteDbTreesorService.value_collection)
+                .FindAll()
+                .Single()
+                .Get(columns[0].Id.ToString())
+                .AsInt32);
+
+            Assert.IsFalse(this.database
+                .GetCollection(LiteDbTreesorService.value_collection)
+                .FindAll()
+                .Single()
+                .ContainsKey(columns[1].Id.ToString()));
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_ClearPropertyValue_for_missing_column()
+        {
+            // ACT & ARRANGE
+
+            base.TreesorService_fails_on_ClearPropertyValue_for_missing_column();
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_ClearPropertyValue_at_missing_node()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_ClearPropertyValue_at_missing_node();
+        }
+
+        [Test]
+        public void LiteDbService_fails_ClearPropertyValue_fails_for_missing_column_name()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_ClearPropertyValue_with_missing_column_name();
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_ClearPropertyValue_with_missing_node_path()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_ClearPropertyValue_with_missing_node_path();
+        }
+
+        #endregion ClearProperty
     }
 }
