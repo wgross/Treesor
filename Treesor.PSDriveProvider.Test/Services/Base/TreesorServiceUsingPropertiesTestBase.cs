@@ -104,11 +104,10 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void SetPropertyValue_fails_on_missing_column(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_SetPropertyValue_with_missing_column(Reference<Guid> id)
         {
             // ARRANGE
 
-            var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
                 .Returns(true);
@@ -124,7 +123,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void SetPropertyValue_fails_on_missing_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_SetPropertyValue_at_missing_node()
         {
             // ARRANGE
 
@@ -146,7 +145,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void SetPropertyValue_fails_on_missing_property_name(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_SetPropertyValue_with_missing_property_name()
         {
             // ACT
 
@@ -157,7 +156,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             Assert.AreEqual("name", result.ParamName);
         }
 
-        public void SetPropertyValue_fails_on_missing_node_path(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_SetPropertyValue_with_missing_node_path()
         {
             // ACT
 

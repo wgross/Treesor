@@ -362,7 +362,7 @@ namespace Treesor.PSDriveProvider
             // accept same name with same type
 
             if (existingColumn != null && existingColumn.TypeName.Equals(type.ToString()))
-                return new TreesorColumn(existingColumn.Name, Type.GetType(existingColumn.TypeName, throwOnError: true, ignoreCase: true));
+                return new TreesorColumn(existingColumn.Name, existingColumn.GetColumnType());
 
             // throw on duplcate
 
@@ -418,8 +418,7 @@ namespace Treesor.PSDriveProvider
             return this.database
                 .GetCollection<ColumnEntity>(column_collection)
                 .FindAll()
-                .Select(ce => new TreesorColumn(ce.Name,
-                    Type.GetType(ce.TypeName, throwOnError: true, ignoreCase: true)));
+                .Select(ce => new TreesorColumn(ce.Name, ce.GetColumnType()));
         }
 
         #endregion Manage Item Columns

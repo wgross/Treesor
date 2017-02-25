@@ -68,71 +68,39 @@ namespace Treesor.PSDriveProvider.Test.Service
         }
 
         [Test]
-        public void SetPropertyValue_fails_on_missing_column()
+        public void InMemoryService_fails_on_SetPropertyValue_fon_missing_column()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
 
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5));
-
-            // ASSERT
-
-            Assert.AreEqual($"Property 'p' doesn't exist", result.Message);
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(id);
         }
 
         [Test]
-        public void SetPropertyValue_fails_on_missing_node()
+        public void InMemoryService_fails_on_SetPropertyValue_at_missing_node()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            Reference<Guid> id = null;
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(false);
-
-            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5));
-
-            // ASSERT
-
-            Assert.AreEqual($"Node 'a' doesn't exist", result.Message);
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_SetPropertyValue_at_missing_node();
         }
 
         [Test]
-        public void SetPropertyValue_fails_on_missing_property_name()
+        public void InMemoryService_fails_on_SetPropertyValue_on_missing_property_name()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), null, "value"));
-
-            // ASSERT
-
-            Assert.AreEqual("name", result.ParamName);
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_property_name();
         }
 
         [Test]
-        public void SetPropertyValue_fails_on_missing_node_path()
+        public void InMemoryService_fails_on_SetPropertyValue_with_missing_node_path()
         {
-            // ACT
+            // ACT & ASSERT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.SetPropertyValue(null, "p", "value"));
-
-            // ASSERT
-
-            Assert.AreEqual("path", result.ParamName);
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_node_path();
         }
 
         #endregion SetPropertyValue

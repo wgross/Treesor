@@ -129,7 +129,7 @@ namespace Treesor.PSDriveProvider.Test.Services
 
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(id,"value");
+            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(id, "value");
 
             // ASSERT
             // verify storage structure: single columns single value
@@ -145,6 +145,74 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .Single()
                 .Get(column.Id.ToString())
                 .RawValue);
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_SetPropertyValue_with_missing_column()
+        {
+            // ARRANGE
+
+            var id = new Reference<Guid>(Guid.NewGuid());
+
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(id);
+
+            // ASSERT
+            // no values have been created
+
+            Assert.IsFalse(this.database
+               .GetCollection(LiteDbTreesorService.value_collection)
+               .FindAll()
+               .Any());
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_SetPropertyValue_at_missing_node()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_SetPropertyValue_at_missing_node();
+
+            // ASSERT
+            // no values have been created
+
+            Assert.IsFalse(this.database
+               .GetCollection(LiteDbTreesorService.value_collection)
+               .FindAll()
+               .Any());
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_SetPropertyValue_on_missing_property_name()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_property_name();
+
+            // ASSERT
+            // no values have been created
+
+            Assert.IsFalse(this.database
+               .GetCollection(LiteDbTreesorService.value_collection)
+               .FindAll()
+               .Any());
+        }
+
+        [Test]
+        public void LiteDbService_fails_on_SetPropertyValue_with_missing_node_path()
+        {
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_node_path();
+
+            // ASSERT
+            // no values have been created
+
+            Assert.IsFalse(this.database
+               .GetCollection(LiteDbTreesorService.value_collection)
+               .FindAll()
+               .Any());
         }
 
         #endregion SetPropertyValue
