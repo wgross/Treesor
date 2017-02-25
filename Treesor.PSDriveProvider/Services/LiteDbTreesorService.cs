@@ -311,7 +311,7 @@ namespace Treesor.PSDriveProvider
             return this.database
                 .GetCollection(value_collection)
                 .FindById(new BsonValue(itemId))
-                .Get(columnId.ToString())
+                ?.Get(columnId.ToString())
                 .RawValue;
         }
 

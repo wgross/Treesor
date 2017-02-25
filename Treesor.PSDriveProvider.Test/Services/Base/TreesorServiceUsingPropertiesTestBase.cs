@@ -346,7 +346,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
         #region CopyPropertyValue
 
-        public void CopyPropertyValue_from_root_to_child(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_copies_property_value_from_root_to_child(string value)
         {
             // ARRANGE
 
@@ -360,9 +360,9 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            treesorService.CreateColumn("p", typeof(int));
-            treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.CreateColumn("p", typeof(string));
+            treesorService.CreateColumn("q", typeof(string));
+            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: value);
 
             // ACT
 
@@ -370,13 +370,13 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.AreEqual(value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_at_same_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_copies_property_value_within_same_node(int value)
         {
             // ARRANGE
 
@@ -387,7 +387,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: value);
 
             // ACT
 
@@ -395,13 +395,13 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
 
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_from_child_to_root(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_copies_property_value_from_child_to_root(int value)
         {
             // ARRANGE
 
@@ -415,9 +415,9 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
                 .Returns(true);
 
-            treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: 5);
+            treesorService.CreateColumn("p", typeof(int));
+            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: value);
 
             // ACT
 
@@ -425,13 +425,13 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_fails_for_missing_destination_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(int value)
         {
             // ARRANGE
 
@@ -442,7 +442,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: value);
 
             // ACT
 
@@ -451,12 +451,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ASSERT
 
             Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_fails_for_missing_destination_column(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(int value)
         {
             // ARRANGE
 
@@ -471,7 +471,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Returns(true);
 
             treesorService.CreateColumn("p", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: value);
 
             // ACT
 
@@ -480,12 +480,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ASSERT
 
             Assert.AreEqual("Property 'q' doesn't exist", result.Message);
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_fails_for_missing_source_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_CopyPropertyValues_for_missing_source_node()
         {
             // ARRANGE
 
@@ -510,7 +510,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_fails_for_missing_source_column(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_on_CopyPropertyValue_for_missing_source_column()
         {
             // ARRANGE
 
@@ -536,7 +536,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void CopyPropertyValue_fails_for_different_types(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void TreesorService_fails_CopyPropertyValue_for_different_types(int value)
         {
             // ARRANGE
 
@@ -552,7 +552,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(double));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: value);
 
             // ACT
 
@@ -561,8 +561,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.AreEqual($"Couldn't assign value '{value}'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
+            Assert.AreEqual(value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
             Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
