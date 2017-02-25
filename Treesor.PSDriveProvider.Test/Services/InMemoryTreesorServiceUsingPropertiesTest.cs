@@ -3,15 +3,13 @@ using Elementary.Hierarchy.Collections;
 using Moq;
 using NUnit.Framework;
 using System;
+using Treesor.PSDriveProvider.Test.Service.Base;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
     [TestFixture]
-    public class InMemoryTreesorServiceUsingPropertiesTest
+    public class InMemoryTreesorServiceUsingPropertiesTest : TreesorServiceUsingPropertiesTestBase
     {
-        private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        private InMemoryTreesorService treesorService;
-
         [SetUp]
         public void ArrangeAllTests()
         {
@@ -22,75 +20,51 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region SetPropertyValue
 
         [Test]
-        public void SetPropertyValue_property_value()
+        public void InMemoryService_sets_property_value()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
 
-            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
+            // ACT & ASSERT
 
-            // ACT
-
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: "value");
-
-            // ASSERT
-
-            Assert.AreEqual("value", column.GetValue(id));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_sets_property_value(id, "value");
         }
 
         [Test]
-        public void SetProperyValue_changes_property_value()
+        public void InMemoryService_adds_second_property_value()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
 
-            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
-            column.SetValue(id, "test");
+            // ACT & ASSERT
 
-            // ACT
-
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: "value2");
-
-            // ASSERT
-
-            Assert.AreEqual("value2", column.GetValue(id));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_adds_second_property_value(id, "value", 2);
         }
 
         [Test]
-        public void SetPropertyValue_fails_with_wrong_type()
+        public void InMemoryService_changes_property_value()
         {
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id))
-                .Returns(true);
-
-            var column = this.treesorService.CreateColumn(name: "p", type: typeof(string));
-            column.SetValue(id, "value");
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5));
+            base.TreesorService_changes_property_value(id, "value", "new value");
+        }
 
-            // ASSERT
+        [Test]
+        public void InMemoryService_fails_on_SetPropertyValue_with_wrong_type()
+        {
+            // ARRANGE
 
-            Assert.AreEqual("value", column.GetValue(id));
-            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'p' at node '{id.Value}': value.GetType() must be 'System.String'", result.Message);
+            var id = new Reference<Guid>(Guid.NewGuid());
 
-            this.hierarchyMock.VerifyAll();
+            // ACT & ASSERT
+
+            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(id, "value");
         }
 
         [Test]

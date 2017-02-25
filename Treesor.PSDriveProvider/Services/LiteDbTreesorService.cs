@@ -12,7 +12,9 @@ namespace Treesor.PSDriveProvider
     {
         private static readonly NLog.Logger log = LogManager.GetCurrentClassLogger();
 
-        public static string column_collection = nameof(column_collection);
+        public static readonly string column_collection = nameof(column_collection);
+
+        public static readonly string value_collection = nameof(value_collection);
 
         public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
 
@@ -266,9 +268,25 @@ namespace Treesor.PSDriveProvider
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            var column = this.GetColumnOrThrow(name);
+            var column = this.GetColumnEntityOrThrow(name);
+            if (!column.GetColumnType().Equals(value.GetType()))
+                throw new InvalidOperationException($"Couldn't assign value '{value}'(type='{value.GetType()}') to property '{column.Name}' at node '{item.Id}': value.GetType() must be '{column.TypeName}'");
 
-            column.SetValue(this.GetItem(path).IdRef, value);
+            this.UpsertColumnValue(item.Id, column.Id, value);
+        }
+
+        private void UpsertColumnValue(Guid nodeId, int columnId, object value)
+        {
+            var collection = this.database.GetCollection(value_collection);
+            var itemValuesDocument = collection.FindById(new BsonValue(nodeId));
+            if (itemValuesDocument == null)
+            {
+                itemValuesDocument = new BsonDocument(new Dictionary<string, BsonValue>
+                {
+                    { "_id", new BsonValue(nodeId) },
+                });
+            }
+            collection.Upsert(itemValuesDocument.Set(columnId.ToString(), new BsonValue(value)));
         }
 
         public object GetPropertyValue(TreesorNodePath path, string name)
@@ -279,13 +297,22 @@ namespace Treesor.PSDriveProvider
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            var column = this.GetColumnOrThrow(name);
+            var column = this.GetColumnEntityOrThrow(name);
 
             TreesorItem item;
             if (!this.TryGetItem(path, out item))
                 throw new InvalidOperationException($"Node '{path}' doesn't exist");
 
-            return column.GetValue(item.IdRef);
+            return this.GetColumnValue(item.Id, column.Id);
+        }
+
+        private object GetColumnValue(Guid itemId, int columnId)
+        {
+            return this.database
+                .GetCollection(value_collection)
+                .FindById(new BsonValue(itemId))
+                .Get(columnId.ToString())
+                .RawValue;
         }
 
         public void ClearPropertyValue(TreesorNodePath path, string name)
