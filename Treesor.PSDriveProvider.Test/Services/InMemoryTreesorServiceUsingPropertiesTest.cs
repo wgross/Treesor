@@ -22,37 +22,25 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void InMemoryService_sets_property_value()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSERT
 
-            base.TreesorService_sets_property_value(id, "value");
+            base.TreesorService_sets_property_value(nodeId: Guid.NewGuid(), value: "value");
         }
 
         [Test]
         public void InMemoryService_adds_second_property_value()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSERT
 
-            base.TreesorService_adds_second_property_value(id, "value", 2);
+            base.TreesorService_adds_second_property_value(nodeId: Guid.NewGuid(), p_value: "value", q_value: 2);
         }
 
         [Test]
         public void InMemoryService_changes_property_value()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT
 
-            base.TreesorService_changes_property_value(id, "value", "new value");
+            base.TreesorService_changes_property_value(Guid.NewGuid(), value: "value", newValue: "new value");
         }
 
         [Test]
@@ -272,147 +260,43 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region MovePropertyValue
 
         [Test]
-        public void MovePropertyValue_from_root_to_child()
+        public void InMemoryService_MovePropertyValue_from_root_to_child()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            var id_root = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
-                .Returns(true);
-
-            var id_a = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.CreateColumn("q", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
-
-            // ACT
-
-            this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q");
-
-            // ASSERT
-
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_moves_property_value_from_root_to_child(7);
         }
 
         [Test]
-        public void MovePropertyValue_at_same_node()
+        public void InMemoryService_moves_values_between_properties_of_same_node()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            var id_root = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.CreateColumn("q", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
-
-            // ACT
-
-            this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.RootPath, "q");
-
-            // ASSERT
-
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_moves_values_between_properties_of_same_node(6);
         }
 
         [Test]
-        public void MovePropertyValue_from_child_to_root()
+        public void InMemoryService_moves_property_value_from_child_to_root()
         {
-            // ARRANGE
-
-            var id_root = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
-                .Returns(true);
-
-            var id_a = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.CreateColumn("q", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: 5);
-
             // ACT
 
-            this.treesorService.MovePropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p");
-
-            // ASSERT
-
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_moves_property_value_from_child_to_root(6);
         }
 
         [Test]
-        public void MovePropertyValue_fails_for_missing_destination_node()
+        public void InMemoryService_fails_on_MovePropertyValue_for_missing_destination_node()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            var id_root = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.CreateColumn("q", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
-
-            // ASSERT
-
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
         }
 
         [Test]
-        public void MovePropertyValue_fails_for_missing_destination_column()
+        public void InMemoryService_fails_on_MovePropertyValue_for_missing_destination_column()
         {
-            // ARRANGE
+            // ACT & ASSERT
 
-            var id_root = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create<string>(), out id_root))
-                .Returns(true);
-
-            var id_a = new Reference<Guid>(Guid.NewGuid());
-            this.hierarchyMock
-                .Setup(h => h.TryGetValue(HierarchyPath.Create("a"), out id_a))
-                .Returns(true);
-
-            this.treesorService.CreateColumn("p", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
-
-            // ACT
-
-            var result = Assert.Throws<InvalidOperationException>(() => this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
-
-            // ASSERT
-
-            Assert.AreEqual("Property 'q' doesn't exist", result.Message);
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-
-            this.hierarchyMock.VerifyAll();
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
         }
 
         [Test]
