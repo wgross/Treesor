@@ -46,25 +46,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void InMemoryService_fails_on_SetPropertyValue_with_wrong_type()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(id, "value");
+            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(Guid.NewGuid(), "value", 3);
         }
 
         [Test]
         public void InMemoryService_fails_on_SetPropertyValue_fon_missing_column()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(id);
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(Guid.NewGuid());
         }
 
         [Test]
@@ -134,25 +126,17 @@ namespace Treesor.PSDriveProvider.Test.Service
         [Test]
         public void InMemoryService_clears_property_value()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSSERT
 
-            base.TreesorService_clears_property_value(id);
+            base.TreesorService_clears_property_value(Guid.NewGuid(), 2);
         }
 
         [Test]
         public void InMemoryService_clears_second_property_value()
         {
-            // ARRANGE
-
-            var id = new Reference<Guid>(Guid.NewGuid());
-
             // ACT & ASSSERT
 
-            base.TreesorService_clears_second_property_value(id, 5, "value");
+            base.TreesorService_clears_second_property_value(Guid.NewGuid(), p_value: 5, q_value: "value");
         }
 
         [Test]
@@ -196,7 +180,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ARRANGE
 
-            base.TreesorService_copies_property_value_from_root_to_child("value");
+            base.TreesorService_copies_property_value_from_root_to_child(Guid.NewGuid(), Guid.NewGuid(), "value");
         }
 
         [Test]
@@ -204,7 +188,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_copies_property_value_within_same_node(5);
+            base.TreesorService_copies_property_value_within_same_node(Guid.NewGuid(), node_p_value: 5);
         }
 
         [Test]
@@ -212,7 +196,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_copies_property_value_from_child_to_root(6);
+            base.TreesorService_copies_property_value_from_child_to_root(Guid.NewGuid(), Guid.NewGuid(), 6);
         }
 
         [Test]
@@ -220,7 +204,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(7);
+            base.TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(Guid.NewGuid(), 7);
         }
 
         [Test]
@@ -228,7 +212,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(7);
+            base.TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(Guid.NewGuid(), Guid.NewGuid(), 7);
         }
 
         [Test]
@@ -252,7 +236,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_CopyPropertyValue_for_different_types(7);
+            base.TreesorService_fails_CopyPropertyValue_for_different_types(Guid.NewGuid(), Guid.NewGuid(), 7);
         }
 
         #endregion CopyPropertyValue
@@ -264,7 +248,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_moves_property_value_from_root_to_child(7);
+            base.TreesorService_moves_property_value_from_root_to_child(Guid.NewGuid(), Guid.NewGuid(), 7);
         }
 
         [Test]
@@ -272,7 +256,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_moves_values_between_properties_of_same_node(6);
+            base.TreesorService_moves_values_between_properties_of_same_node(Guid.NewGuid(), 6);
         }
 
         [Test]
@@ -280,7 +264,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            base.TreesorService_moves_property_value_from_child_to_root(6);
+            base.TreesorService_moves_property_value_from_child_to_root(Guid.NewGuid(), Guid.NewGuid(), 6);
         }
 
         [Test]
@@ -288,7 +272,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(Guid.NewGuid(), 6);
         }
 
         [Test]
@@ -296,7 +280,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_column();
         }
 
         [Test]

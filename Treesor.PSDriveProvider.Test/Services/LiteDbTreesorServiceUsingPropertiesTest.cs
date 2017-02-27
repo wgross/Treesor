@@ -124,11 +124,11 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ARRANGE
 
-            var id = new Reference<Guid>(Guid.NewGuid());
+            var nodeId = Guid.NewGuid();
 
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(id, "value");
+            base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(nodeId, value: "value", wrongValue: 6);
 
             // ASSERT
             // verify storage structure: single columns single value
@@ -138,12 +138,15 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .Single();
 
-            Assert.AreEqual((object)"value", this.database
+            Assert.AreEqual(typeof(string).ToString(), column.TypeName);
+
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .Single()
-                .Get(column.Id.ToString())
-                .RawValue);
+                .Single();
+
+            Assert.AreEqual(nodeId, bsonDocument.Get(_id).RawValue);
+            Assert.AreEqual("value", bsonDocument.Get(column.Id.ToString()).RawValue);
         }
 
         [Test]
@@ -151,14 +154,19 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ARRANGE
 
-            var id = new Reference<Guid>(Guid.NewGuid());
+            var nodeId = Guid.NewGuid();
 
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(id);
+            base.TreesorService_fails_on_SetPropertyValue_with_missing_column(nodeId);
 
             // ASSERT
             // no values have been created
+
+            Assert.IsFalse(this.database
+                .GetCollection(LiteDbTreesorService.column_collection)
+                .FindAll()
+                .Any());
 
             Assert.IsFalse(this.database
                .GetCollection(LiteDbTreesorService.value_collection)
@@ -232,6 +240,19 @@ namespace Treesor.PSDriveProvider.Test.Services
             // ACT & ASSERT
 
             base.TreesorService_fails_on_GetPropertyValue_for_missing_node();
+
+            // ASSERT
+            // no nodes have been created, one column exists
+
+            Assert.AreEqual(1, this.database
+               .GetCollection(LiteDbTreesorService.column_collection)
+               .FindAll()
+               .Count());
+
+            Assert.IsFalse(this.database
+               .GetCollection(LiteDbTreesorService.value_collection)
+               .FindAll()
+               .Any());
         }
 
         [Test]
@@ -251,11 +272,11 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ARRANGE
 
-            var id = new Reference<Guid>(Guid.NewGuid());
+            var nodeId = Guid.NewGuid();
 
             // ACT & ASSSERT
 
-            base.TreesorService_clears_property_value(id);
+            base.TreesorService_clears_property_value(nodeId, value: 3);
 
             // ASSERT
             // verify storage structure: single columns, no value
@@ -265,11 +286,13 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .Single();
 
-            Assert.IsFalse(this.database
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .Single()
-                .ContainsKey(column.Id.ToString()));
+                .Single();
+
+            Assert.AreEqual(nodeId, bsonDocument.Get(_id).RawValue);
+            Assert.IsFalse(bsonDocument.ContainsKey(column.Id.ToString()));
         }
 
         [Test]
@@ -277,11 +300,11 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ARRANGE
 
-            var id = new Reference<Guid>(Guid.NewGuid());
+            var id = Guid.NewGuid();
 
             // ACT & ASSSERT
 
-            base.TreesorService_clears_second_property_value(id, 5, "value");
+            base.TreesorService_clears_second_property_value(id, p_value: 5, q_value: "value");
 
             // ASSERT
             // verify storage structure: single columns, no value
@@ -290,18 +313,16 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
                 .FindAll().ToArray();
 
-            Assert.AreEqual(5, this.database
-                .GetCollection(LiteDbTreesorService.value_collection)
-                .FindAll()
-                .Single()
-                .Get(columns[0].Id.ToString())
-                .AsInt32);
+            Assert.AreEqual(2, columns.Count());
 
-            Assert.IsFalse(this.database
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .Single()
-                .ContainsKey(columns[1].Id.ToString()));
+                .Single();
+
+            Assert.AreEqual(id, bsonDocument.Get(_id).RawValue);
+            Assert.AreEqual(5, bsonDocument.Get(columns.Single(c => c.Name.Equals("p")).Id.ToString()).AsInt32);
+            Assert.IsFalse(bsonDocument.ContainsKey(columns.Single(c => c.Name.Equals("q")).Id.ToString()));
         }
 
         [Test]
@@ -343,17 +364,24 @@ namespace Treesor.PSDriveProvider.Test.Services
         [Test]
         public void LiteDbService_copies_property_value_from_root_to_child()
         {
+            // ARRANGE
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT & ARRANGE
 
-            base.TreesorService_copies_property_value_from_root_to_child("value");
+            base.TreesorService_copies_property_value_from_root_to_child(rootId, childId, root_p_value: "value");
 
             // ASSERT
-            // both items hav same value
+            // both items have same value
 
             var columns = this.database
                 .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
                 .FindAll()
                 .ToArray();
+
+            Assert.AreEqual(2, columns.Count());
 
             var items = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
@@ -361,78 +389,124 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .ToArray();
 
             Assert.AreEqual(2, items.Count());
-            Assert.AreEqual("value", items[0].Get(columns[0].Id.ToString()).RawValue);
-            Assert.AreEqual("value", items[1].Get(columns[1].Id.ToString()).RawValue);
+            Assert.AreEqual("value", items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .Get(columns.Single(c => c.Name.Equals("p")).Id.ToString())
+                .RawValue);
+            Assert.AreEqual("value", items
+                .Single(i => i.Get(_id).RawValue.Equals(childId))
+                .Get(columns.Single(c => c.Name.Equals("q")).Id.ToString())
+                .RawValue);
         }
 
         [Test]
         public void LiteDbService_copies_property_value_within_same_node()
         {
+            // ARRANGE
+
+            var nodeId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_copies_property_value_within_same_node(5);
+            base.TreesorService_copies_property_value_within_same_node(nodeId, node_p_value: 5);
 
             // ASSERT
 
             var columns = this.database
-               .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
-               .FindAll()
-               .ToArray();
+                .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
+                .FindAll()
+                .ToArray();
 
-            var item = this.database
+            Assert.AreEqual(2, columns.Count());
+
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
                 .Single();
 
-            Assert.AreEqual(5, item.Get(columns[0].Id.ToString()).RawValue);
-            Assert.AreEqual(5, item.Get(columns[1].Id.ToString()).RawValue);
+            Assert.AreEqual(nodeId, bsonDocument.Get(_id).RawValue);
+
+            Assert.AreEqual(5, bsonDocument
+                .Get(columns.Single(c => c.Name.Equals("p")).Id.ToString())
+                .RawValue);
+
+            Assert.AreEqual(5, bsonDocument
+                .Get(columns.Single(c => c.Name.Equals("q")).Id.ToString())
+                .RawValue);
         }
 
         [Test]
         public void LiteDbService_copies_property_value_from_child_to_root()
         {
+            // ARRANGE
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_copies_property_value_from_child_to_root(7);
+            base.TreesorService_copies_property_value_from_child_to_root(rootId, childId, child_q_value: 7);
 
             // ASSERT
 
             var columns = this.database
-               .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
-               .FindAll()
-               .ToArray();
+                .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
+                .FindAll()
+                .ToArray();
+
+            Assert.AreEqual(2, columns.Count());
 
             var items = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
                 .ToArray();
 
-            Assert.AreEqual(7, items[0].Get(columns[0].Id.ToString()).RawValue);
-            Assert.AreEqual(7, items[1].Get(columns[1].Id.ToString()).RawValue);
+            Assert.AreEqual(2, items.Count());
+
+            Assert.AreEqual(7, items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .Get(columns.Single(c => c.Name.Equals("p")).Id.ToString())
+                .RawValue);
+
+            Assert.AreEqual(7, items
+                .Single(i => i.Get(_id).RawValue.Equals(childId))
+                .Get(columns.Single(c => c.Name.Equals("q")).Id.ToString())
+                .RawValue);
         }
 
         [Test]
         public void LiteDbService_fails_on_CopyPropertyValue_at_missing_destination_node()
         {
+            // ARRANGE
+
+            var nodeId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(7);
+            base.TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(nodeId, p_value: 7);
 
             // ASSERT
             // an item wasn't created
 
-            Assert.AreEqual(1, this.database
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .Count());
+                .Single();
+
+            Assert.AreEqual(nodeId, bsonDocument.Get(_id).RawValue);
         }
 
         [Test]
         public void InMemoryService_fails_on_CopyPropertyValue_for_missing_destination_column()
         {
+            // ACT
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(7);
+            base.TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(rootId, childId, root_p_value: 7);
 
             // ASSERT
             // destination item wasn't created
@@ -442,10 +516,13 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .Count());
 
-            Assert.AreEqual(1, this.database
+            var bsonDocment = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .Count());
+                .Single();
+
+            Assert.AreEqual(rootId, bsonDocment.Get(_id).RawValue);
+            Assert.AreEqual(2, bsonDocment.Keys.Count());
         }
 
         [Test]
@@ -488,9 +565,14 @@ namespace Treesor.PSDriveProvider.Test.Services
         [Test]
         public void LiteDbService_CopyPropertyValue_fails_for_different_types()
         {
+            // ARRANGE
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_fails_CopyPropertyValue_for_different_types(7);
+            base.TreesorService_fails_CopyPropertyValue_for_different_types(rootId, childId, root_p_value: 7);
 
             // ASSERT
             // two columns, one items
@@ -500,12 +582,16 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .ToArray();
 
-            Assert.AreEqual(7, this.database
-              .GetCollection(LiteDbTreesorService.value_collection)
-              .FindAll()
-              .Single()
-              .Get(columns[0].Id.ToString())
-              .RawValue);
+            var bsonDocument = this.database
+                .GetCollection(LiteDbTreesorService.value_collection)
+                .FindAll()
+                .Single();
+
+            Assert.AreEqual(7, bsonDocument
+                .Get(columns.Single(c => c.Name.Equals("p")).Id.ToString())
+                .RawValue);
+
+            Assert.IsFalse(bsonDocument.ContainsKey(columns.Single(c => c.Name.Equals("q")).Id.ToString()));
         }
 
         #endregion CopyPropertyValue
@@ -515,9 +601,14 @@ namespace Treesor.PSDriveProvider.Test.Services
         [Test]
         public void LiteDbService_moves_property_value_from_root_to_child()
         {
+            // ARRANGE
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_moves_property_value_from_root_to_child(7);
+            base.TreesorService_moves_property_value_from_root_to_child(rootId, childId, root_p_value: 7);
 
             // ASSERT
             // second item has the value, first one hasn't no values any more
@@ -527,22 +618,38 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .ToArray();
 
+            Assert.AreEqual(2, columns.Count());
+
             var items = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
                 .ToArray();
 
-            Assert.IsFalse(items[0].ContainsKey(columns[0].Id.ToString()));
-            Assert.IsFalse(items[0].ContainsKey(columns[1].Id.ToString()));
-            Assert.AreEqual(7, items[1].Get(columns[1].Id.ToString()).RawValue);
+            Assert.AreEqual(2, items.Count());
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("p")).Id.ToString()));
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("q")).Id.ToString()));
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(childId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("p")).Id.ToString()));
+            Assert.AreEqual(7, items
+                .Single(i => i.Get(_id).Equals(childId))
+                .Get(columns.Single(c => c.Name.Equals("q")).Id.ToString()).RawValue);
         }
 
         [Test]
         public void LiteDbService_moves_values_between_properties_of_same_node()
         {
+            // ARRANGE
+
+            var nodeId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_moves_values_between_properties_of_same_node(6);
+            base.TreesorService_moves_values_between_properties_of_same_node(nodeId, p_value: 6);
 
             // ASSERT
             // value is no in second columns
@@ -552,21 +659,28 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .ToArray();
 
+            Assert.AreEqual(2, columns.Count());
+
             var item = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
                 .Single();
 
-            Assert.IsFalse(item.ContainsKey(columns[0].Id.ToString()));
-            Assert.AreEqual(6, item.Get(columns[1].Id.ToString()).RawValue);
+            Assert.IsFalse(item.ContainsKey(columns.Single(c => c.Name.Equals("p")).Id.ToString()));
+            Assert.AreEqual(6, item.Get(columns.Single(c => c.Name.Equals("q")).Id.ToString()).RawValue);
         }
 
         [Test]
         public void LiteDbService_moves_property_value_from_child_to_root()
         {
+            // ARRANGE
+
+            var rootId = Guid.NewGuid();
+            var childId = Guid.NewGuid();
+
             // ACT
 
-            base.TreesorService_moves_property_value_from_child_to_root(6);
+            base.TreesorService_moves_property_value_from_child_to_root(rootId, childId, child_q_value: 6);
 
             // ASSERT
             // value is in second column of first (root) item
@@ -576,37 +690,58 @@ namespace Treesor.PSDriveProvider.Test.Services
                 .FindAll()
                 .ToArray();
 
+            Assert.AreEqual(2, columns.Count());
+
             var items = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
                 .ToArray();
 
-            Assert.IsFalse(items[0].ContainsKey(columns[0].Id.ToString()));
-            Assert.IsFalse(items[0].ContainsKey(columns[1].Id.ToString()));
-            Assert.AreEqual(6, items[1].Get(columns[0].Id.ToString()).RawValue);
-            Assert.IsFalse(items[1].ContainsKey(columns[1].Id.ToString()));
+            Assert.AreEqual(6, items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .Get(columns.Single(c => c.Name.Equals("p")).Id.ToString()).RawValue);
+
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(rootId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("q")).Id.ToString()));
+
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(childId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("p")).Id.ToString()));
+
+            Assert.IsFalse(items
+                .Single(i => i.Get(_id).RawValue.Equals(childId))
+                .ContainsKey(columns.Single(c => c.Name.Equals("q")).Id.ToString()));
         }
 
         [Test]
         public void LiteDbService_fails_on_MovePropertyValue_for_missing_destination_node()
         {
+            // ARRANGE
+
+            var nodeId = Guid.NewGuid();
+
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(nodeId, p_value: 6);
 
             // ASSERT
             // value is still at source node
 
-            Assert.AreEqual(2, this.database
+            var columns = this.database
                .GetCollection<LiteDbTreesorService.ColumnEntity>(LiteDbTreesorService.column_collection)
                .FindAll()
-               .Count());
+               .ToArray();
 
-            Assert.AreEqual(1, this.database
+            Assert.AreEqual(2, columns.Count());
+
+            var bsonDocument = this.database
                 .GetCollection(LiteDbTreesorService.value_collection)
                 .FindAll()
-                .ToArray()
-                .Count());
+                .Single();
+
+            Assert.AreEqual(nodeId, bsonDocument.Get(_id).RawValue);
+            Assert.AreEqual(6, bsonDocument.Get(columns.Single(c => c.Name.Equals("p")).Id.ToString()).RawValue);
         }
 
         [Test]
@@ -614,7 +749,7 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ACT & ASSERT
 
-            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(6);
+            base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_column();
 
             // ASSERT
         }
