@@ -5,15 +5,13 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.PSDriveProvider.Test.Service.Base;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
     [TestFixture]
-    public class InMemoryTreesorServiceUsingHierarchyTest
+    public class InMemoryTreesorServiceUsingHierarchyTest : TreesorServiceUsingHierarchyTestBase
     {
-        private Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        private InMemoryTreesorService treesorService;
-
         [SetUp]
         public void ArrangeAllTests()
         {
@@ -24,9 +22,9 @@ namespace Treesor.PSDriveProvider.Test.Service
         #region NewItem > Add
 
         [Test]
-        public void NewItem_creates_hierarchy_node_under_root()
+        public void InMemoryService_creates_hierarchy_node_under_root()
         {
-            // ACT
+            // ACT & ASSERT
 
             this.treesorService.NewItem(TreesorNodePath.Create("item"), newItemValue: null);
 

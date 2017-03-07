@@ -4,6 +4,12 @@ namespace Treesor.PSDriveProvider
 {
     public partial class LiteDbTreesorService
     {
+        public static readonly string column_collection = nameof(column_collection);
+
+        public static readonly string value_collection = nameof(value_collection);
+
+        public static readonly string node_collection = nameof(value_collection);
+
         /// <summary>
         /// Represents a persistent copy of a <see cref="TreesorColumn"/> in a LiteDb database.
         /// </summary>

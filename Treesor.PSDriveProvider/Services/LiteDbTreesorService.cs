@@ -12,10 +12,6 @@ namespace Treesor.PSDriveProvider
     {
         private static readonly NLog.Logger log = LogManager.GetCurrentClassLogger();
 
-        public static readonly string column_collection = nameof(column_collection);
-
-        public static readonly string value_collection = nameof(value_collection);
-
         public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
 
         private static ITreesorService DefaultFactoryDelegate(string type)

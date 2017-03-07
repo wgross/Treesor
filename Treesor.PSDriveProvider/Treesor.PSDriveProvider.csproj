@@ -138,8 +138,12 @@
     <Compile Include="Commands\NewTreesorColumnCommand.cs" />
     <Compile Include="Commands\TreesorDriveNameArgumentCompleter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\LiteDbCollection.cs" />
+    <Compile Include="Services\LiteDbHierarchyVisitor.cs" />
+    <Compile Include="Services\LiteDbHierarchy.cs" />
     <Compile Include="Services\LiteDbTreesorService.cs" />
     <Compile Include="Services\LiteDbTreesorService.Entities.cs" />
+    <Compile Include="Services\LiteDbTreesorService.HiararchyWriter.cs" />
     <Compile Include="TreesorColumn.cs" />
     <Compile Include="TreesorDriveProvider.ContainerCmdletProvider.cs" />
     <Compile Include="TreesorDriveProvider.cs" />
