@@ -132,6 +132,8 @@
     <Compile Include="ITreesorModel.cs" />
     <Compile Include="Commands\NewTreesorColumnCommand.cs" />
     <Compile Include="Commands\TreesorDriveNameArgumentCompleter.cs" />
+    <Compile Include="Model\TreesorModelErrorCodes.cs" />
+    <Compile Include="Model\TreesorModelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LiteDbCollection.cs" />
     <Compile Include="Services\LiteDbHierarchyVisitor.cs" />
@@ -145,12 +147,12 @@
     <Compile Include="TreesorDriveInfo.cs" />
     <Compile Include="TreesorDriveProvider.ItemCmdletProvider.cs" />
     <Compile Include="TreesorDriveProvider.NavigationCmdletProvider.cs" />
-    <Compile Include="TreesorItem.cs" />
-    <Compile Include="TreesorNodePath.cs" />
+    <Compile Include="Model\TreesorItem.cs" />
+    <Compile Include="Model\TreesorNodePath.cs" />
     <Compile Include="TreesorProviderIntrinsics.cs" />
     <Compile Include="Services\InMemoryTreesorService.cs" />
     <Compile Include="TreesorDriveProvider.DynamicPropertyCmdletProvider.cs" />
-    <Compile Include="Reference.cs" />
+    <Compile Include="Model\Reference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

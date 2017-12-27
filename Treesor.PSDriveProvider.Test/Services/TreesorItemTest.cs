@@ -1,4 +1,5 @@
 ﻿using System;
+using Treesor.Model;
 using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service

@@ -1,5 +1,6 @@
 ﻿using Elementary.Hierarchy;
 using System.Linq;
+using Treesor.Model;
 using Treesor.PSDriveProvider;
 using Xunit;
 

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Treesor.Abstractions;
+using Treesor.Model;
 using Treesor.PSDriveProvider.Test.Service.Base;
 using Xunit;
 

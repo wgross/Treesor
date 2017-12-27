@@ -1,4 +1,5 @@
 ﻿using NLog.Fluent;
+using System;
 using System.Management.Automation;
 using Treesor.Model;
 
@@ -69,18 +70,28 @@ namespace Treesor.PSDriveProvider
             log.Trace()
                 .Message($"{nameof(NewItem)}({nameof(path)}='{path}',{nameof(itemTypeName)}='{itemTypeName}',{nameof(newItemValue)}='{newItemValue}')")
                 .Write();
+            try
+            {
+                //if (this.DynamicParameters != null && ((TreesorNewItemDynamicParameters)this.DynamicParameters).NullValue.IsPresent)
+                //    newItem = this.TreesorDriveInfo.NewItem(TreesorNodePath.Parse(path), itemTypeName, TreesorDriveInfo.NullValue, out isContainer);
+                //else
 
-            //if (this.DynamicParameters != null && ((TreesorNewItemDynamicParameters)this.DynamicParameters).NullValue.IsPresent)
-            //    newItem = this.TreesorDriveInfo.NewItem(TreesorNodePath.Parse(path), itemTypeName, TreesorDriveInfo.NullValue, out isContainer);
-            //else
+                var newItem = this.DriveInfo.Service.NewItem(TreesorNodePath.Parse(path), newItemValue);
 
-            var newItem = this.DriveInfo.Service.NewItem(TreesorNodePath.Parse(path), newItemValue);
+                log.Trace()
+                    .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode='{newItem?.GetHashCode()}',{nameof(path)}='{newItem.Path}',isContainer='{newItem.IsContainer}'")
+                    .Write();
 
-            log.Trace()
-                .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode='{newItem?.GetHashCode()}',{nameof(path)}='{newItem.Path}',isContainer='{newItem.IsContainer}'")
-                .Write();
-
-            this.WriteItemObject(newItem, path, newItem.IsContainer);
+                this.WriteItemObject(newItem, path, newItem.IsContainer);
+            }
+            catch (TreesorModelException ex) when (ex.ErrorCode == TreesorModelErrorCodes.DuplicateItem)
+            {
+                this.WriteError(new ErrorRecord(ex, "newitem.1", ErrorCategory.ResourceExists, path));
+            }
+            catch (TreesorModelException ex) when (ex.ErrorCode == TreesorModelErrorCodes.NotImplemented)
+            {
+                this.WriteError(new ErrorRecord(ex, "newitem.2", ErrorCategory.NotImplemented, path));
+            }
         }
 
         //protected override object NewItemDynamicParameters(string path, string itemTypeName, object newItemValue)
