@@ -1,4 +1,4 @@
-﻿namespace Treesor.PSDriveProvider
+﻿namespace Treesor.Model
 {
     public static class Reference
     {
@@ -8,7 +8,7 @@
         }
     }
 
-    public class Reference<T> where T : struct
+    public sealed class Reference<T> where T : struct
     {
         public Reference(T referencedValue)
         {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Treesor.PSDriveProvider
+namespace Treesor.Model
 {
     public class TreesorItem
     {
@@ -14,10 +14,18 @@ namespace Treesor.PSDriveProvider
 
         public Guid Id => this.IdRef.Value;
 
+        /// <summary>
+        /// a treesor item can always contain other items
+        /// </summary>
         public bool IsContainer => true;
 
         public TreesorNodePath Path { get; }
 
+        /// <summary>
+        /// Equality of an entity depends on the Id
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>true, if objects are the same or have same id</returns>
         public override bool Equals(object obj)
         {
             var objAsTreesorItem = obj as TreesorItem;

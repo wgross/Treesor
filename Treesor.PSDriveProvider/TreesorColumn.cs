@@ -1,5 +1,6 @@
 ﻿using Elementary.Properties.Sparse;
 using System;
+using Treesor.Model;
 
 namespace Treesor.PSDriveProvider
 {

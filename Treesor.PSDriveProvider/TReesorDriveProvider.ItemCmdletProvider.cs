@@ -1,6 +1,7 @@
 ﻿using NLog.Fluent;
 using System.Linq;
 using System.Management.Automation;
+using Treesor.Model;
 
 namespace Treesor.PSDriveProvider
 {

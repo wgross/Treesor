@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using Treesor.Abstractions;
+using Treesor.Model;
 using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service.Base

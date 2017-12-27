@@ -1,4 +1,6 @@
-﻿namespace Treesor.PSDriveProvider.Services
+﻿using Treesor.Model;
+
+namespace Treesor.PSDriveProvider.Services
 {
     public class TreesorNodeVisitor
     {

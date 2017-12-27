@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Treesor.Model;
 
 namespace Treesor.PSDriveProvider
 {

@@ -1,6 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using NLog.Fluent;
 using System.Linq;
+using Treesor.Model;
 
 namespace Treesor.PSDriveProvider
 {

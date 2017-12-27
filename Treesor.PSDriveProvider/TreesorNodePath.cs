@@ -1,4 +1,4 @@
-﻿namespace Treesor.PSDriveProvider
+﻿namespace Treesor.Model
 {
     using Elementary.Hierarchy;
     using System.Linq;
