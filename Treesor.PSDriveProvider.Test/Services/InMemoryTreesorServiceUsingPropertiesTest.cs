@@ -1,17 +1,15 @@
 ﻿using Elementary.Hierarchy;
 using Moq;
-using NUnit.Framework;
 using System;
 using Treesor.Abstractions;
 using Treesor.PSDriveProvider.Test.Service.Base;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
-    [TestFixture]
     public class InMemoryTreesorServiceUsingPropertiesTest : TreesorServiceUsingPropertiesTestBase
     {
-        [SetUp]
-        public void ArrangeAllTests()
+        public InMemoryTreesorServiceUsingPropertiesTest()
         {
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
             this.treesorService = new InMemoryTreesorService(this.hierarchyMock.Object);
@@ -19,7 +17,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region SetPropertyValue
 
-        [Test]
+        [Fact]
         public void InMemoryService_sets_property_value()
         {
             // ACT & ASSERT
@@ -27,7 +25,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_sets_property_value(nodeId: Guid.NewGuid(), value: "value");
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_adds_second_property_value()
         {
             // ACT & ASSERT
@@ -35,7 +33,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_adds_second_property_value(nodeId: Guid.NewGuid(), p_value: "value", q_value: 2);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_changes_property_value()
         {
             // ACT
@@ -43,7 +41,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_changes_property_value(Guid.NewGuid(), value: "value", newValue: "new value");
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_SetPropertyValue_with_wrong_type()
         {
             // ACT & ASSERT
@@ -51,7 +49,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_SetPropertyValue_with_wrong_type(Guid.NewGuid(), "value", 3);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_SetPropertyValue_fon_missing_column()
         {
             // ACT & ASSERT
@@ -59,7 +57,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_SetPropertyValue_with_missing_column(Guid.NewGuid());
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_SetPropertyValue_at_missing_node()
         {
             // ACT & ASSERT
@@ -67,7 +65,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_SetPropertyValue_at_missing_node();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_SetPropertyValue_on_missing_property_name()
         {
             // ACT & ASSERT
@@ -75,7 +73,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_SetPropertyValue_with_missing_property_name();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_SetPropertyValue_with_missing_node_path()
         {
             // ACT & ASSERT
@@ -87,7 +85,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_GetPropertyValue_at_missing_column()
         {
             // ACT & ASSERT
@@ -95,7 +93,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_GetPropertyValue_at_missing_column();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_GetPropertyValue_at_missing_node()
         {
             // ACT & ASSERT
@@ -103,7 +101,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_GetPropertyValue_for_missing_node();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_GetPropertyValue_with_missing_property_name()
         {
             // ACT & ASSERT
@@ -111,7 +109,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_GetPropertyValue_with_missing_property_name();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_GetPropertyValue_fails_with_missing_node_path()
         {
             // ACT & ASSERT
@@ -123,7 +121,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region ClearPropertyValue
 
-        [Test]
+        [Fact]
         public void InMemoryService_clears_property_value()
         {
             // ACT & ASSSERT
@@ -131,7 +129,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_clears_property_value(Guid.NewGuid(), 2);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_clears_second_property_value()
         {
             // ACT & ASSSERT
@@ -139,7 +137,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_clears_second_property_value(Guid.NewGuid(), p_value: 5, q_value: "value");
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_ClearPropertyValue_for_missing_column()
         {
             // ACT & ARRANGE
@@ -147,7 +145,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_ClearPropertyValue_for_missing_column();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_ClearPropertyValue_at_missing_node()
         {
             // ACT & ASSERT
@@ -155,7 +153,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_ClearPropertyValue_at_missing_node();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_ClearPropertyValue_fails_for_missing_column_name()
         {
             // ACT & ASSERT
@@ -163,7 +161,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_ClearPropertyValue_with_missing_column_name();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_ClearPropertyValue_with_missing_node_path()
         {
             // ACT & ASSERT
@@ -175,7 +173,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region CopyPropertyValue
 
-        [Test]
+        [Fact]
         public void InMemoryService_copies_property_value_from_root_to_child()
         {
             // ACT & ARRANGE
@@ -183,7 +181,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_copies_property_value_from_root_to_child(Guid.NewGuid(), Guid.NewGuid(), "value");
         }
 
-        [Test]
+        [Fact]
         public void TreesorService_copies_property_value_within_same_node()
         {
             // ACT & ASSERT
@@ -191,7 +189,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_copies_property_value_within_same_node(Guid.NewGuid(), node_p_value: 5);
         }
 
-        [Test]
+        [Fact]
         public void InMemomryService_copies_property_value_from_child_to_root()
         {
             // ACT & ASSERT
@@ -199,7 +197,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_copies_property_value_from_child_to_root(Guid.NewGuid(), Guid.NewGuid(), 6);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_CopyPropertyValue_at_missing_destination_node()
         {
             // ACT & ASSERT
@@ -207,7 +205,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_CopyPropertyValue_at_missing_destination_node(Guid.NewGuid(), 7);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_CopyPropertyValue_for_missing_destination_column()
         {
             // ACT & ASSERT
@@ -215,7 +213,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_CopyPropertyValue_for_missing_destination_column(Guid.NewGuid(), Guid.NewGuid(), 7);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_CopyPropertyValue_for_missing_source_node()
         {
             // ACT & ASSERT
@@ -223,7 +221,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_CopyPropertyValues_for_missing_source_node();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_CopyPropertyValue_fails_for_missing_source_column()
         {
             // ACT & ASSERT
@@ -231,7 +229,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_CopyPropertyValue_for_missing_source_column();
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_CopyPropertyValue_fails_for_different_types()
         {
             // ACT & ASSERT
@@ -243,7 +241,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region MovePropertyValue
 
-        [Test]
+        [Fact]
         public void InMemoryService_MovePropertyValue_from_root_to_child()
         {
             // ACT & ASSERT
@@ -251,7 +249,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_moves_property_value_from_root_to_child(Guid.NewGuid(), Guid.NewGuid(), 7);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_moves_values_between_properties_of_same_node()
         {
             // ACT & ASSERT
@@ -259,7 +257,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_moves_values_between_properties_of_same_node(Guid.NewGuid(), 6);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_moves_property_value_from_child_to_root()
         {
             // ACT
@@ -267,7 +265,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_moves_property_value_from_child_to_root(Guid.NewGuid(), Guid.NewGuid(), 6);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_MovePropertyValue_for_missing_destination_node()
         {
             // ACT & ASSERT
@@ -275,7 +273,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_node(Guid.NewGuid(), 6);
         }
 
-        [Test]
+        [Fact]
         public void InMemoryService_fails_on_MovePropertyValue_for_missing_destination_column()
         {
             // ACT & ASSERT
@@ -283,7 +281,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             base.TreesorService_fails_on_MovePropertyValue_for_missing_destination_column();
         }
 
-        [Test]
+        [Fact]
         public void MovePropertyValue_fails_for_missing_source_node()
         {
             // ARRANGE
@@ -303,13 +301,13 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void MovePropertyValue_fails_for_missing_source_column()
         {
             // ARRANGE
@@ -328,15 +326,15 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void MovePropertyValue_fails_for_different_types()
         {
             // ARRANGE
@@ -362,9 +360,9 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.AreEqual(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.IsNull(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
+            Assert.Equal(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             this.hierarchyMock.VerifyAll();
         }

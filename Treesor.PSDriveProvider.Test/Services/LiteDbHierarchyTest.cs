@@ -1,21 +1,19 @@
 ﻿using Elementary.Hierarchy;
 using LiteDB;
-using NUnit.Framework;
 using System;
 using System.IO;
 using Treesor.PSDriveProvider.Services;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Services
 {
-    [TestFixture]
     public class LiteDbHierarchyTest
     {
-        private LiteDatabase database;
-        private MemoryStream databaseStream;
-        private LiteDbHierarchy<string, Guid> hierarchy;
+        private readonly LiteDatabase database;
+        private readonly MemoryStream databaseStream;
+        private readonly LiteDbHierarchy<string, Guid> hierarchy;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public LiteDbHierarchyTest()
         {
             this.databaseStream = new MemoryStream();
             this.database = new LiteDatabase(this.databaseStream);
@@ -23,17 +21,17 @@ namespace Treesor.PSDriveProvider.Test.Services
             this.hierarchy = new LiteDbHierarchy<string, Guid>(this.database);
         }
 
-        [Test]
+        [Fact]
         public void IHierarchy_root_node_has_no_value()
         {
             // ACT & ASSERT
 
             Guid value;
-            Assert.IsFalse(this.hierarchy.TryGetValue(HierarchyPath.Create<string>(), out value));
-            Assert.IsFalse(this.hierarchy.Traverse(HierarchyPath.Create<string>()).HasValue);
+            Assert.False(this.hierarchy.TryGetValue(HierarchyPath.Create<string>(), out value));
+            Assert.False(this.hierarchy.Traverse(HierarchyPath.Create<string>()).HasValue);
         }
 
-        [Test]
+        [Fact]
         public void IHierarchy_Add_value_to_root_node()
         {
             // ARRANGE
@@ -49,8 +47,8 @@ namespace Treesor.PSDriveProvider.Test.Services
             Guid result;
 
             // new hierarchy contains all values
-            Assert.IsTrue(hierarchy.TryGetValue(HierarchyPath.Create<string>(), out result));
-            Assert.AreSame(result, value);
+            Assert.True(hierarchy.TryGetValue(HierarchyPath.Create<string>(), out result));
+            Assert.Equal(result, value);
         }
     }
 }

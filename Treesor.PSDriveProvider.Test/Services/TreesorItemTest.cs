@@ -1,12 +1,11 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
-    [TestFixture]
     public class TreesorItemTest
     {
-        [Test]
+        [Fact]
         public void TreesorItems_are_equal_if_ids_are_equal()
         {
             // ARRANGE
@@ -22,11 +21,11 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.IsTrue(result_a);
-            Assert.IsTrue(result_b);
+            Assert.True(result_a);
+            Assert.True(result_b);
         }
 
-        [Test]
+        [Fact]
         public void TreesorItems_hachcodes_are_equal_if_ids_are_equal()
         {
             // ARRANGE
@@ -42,8 +41,8 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual(id.Value.GetHashCode(), result_a);
-            Assert.AreEqual(id.Value.GetHashCode(), result_b);
+            Assert.Equal(id.Value.GetHashCode(), result_a);
+            Assert.Equal(id.Value.GetHashCode(), result_b);
         }
     }
 }

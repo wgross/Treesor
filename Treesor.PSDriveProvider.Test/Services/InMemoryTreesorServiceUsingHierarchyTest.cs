@@ -1,19 +1,17 @@
 ﻿using Elementary.Hierarchy;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Treesor.Abstractions;
 using Treesor.PSDriveProvider.Test.Service.Base;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service
 {
-    [TestFixture]
     public class InMemoryTreesorServiceUsingHierarchyTest : TreesorServiceUsingHierarchyTestBase
     {
-        [SetUp]
-        public void ArrangeAllTests()
+        public InMemoryTreesorServiceUsingHierarchyTest()
         {
             this.hierarchyMock = new Mock<IHierarchy<string, Reference<Guid>>>();
             this.treesorService = new InMemoryTreesorService(this.hierarchyMock.Object);
@@ -21,7 +19,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region NewItem > Add
 
-        [Test]
+        [Fact]
         public void InMemoryService_creates_hierarchy_node_under_root()
         {
             // ACT & ASSERT
@@ -33,7 +31,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Reference<Guid>>()), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void NewItem_doesnt_accept_value()
         {
             // ACT
@@ -42,10 +40,10 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.IsTrue(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
+            Assert.True(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
         }
 
-        [Test]
+        [Fact]
         public void NewItem_fails_if_item_exists_already()
         {
             // ARRANGE
@@ -67,7 +65,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region ItemExists > TryGetValue
 
-        [Test]
+        [Fact]
         public void ItemExists_tries_to_retrieve_existing_hierarchy_node()
         {
             // ARRANGE
@@ -83,11 +81,11 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.IsTrue(result);
+            Assert.True(result);
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("item"), out value), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void ItemExists_tries_to_retrieve_missing_hierarchy_node()
         {
             // ARRANGE
@@ -110,7 +108,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region GetItem > TryGetValue
 
-        [Test]
+        [Fact]
         public void GetItem_retrieves_existing_node()
         {
             // ARRANGE
@@ -128,14 +126,14 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ASSERT
 
             Assert.NotNull(result);
-            Assert.IsTrue(result.IsContainer);
-            Assert.AreEqual(TreesorNodePath.Create("item"), result.Path);
-            Assert.AreEqual(id.Value, result.Id);
+            Assert.True(result.IsContainer);
+            Assert.Equal(TreesorNodePath.Create("item"), result.Path);
+            Assert.Equal(id.Value, result.Id);
 
             this.hierarchyMock.Verify(s => s.TryGetValue(HierarchyPath.Create("item"), out id), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void GetItem_retrieves_missing_node_returns_null()
         {
             // ARRANGE
@@ -157,7 +155,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.Verify(s => s.TryGetValue(HierarchyPath.Create("item"), out id), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void GetItem_fails_on_missing_node_path()
         {
             // ACT
@@ -166,14 +164,14 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual("path", result.ParamName);
+            Assert.Equal("path", result.ParamName);
         }
 
         #endregion GetItem > TryGetValue
 
         #region SetItem: NotSupported
 
-        [Test]
+        [Fact]
         public void SetItem_throws_NotSupportedException()
         {
             // ACT
@@ -189,19 +187,19 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region ClearItem: Does nothing
 
-        [Test]
+        [Fact]
         public void ClearItem_does_nothing()
         {
             // ACT
 
-            Assert.DoesNotThrow(() => this.treesorService.ClearItem(TreesorNodePath.Create("item")));
+            this.treesorService.ClearItem(TreesorNodePath.Create("item"));
         }
 
         #endregion ClearItem: Does nothing
 
         #region RemoveItem > RemoveNode
 
-        [Test]
+        [Fact]
         public void RemoveItem_removes_existing_node_under_root()
         {
             // ACT
@@ -213,8 +211,8 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.Verify(h => h.RemoveNode(HierarchyPath.Create("item"), false), Times.Once());
         }
 
-        [Test]
-        public void RemoveItem_removes_existing_node_under_root_recursively()
+        [Fact]
+        public new void RemoveItem_removes_existing_node_under_root_recursively()
         {
             // ACT
 
@@ -229,7 +227,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region GetChildItems,GetDescendants > Traverse
 
-        [Test]
+        [Fact]
         public void GetChildItems_retrieves_nodes_child_nodes()
         {
             // ARRANGE
@@ -281,14 +279,14 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual(2, result.Count());
-            Assert.AreEqual(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
-            Assert.AreEqual(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
+            Assert.Equal(2, result.Count());
+            Assert.Equal(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
+            Assert.Equal(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void GetDescendants_retrieves_nodes_descendant_nodes()
         {
             // ARRANGE
@@ -340,11 +338,11 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.AreEqual(4, result.Count());
-            Assert.AreEqual(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
-            Assert.AreEqual(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
-            Assert.AreEqual(TreesorNodePath.Create("item", "b", "c"), result.ElementAt(2).Path);
-            Assert.AreEqual(TreesorNodePath.Create("item", "b", "d"), result.ElementAt(3).Path);
+            Assert.Equal(4, result.Count());
+            Assert.Equal(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
+            Assert.Equal(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
+            Assert.Equal(TreesorNodePath.Create("item", "b", "c"), result.ElementAt(2).Path);
+            Assert.Equal(TreesorNodePath.Create("item", "b", "d"), result.ElementAt(3).Path);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
         }
@@ -353,7 +351,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region RenameItem > TryGetValue,Remove,Add
 
-        [Test]
+        [Fact]
         public void RenameItem_creates_newItem_with_same_value_and_new_name()
         {
             // ARRAMGE
@@ -391,7 +389,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region CopyItem > TryGetValue,NewItem
 
-        [Test]
+        [Fact]
         public void CopyItem_creates_new_destination_item()
         {
             // ARRANGE
@@ -416,7 +414,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void CopyItem_creates_new_destination_item_recursivly()
         {
             // ARRANGE
@@ -469,7 +467,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void CopyItem_creates_new_item_under_existing_destination_item()
         {
             // ARRANGE
@@ -500,7 +498,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void CopyItem_doesnt_do_anything_if_all_possible_destinations_exist()
         {
             // ARRANGE
@@ -535,7 +533,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region MoveItem > TryGetValue,NewValue,Remove
 
-        [Test]
+        [Fact]
         public void MoveItem_create_new_destination_item()
         {
             // ARRANGE
@@ -574,7 +572,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.Verify(h => h.Remove(HierarchyPath.Create("item"), null), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void MoveItem_create_new_destination_item_recursively()
         {
             // ARRANGE
@@ -628,7 +626,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void MoveItem_creates_new_item_under_existing_destination_item()
         {
             // ARRANGE
@@ -665,7 +663,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void MoveItem_doesnt_do_anything_if_all_possible_destinations_exist()
         {
             // ARRANGE
@@ -702,7 +700,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
         #region HasChildItems > Traverse
 
-        [Test]
+        [Fact]
         public void HasChildItems_check_item_under_root_returns_false()
         {
             // ARRANGE
@@ -721,13 +719,13 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.IsFalse(result);
+            Assert.False(result);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void HasChildItems_check_item_under_root_returns_true()
         {
             // ARRANGE
@@ -746,13 +744,13 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ASSERT
 
-            Assert.IsTrue(result);
+            Assert.True(result);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
             this.hierarchyMock.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void HasChildItems_check_missing_item_throws_KeyNotFoundException()
         {
             // ARRANGE

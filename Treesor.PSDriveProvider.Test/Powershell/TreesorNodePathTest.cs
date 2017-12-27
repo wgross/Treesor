@@ -1,14 +1,13 @@
 ﻿using Elementary.Hierarchy;
-using NUnit.Framework;
 using System.Linq;
 using Treesor.PSDriveProvider;
+using Xunit;
 
 namespace Treesor.PowershellDriveProvider.Test
 {
-    [TestFixture]
     public class TreesorNodePathTest
     {
-        [Test]
+        [Fact]
         public void Create_TreesorNodePath_from_path_item_array()
         {
             // ACT
@@ -17,10 +16,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.AreEqual(HierarchyPath.Create("a", "b"), result.HierarchyPath);
+            Assert.Equal(HierarchyPath.Create("a", "b"), result.HierarchyPath);
         }
 
-        [Test]
+        [Fact]
         public void Create_TreesorNodePath_from_HierarchyPath()
         {
             // ARRANGE
@@ -33,11 +32,11 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.AreEqual(treeKey, result.HierarchyPath);
-            Assert.AreNotSame(treeKey, result.HierarchyPath);
+            Assert.Equal(treeKey, result.HierarchyPath);
+            Assert.NotSame(treeKey, result.HierarchyPath);
         }
 
-        [Test]
+        [Fact]
         public void Parse_HierarchyPath_from_string_with_slashes()
         {
             // ARRANGE
@@ -46,10 +45,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.AreEqual(HierarchyPath.Create("a", "b"), result.HierarchyPath);
+            Assert.Equal(HierarchyPath.Create("a", "b"), result.HierarchyPath);
         }
 
-        [Test]
+        [Fact]
         public void Parse_HierarchyPath_from_string_with_backslashes()
         {
             // ARRANGE
@@ -58,10 +57,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.AreEqual(HierarchyPath.Create("a", "b"), result.HierarchyPath);
+            Assert.Equal(HierarchyPath.Create("a", "b"), result.HierarchyPath);
         }
 
-        [Test]
+        [Fact]
         public void Parse_HierarchyPath_from_string_with_mixed_slashes_and_backslashes()
         {
             // ARRANGE
@@ -70,10 +69,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.AreEqual(HierarchyPath.Create("a", "b", "c"), result.HierarchyPath);
+            Assert.Equal(HierarchyPath.Create("a", "b", "c"), result.HierarchyPath);
         }
 
-        [Test]
+        [Fact]
         public void TreesorNodePathes_are_equal_if_HierarchyPaths_are_equal()
         {
             // ARRANGE
@@ -88,12 +87,12 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsTrue(result1);
-            Assert.IsTrue(result2);
-            Assert.AreEqual(left.GetHashCode(), right.GetHashCode());
+            Assert.True(result1);
+            Assert.True(result2);
+            Assert.Equal(left.GetHashCode(), right.GetHashCode());
         }
 
-        [Test]
+        [Fact]
         public void TreesorNodePathes_are_not_equal_if_HierarchyPaths_are_not_equal()
         {
             // ARRANGE
@@ -108,19 +107,19 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(result1);
-            Assert.IsFalse(result2);
-            Assert.AreNotEqual(left.GetHashCode(), right.GetHashCode());
+            Assert.False(result1);
+            Assert.False(result2);
+            Assert.NotEqual(left.GetHashCode(), right.GetHashCode());
         }
 
-        [Test]
+        [Fact]
         public void TreesotNodePath_empty_is_root_path()
         {
             // ASSERT
 
-            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Create());
-            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Create(""));
-            Assert.AreEqual(TreesorNodePath.RootPath, TreesorNodePath.Parse(@"\"));
+            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Create());
+            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Create(""));
+            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Parse(@"\"));
         }
     }
 }

@@ -1,19 +1,18 @@
 ﻿using Moq;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test
 {
-    public class TreesorDriveDynamicPropertyCmdletProviderTest
+    public class TreesorDriveDynamicPropertyCmdletProviderTest : IDisposable
     {
         private Mock<ITreesorService> treesorService;
         private PowerShell powershell;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public TreesorDriveDynamicPropertyCmdletProviderTest()
         {
             this.treesorService = new Mock<ITreesorService>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
@@ -32,8 +31,7 @@ namespace Treesor.PSDriveProvider.Test
                 .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
         }
 
-        [TearDown]
-        public void TearDownAllTests()
+        public void Dispose()
         {
             this.powershell.Stop();
             this.powershell.Dispose();
@@ -41,7 +39,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region New-ItemProperty - Not Supported
 
-        [Test]
+        [Fact]
         public void Powershell_fails_on_NewItemProperty()
         {
             // ACT
@@ -56,7 +54,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsTrue(this.powershell.HadErrors);
+            Assert.True(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.CreateColumn("p", It.IsAny<Type>()), Times.Never());
             this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", "value"), Times.Never());
@@ -66,7 +64,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Remove-ItemProperty - Not Supported
 
-        [Test]
+        [Fact]
         public void Powershell_fails_on_RemoveItemProperty()
         {
             // ACT
@@ -81,7 +79,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsTrue(this.powershell.HadErrors);
+            Assert.True(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Never());
         }
@@ -90,7 +88,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Rename-ItemProperty - NotSupported
 
-        [Test]
+        [Fact]
         public void Powershell_fails_on_RenameProperty()
         {
             // ACT
@@ -104,7 +102,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsTrue(this.powershell.HadErrors);
+            Assert.True(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Never());
         }
@@ -113,7 +111,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Set-ItemProperty > SetPropertyValue
 
-        [Test]
+        [Fact]
         public void Powershell_creates_property_at_root_node()
         {
             // ACT
@@ -128,12 +126,12 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.RootPath, "p", value), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_creates_property_at_inner_node()
         {
             // ACT
@@ -148,7 +146,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.SetPropertyValue(TreesorNodePath.Create("a"), "p", value), Times.Once());
         }
@@ -157,7 +155,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Get-ItemProperty > GetPropertyValue
 
-        [Test]
+        [Fact]
         public void Powershell_retrieves_root_property_value()
         {
             // ARRANGE
@@ -178,14 +176,14 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(5, (int)(result.Last().BaseObject));
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal(5, (int)(result.Last().BaseObject));
 
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.GetPropertyValue(TreesorNodePath.RootPath, "p"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_retrieves_inner_node_property_value()
         {
             // ARRANGE
@@ -206,8 +204,8 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(5, (int)(result.Last().BaseObject));
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal(5, (int)(result.Last().BaseObject));
 
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.GetPropertyValue(TreesorNodePath.Create("a"), "p"), Times.Once());
@@ -217,7 +215,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Clear-ItemProperty > ClearPropertyValue
 
-        [Test]
+        [Fact]
         public void Powershell_clears_root_property_value()
         {
             // ARRANGE
@@ -237,13 +235,13 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.RootPath, "p"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_clears_inner_node_property_value()
         {
             // ARRANGE
@@ -263,7 +261,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.ClearPropertyValue(TreesorNodePath.Create("a"), "p"), Times.Once());
@@ -273,7 +271,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Copy-ItemProperty > CopyPropertyValue
 
-        [Test]
+        [Fact]
         public void Powershell_copies_property_value_from_root_node()
         {
             // ACT
@@ -288,12 +286,12 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "p"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_copies_property_value_from_inner_node()
         {
             // ACT
@@ -308,7 +306,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.CopyPropertyValue(TreesorNodePath.Create("a"), "p", TreesorNodePath.RootPath, "p"), Times.Once());
         }
@@ -317,7 +315,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Move-ItemProperty > MovePropertyValue
 
-        [Test]
+        [Fact]
         public void Powershell_moves_property_value_from_root_node()
         {
             // ACT
@@ -332,12 +330,12 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "p"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_moves_property_value_from_inner_node()
         {
             // ACT
@@ -352,7 +350,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.MovePropertyValue(TreesorNodePath.Create("a"), "p", TreesorNodePath.RootPath, "p"), Times.Once());
         }

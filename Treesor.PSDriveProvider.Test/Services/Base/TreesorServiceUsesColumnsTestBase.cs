@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Services.Base
 {
@@ -16,10 +16,10 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual("p", result.Name);
-            Assert.AreEqual(typeof(string), result.Type);
-            Assert.AreEqual(result, treesorService.GetColumns().Single());
+            Assert.NotNull(result);
+            Assert.Equal("p", result.Name);
+            Assert.Equal(typeof(string), result.Type);
+            Assert.Equal(result, treesorService.GetColumns().Single());
         }
 
         public void CreateColumn_twice_is_accepted(ITreesorService treesorService)
@@ -34,11 +34,11 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.IsNotNull(result);
-            Assert.AreEqual(column, result);
-            Assert.AreEqual("p", result.Name);
-            Assert.AreSame(typeof(string), result.Type);
-            Assert.AreEqual(column, treesorService.GetColumns().Single());
+            Assert.NotNull(result);
+            Assert.Equal(column, result);
+            Assert.Equal("p", result.Name);
+            Assert.Same(typeof(string), result.Type);
+            Assert.Equal(column, treesorService.GetColumns().Single());
         }
 
         public void CreateColumns_twice_fails_with_different_type(ITreesorService treesorService)
@@ -53,7 +53,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Column: 'p' already defined with type: '{typeof(string)}'", result.Message);
+            Assert.Equal($"Column: 'p' already defined with type: '{typeof(string)}'", result.Message);
         }
 
         public void CreateColumn_fails_on_missing_name(ITreesorService treesorService)
@@ -64,7 +64,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.AreEqual("name", result.ParamName);
+            Assert.Equal("name", result.ParamName);
         }
 
         public void CreateColumn_fails_on_missing_type(ITreesorService treesorService)
@@ -75,7 +75,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.AreEqual("type", result.ParamName);
+            Assert.Equal("type", result.ParamName);
         }
 
         #endregion CreateColumn
@@ -90,7 +90,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
         public void RemoveColumn_succeeds(ITreesorService treesorService)
@@ -105,8 +105,8 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.IsTrue(result);
-            Assert.IsFalse(treesorService.GetColumns().Any());
+            Assert.True(result);
+            Assert.False(treesorService.GetColumns().Any());
         }
 
         public void RemoveColumns_fails_on_null_columnName(ITreesorService treesorService)
@@ -115,7 +115,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             var result = Assert.Throws<ArgumentNullException>(() => treesorService.RemoveColumn(null));
 
-            Assert.AreEqual("columnName", result.ParamName);
+            Assert.Equal("columnName", result.ParamName);
         }
 
         public void RemoveColumns_fails_on_empty_columnName(ITreesorService treesorService)
@@ -124,7 +124,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             var result = Assert.Throws<ArgumentNullException>(() => treesorService.RemoveColumn(""));
 
-            Assert.AreEqual("columnName", result.ParamName);
+            Assert.Equal("columnName", result.ParamName);
         }
 
         #endregion RemoveColumn
@@ -139,7 +139,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
         }
 
         public void RenameColumn_changes_the_column_name(ITreesorService treesorService)
@@ -150,11 +150,11 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ACT
 
-            Assert.DoesNotThrow(() => treesorService.RenameColumn("p", "q"));
+            treesorService.RenameColumn("p", "q");
 
             // ASSERT
 
-            Assert.AreEqual("q", treesorService.GetColumns().Single().Name);
+            Assert.Equal("q", treesorService.GetColumns().Single().Name);
         }
 
         public void RenameColumn_fails_is_column_name_is_used_already(ITreesorService treesorService)
@@ -170,7 +170,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
             // ASSERT
 
-            Assert.AreEqual("An item with the same key has already been added.", result.Message);
+            Assert.Equal("An item with the same key has already been added.", result.Message);
         }
 
         #endregion RenameColumn

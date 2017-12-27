@@ -1,21 +1,20 @@
 ﻿using Elementary.Hierarchy;
 using LiteDB;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.IO;
 using Treesor.Abstractions;
 using Treesor.PSDriveProvider.Test.Service.Base;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Services
 {
     public class LiteDbTreesorServiceUsingHierarchyTest : TreesorServiceUsingHierarchyTestBase
     {
-        private LiteDatabase database;
-        private MemoryStream databaseStream;
+        private readonly LiteDatabase database;
+        private readonly MemoryStream databaseStream;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public LiteDbTreesorServiceUsingHierarchyTest()
         {
             this.databaseStream = new MemoryStream();
             this.database = new LiteDatabase(this.databaseStream);
@@ -27,7 +26,7 @@ namespace Treesor.PSDriveProvider.Test.Services
 
         #region NewItem > Add
 
-        [Test]
+        [Fact]
         public void LiteDbService_creates_hierarchy_node_under_root()
         {
             // ACT
@@ -39,7 +38,7 @@ namespace Treesor.PSDriveProvider.Test.Services
             this.hierarchyMock.Verify(h => h.Add(HierarchyPath.Create("item"), It.IsAny<Reference<Guid>>()), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void LiteDbService_NewItem_doesnt_accept_value()
         {
             // ACT
@@ -48,10 +47,10 @@ namespace Treesor.PSDriveProvider.Test.Services
 
             // ASSERT
 
-            Assert.IsTrue(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
+            Assert.True(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
         }
 
-        [Test]
+        [Fact]
         public void NewItem_fails_if_item_exists_already()
         {
             // ARRANGE

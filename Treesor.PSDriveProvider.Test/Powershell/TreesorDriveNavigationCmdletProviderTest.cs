@@ -1,19 +1,18 @@
 ﻿using Moq;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test
 {
-    public class TreesorDriveNavigationCmdletProviderTest
+    public class TreesorDriveNavigationCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
         private Mock<ITreesorService> treesorService;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public TreesorDriveNavigationCmdletProviderTest()
         {
             this.treesorService = new Mock<ITreesorService>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
@@ -32,8 +31,8 @@ namespace Treesor.PSDriveProvider.Test
                 .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
         }
 
-        [TearDown]
-        public void TearDownAllTests()
+        
+        public void Dispose()
         {
             this.powershell.Stop();
             this.powershell.Dispose();
@@ -41,7 +40,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Set-Location
 
-        [Test]
+        [Fact]
         public void Powershell_sets_location_to_root_container()
         {
             // ARRANGE
@@ -61,14 +60,14 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Never());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
             this.treesorService.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void Powershell_gets_location_from_root_container()
         {
             // ARRANGE
@@ -92,14 +91,14 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.IsInstanceOf<PathInfo>(result.Last().BaseObject);
-            Assert.AreEqual(TreesorNodePath.Create(@"treesor:\"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
+            Assert.False(this.powershell.HadErrors);
+            Assert.IsType<PathInfo>(result.Last().BaseObject);
+            Assert.Equal(TreesorNodePath.Create(@"treesor:\"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
 
             this.treesorService.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void Powershell_set_location_to_container_under_root()
         {
             // ARRANGE
@@ -119,14 +118,14 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
             this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorService.VerifyAll();
         }
 
-        [Test]
+        [Fact]
         public void Powershell_gets_location_from_container_under_root()
         {
             // ARRANGE
@@ -150,9 +149,9 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.IsInstanceOf<PathInfo>(result.Last().BaseObject);
-            Assert.AreEqual(TreesorNodePath.Create(@"treesor:\item"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
+            Assert.False(this.powershell.HadErrors);
+            Assert.IsType<PathInfo>(result.Last().BaseObject);
+            Assert.Equal(TreesorNodePath.Create(@"treesor:\item"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
 
             this.treesorService.VerifyAll();
         }
@@ -161,7 +160,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Move-Item > MoveItem
 
-        [Test]
+        [Fact]
         public void Powershell_moves_child_of_root_under_other_child()
         {
             // ARRANGE
@@ -180,7 +179,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.MoveItem(TreesorNodePath.Create("item1"), TreesorNodePath.Create("item2")), Times.Once());
             this.treesorService.VerifyAll();

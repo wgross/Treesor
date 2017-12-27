@@ -1,19 +1,18 @@
 ﻿using Moq;
-using NUnit.Framework;
+using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using Treesor.PSDriveProvider;
+using Xunit;
 
 namespace Treesor.PowershellDriveProvider.Test
 {
-    [TestFixture]
-    public class TreesorDriveCmdletProviderTest
+    public class TreesorDriveCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public TreesorDriveCmdletProviderTest()
         {
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
             var result = this.powershell
@@ -22,14 +21,13 @@ namespace Treesor.PowershellDriveProvider.Test
                 .Invoke();
         }
 
-        [TearDown]
-        public void TearDownAllTests()
+        public void Dispose()
         {
             this.powershell.Stop();
             this.powershell.Dispose();
         }
 
-        [Test]
+        [Fact]
         public void Powershell_returns_list_or_processes()
         {
             // ACT
@@ -38,11 +36,11 @@ namespace Treesor.PowershellDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsNotNull(result);
-            Assert.That(result.Count > 0);
+            Assert.NotNull(result);
+            Assert.True(result.Count > 0);
         }
 
-        //[Test]
+        //[Fact]
         //public void Powershell_loads_Treesor_DrivePowershell_automatically()
         //{
         //    // ACT
@@ -53,10 +51,10 @@ namespace Treesor.PowershellDriveProvider.Test
 
         //    var result = this.powershell.AddStatement().AddCommand("Get-PSDrive").Invoke();
 
-        //    Assert.IsNotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
+        //    Assert.NotNull(result.Select(o => o.BaseObject as PSDriveInfo).SingleOrDefault(ps => ps.Name == "treesor"));
         //}
 
-        [Test]
+        [Fact]
         public void Powershell_creates_new_instance_of_treesor_service()
         {
             // ARRANGE
@@ -86,11 +84,11 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
             // url must be shown to the factory
 
-            Assert.AreEqual(@"\", givenUri);
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.Equal(@"\", givenUri);
+            Assert.False(this.powershell.HadErrors);
         }
 
-        [Test]
+        [Fact]
         public void Powershell_notifies_service_about_drive_removal()
         {
             // ARRANGE
@@ -119,11 +117,11 @@ namespace Treesor.PowershellDriveProvider.Test
             // ASSERT
             // drive is no longer there and service was called.
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
             treesorService.Verify(s => s.Dispose(), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_returns_drive_info()
         {
             // ARRANGE
@@ -153,8 +151,8 @@ namespace Treesor.PowershellDriveProvider.Test
 
             var result = this.powershell.Invoke();
 
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<TreesorDriveInfo>(result.Last().BaseObject);
+            Assert.NotNull(result);
+            Assert.IsType<TreesorDriveInfo>(result.Last().BaseObject);
         }
     }
 }

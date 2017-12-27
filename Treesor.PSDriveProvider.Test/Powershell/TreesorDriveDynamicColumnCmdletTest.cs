@@ -1,19 +1,18 @@
 ﻿using Moq;
-using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test
 {
-    public class TreesorDriveDynamicColumnCmdletProviderTest
+    public class TreesorDriveDynamicColumnCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
         private Mock<ITreesorService> treesorService;
 
-        [SetUp]
-        public void ArrangeAllTests()
+        public TreesorDriveDynamicColumnCmdletProviderTest()
         {
             this.treesorService = new Mock<ITreesorService>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
@@ -38,8 +37,7 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Commands.Clear();
         }
 
-        [TearDown]
-        public void TearDownAllTests()
+        public void Dispose()
         {
             this.powershell.Stop();
             this.powershell.Dispose();
@@ -47,7 +45,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region New-TreesorColumn > CreateColumn
 
-        [Test]
+        [Fact]
         public void Powershell_adds_new_column_with_type_name_to_named_drive()
         {
             // ARRANGE
@@ -55,7 +53,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorService
                 .Setup(s => s.CreateColumn("p", typeof(string)))
                 .Returns(new TreesorColumn("p", typeof(string)));
-            
+
             // ACT
 
             this.powershell
@@ -70,14 +68,14 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // provider write new column on output pipe
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
-            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_adds_new_column_with_type_name_to_current_drive()
         {
             // ARRANGE
@@ -104,14 +102,14 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // provider write new item on output pipe
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
-            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_adds_new_column_with_type_to_named_drive()
         {
             // ARRANGE
@@ -134,9 +132,9 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // provider write new item on output pipe
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
-            Assert.AreEqual(typeof(int), ((TreesorColumn)result.Single().BaseObject).Type);
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.Equal(typeof(int), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.CreateColumn("p", typeof(int)), Times.Once());
         }
@@ -145,7 +143,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Remove-TreesorColumn > RemoveColumn
 
-        [Test]
+        [Fact]
         public void Powershell_removes_existing_column_from_named_drive()
         {
             // ACT
@@ -160,12 +158,12 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_removes_existing_column_from_current_drive()
         {
             // ARRANGE
@@ -189,7 +187,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
         }
@@ -198,7 +196,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Rename-TreesorColumn > RenameColumn
 
-        [Test]
+        [Fact]
         public void Powershell_renames_existing_column_at_named_drive()
         {
             // ACT
@@ -214,12 +212,12 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_renames_existing_column_at_current_drive()
         {
             // ARRANGE
@@ -244,7 +242,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
+            Assert.False(this.powershell.HadErrors);
 
             this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
         }
@@ -253,7 +251,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Get-TreesorColumn > GetColumn
 
-        [Test]
+        [Fact]
         public void Powershell_retrieves_empty_column_set_from_named_drive()
         {
             // ARRANGE
@@ -271,13 +269,13 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(0, result.Count());
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal(0, result.Count());
 
             this.treesorService.Verify(s => s.GetColumns(), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_retrieves_column_set_from_named_drive()
         {
             // ARRANGE
@@ -295,15 +293,15 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
-            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal(1, result.Count());
+            Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.GetColumns(), Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void Powershell_retrieves_column_set_from_current_drive()
         {
             // ARRANGE
@@ -331,10 +329,10 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.IsFalse(this.powershell.HadErrors);
-            Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("p", ((TreesorColumn)result.Single().BaseObject).Name);
-            Assert.AreEqual(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
+            Assert.False(this.powershell.HadErrors);
+            Assert.Equal(1, result.Count());
+            Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
+            Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
             this.treesorService.Verify(s => s.GetColumns(), Times.Once());
         }

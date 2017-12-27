@@ -1,8 +1,8 @@
 ﻿using Elementary.Hierarchy;
 using Moq;
-using NUnit.Framework;
 using System;
 using Treesor.Abstractions;
+using Xunit;
 
 namespace Treesor.PSDriveProvider.Test.Service.Base
 {
@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column.Name));
+            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column.Name));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -57,8 +57,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(p_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column1.Name));
-            Assert.AreEqual(q_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column2.Name));
+            Assert.Equal(p_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column1.Name));
+            Assert.Equal(q_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column2.Name));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -82,7 +82,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(newValue, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Equal(newValue, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -106,8 +106,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-            Assert.AreEqual($"Couldn't assign value '{wrongValue}'(type='System.Int32') to property 'p' at node '{id.Value}': value.GetType() must be 'System.String'", result.Message);
+            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Equal($"Couldn't assign value '{wrongValue}'(type='System.Int32') to property 'p' at node '{id.Value}': value.GetType() must be 'System.String'", result.Message);
 
             hierarchyMock.VerifyAll();
         }
@@ -128,7 +128,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Property 'p' doesn't exist", result.Message);
+            Assert.Equal($"Property 'p' doesn't exist", result.Message);
 
             hierarchyMock.VerifyAll();
         }
@@ -150,7 +150,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Node 'a' doesn't exist", result.Message);
+            Assert.Equal($"Node 'a' doesn't exist", result.Message);
 
             hierarchyMock.VerifyAll();
         }
@@ -163,7 +163,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("name", result.ParamName);
+            Assert.Equal("name", result.ParamName);
         }
 
         public void TreesorService_fails_on_SetPropertyValue_with_missing_node_path()
@@ -174,7 +174,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("path", result.ParamName);
+            Assert.Equal("path", result.ParamName);
         }
 
         #endregion SetPropertyValue
@@ -189,7 +189,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
 
             var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("a"), out id), Times.Never());
@@ -212,7 +212,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
 
             hierarchyMock.VerifyAll();
         }
@@ -225,7 +225,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("name", result.ParamName);
+            Assert.Equal("name", result.ParamName);
         }
 
         public void TreesorService_fails_on_GetPropertyValue_with_missing_node_path()
@@ -236,7 +236,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("path", result.ParamName);
+            Assert.Equal("path", result.ParamName);
         }
 
         #endregion GetPropertyValue: only error cases. Get value was used during set tests sufficiantly
@@ -262,7 +262,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -288,8 +288,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(p_value, treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(p_value, treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -309,7 +309,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
         }
 
         public void TreesorService_fails_on_ClearPropertyValue_at_missing_node()
@@ -329,7 +329,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
 
             hierarchyMock.VerifyAll();
         }
@@ -342,7 +342,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("name", result.ParamName);
+            Assert.Equal("name", result.ParamName);
         }
 
         public void TreesorService_fails_on_ClearPropertyValue_with_missing_node_path()
@@ -353,7 +353,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("path", result.ParamName);
+            Assert.Equal("path", result.ParamName);
         }
 
         #endregion ClearPropertyValue
@@ -384,8 +384,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -410,8 +410,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
+            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -440,8 +440,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -465,8 +465,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.AreEqual(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -494,8 +494,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'q' doesn't exist", result.Message);
-            Assert.AreEqual(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Property 'q' doesn't exist", result.Message);
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -519,8 +519,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -543,8 +543,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
@@ -576,9 +576,9 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '{root_p_value}'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.AreEqual(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal($"Couldn't assign value '{root_p_value}'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -611,8 +611,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -636,8 +636,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.AreEqual(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -666,8 +666,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -691,8 +691,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.AreEqual(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -720,8 +720,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'q' doesn't exist", result.Message);
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Property 'q' doesn't exist", result.Message);
+            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -745,8 +745,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Node 'a' doesn't exist", result.Message);
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal("Node 'a' doesn't exist", result.Message);
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -769,8 +769,8 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual("Property 'p' doesn't exist", result.Message);
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal("Property 'p' doesn't exist", result.Message);
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
@@ -802,9 +802,9 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ASSERT
 
-            Assert.AreEqual($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.AreEqual(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.IsNull(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
+            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
