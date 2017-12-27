@@ -1,10 +1,10 @@
 ﻿using Elementary.Hierarchy;
-using Elementary.Hierarchy.Collections;
 using Elementary.Hierarchy.Generic;
 using LiteDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.Abstractions;
 
 namespace Treesor.PSDriveProvider.Services
 {
@@ -151,29 +151,30 @@ namespace Treesor.PSDriveProvider.Services
             return root;
         }
 
-        private object GetOrCreateNode(HierarchyPath<TKey> hierarchyPath)
+        private Node GetOrCreateNode(HierarchyPath<TKey> hierarchyPath)
         {
-            var visitor = new Node(this.nodes, this.GetOrCreateRootNode());
-            var currentPosition = HierarchyPath.Create<TKey>();
+            return null;
+        //    var visitor = new Node(this.nodes, this.GetOrCreateRootNode());
+        //    var currentPosition = HierarchyPath.Create<TKey>();
 
-            return visitor.DescendantAt(delegate (Node current, TKey key, out Node child)
-            {
-                currentPosition = currentPosition.Join(key);
+        //    return visitor.DescendantAt<string, IHierarchyNode<string, Reference<Guid>>>(delegate (IHierarchyNode<string, Reference<Guid>> current, TKey key, out IHierarchyNode<string, Reference<Guid>> child)
+        //    {
+        //        currentPosition = currentPosition.Join(key);
 
-                // if the chiiled ic not found, just create a new one on-the-fly
-                if (!current.TryGetChildNode(key, out child))
-                {
-                    if (currentPosition.Items.Count() < hierarchyPath.Items.Count() && this.getDefaultValue != null)
-                    {
-                        current.AddChildNode(child = new Node(key, this.getDefaultValue(currentPosition)));
-                    }
-                    else
-                    {
-                        current.AddChildNode(child = new Node(key));
-                    }
-                }
-                return true;
-            }, hierarchyPath);
+        //        // if the child isn't found, just create a new one on-the-fly
+        //        if (!current.TryGetChildNode(key, out child))
+        //        {
+        //            if (currentPosition.Items.Count() < hierarchyPath.Items.Count() && this.getDefaultValue != null)
+        //            {
+        //                current.AddChildNode(child = new Node(key, this.getDefaultValue(currentPosition)));
+        //            }
+        //            else
+        //            {
+        //                current.AddChildNode(child = new Node(key));
+        //            }
+        //        }
+        //        return true;
+        //    }, hierarchyPath);
         }
 
         #endregion LiteDb access implementations

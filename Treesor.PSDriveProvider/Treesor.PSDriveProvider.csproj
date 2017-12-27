@@ -34,13 +34,8 @@
       <HintPath>..\packages\Elementary.Hierarchy.1.7.1\lib\net461\Elementary.Hierarchy.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Elementary.Hierarchy.Collections, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elementary.Hierarchy.Collections.0.2.1\lib\net461\Elementary.Hierarchy.Collections.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Elementary.Properties, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Elementary.Properties.1.2.0\lib\net461\Elementary.Properties.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="LiteDB, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.3.0.0\lib\net35\LiteDB.dll</HintPath>
@@ -173,6 +168,12 @@
       <SubType>Component</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Treesor.Abstractions\Treesor.Abstractions.csproj">
+      <Project>{7527bd7e-9335-48f0-81ff-00c842c48a0f}</Project>
+      <Name>Treesor.Abstractions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

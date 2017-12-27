@@ -1,10 +1,10 @@
 ﻿using Elementary.Hierarchy;
-using Elementary.Hierarchy.Collections;
 using LiteDB;
 using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.Abstractions;
 
 namespace Treesor.PSDriveProvider
 {
@@ -16,7 +16,7 @@ namespace Treesor.PSDriveProvider
 
         private static ITreesorService DefaultFactoryDelegate(string type)
         {
-            var hierarchy = new MutableHierarchy<string, Reference<Guid>>();
+            IHierarchy<string,Reference<Guid>> hierarchy = null;// new MutableHierarchy<string, Reference<Guid>>();
             Reference<Guid> id;
             if (!hierarchy.TryGetValue(HierarchyPath.Create<string>(), out id))
                 hierarchy.Add(HierarchyPath.Create<string>(), new Reference<Guid>(Guid.NewGuid()));

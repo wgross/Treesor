@@ -1,9 +1,9 @@
 ﻿using Elementary.Hierarchy;
-using Elementary.Hierarchy.Collections;
 using LiteDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Treesor.Abstractions;
 
 namespace Treesor.PSDriveProvider.Services
 {
@@ -32,8 +32,7 @@ namespace Treesor.PSDriveProvider.Services
 
         #region IHasChildNodes Members
 
-        public IEnumerable<IHierarchyNode<TKey, TValue>> ChildNodes
-            => Wrap(this.nodes.Find(Query.EQ("parent", this.currentNode.Get("_id"))));
+        public IEnumerable<IHierarchyNode<TKey, TValue>> ChildNodes => Wrap(this.nodes.Find(Query.EQ("parent", this.currentNode.Get("_id"))));
 
         public bool HasChildNodes => this.nodes.Exists(Query.EQ("parent", this.currentNode.Get("_id")));
 
