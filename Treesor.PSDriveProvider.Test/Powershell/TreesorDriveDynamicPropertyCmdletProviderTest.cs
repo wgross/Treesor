@@ -9,12 +9,12 @@ namespace Treesor.PSDriveProvider.Test
 {
     public class TreesorDriveDynamicPropertyCmdletProviderTest : IDisposable
     {
-        private Mock<ITreesorService> treesorService;
+        private Mock<ITreesorModel> treesorService;
         private PowerShell powershell;
 
         public TreesorDriveDynamicPropertyCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorService>();
+            this.treesorService = new Mock<ITreesorModel>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);

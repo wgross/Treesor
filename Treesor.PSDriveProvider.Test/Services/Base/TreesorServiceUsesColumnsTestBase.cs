@@ -8,7 +8,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
     {
         #region CreateColumn
 
-        public void CreateColumn_type_string(ITreesorService treesorService)
+        public void CreateColumn_type_string(ITreesorModel treesorService)
         {
             // ACT
 
@@ -22,7 +22,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal(result, treesorService.GetColumns().Single());
         }
 
-        public void CreateColumn_twice_is_accepted(ITreesorService treesorService)
+        public void CreateColumn_twice_is_accepted(ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -41,7 +41,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal(column, treesorService.GetColumns().Single());
         }
 
-        public void CreateColumns_twice_fails_with_different_type(ITreesorService treesorService)
+        public void CreateColumns_twice_fails_with_different_type(ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -56,7 +56,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal($"Column: 'p' already defined with type: '{typeof(string)}'", result.Message);
         }
 
-        public void CreateColumn_fails_on_missing_name(ITreesorService treesorService)
+        public void CreateColumn_fails_on_missing_name(ITreesorModel treesorService)
         {
             // ACT
 
@@ -67,7 +67,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal("name", result.ParamName);
         }
 
-        public void CreateColumn_fails_on_missing_type(ITreesorService treesorService)
+        public void CreateColumn_fails_on_missing_type(ITreesorModel treesorService)
         {
             // ACT
 
@@ -82,7 +82,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
         #region RemoveColumn
 
-        public void RemoveColumn_unexisting_column_does_nothing(ITreesorService treesorService)
+        public void RemoveColumn_unexisting_column_does_nothing(ITreesorModel treesorService)
         {
             // ACT
 
@@ -93,7 +93,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.False(result);
         }
 
-        public void RemoveColumn_succeeds(ITreesorService treesorService)
+        public void RemoveColumn_succeeds(ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -109,7 +109,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.False(treesorService.GetColumns().Any());
         }
 
-        public void RemoveColumns_fails_on_null_columnName(ITreesorService treesorService)
+        public void RemoveColumns_fails_on_null_columnName(ITreesorModel treesorService)
         {
             // ACT & ASSERT
 
@@ -118,7 +118,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal("columnName", result.ParamName);
         }
 
-        public void RemoveColumns_fails_on_empty_columnName(ITreesorService treesorService)
+        public void RemoveColumns_fails_on_empty_columnName(ITreesorModel treesorService)
         {
             // ACT & ASSERT
 
@@ -131,7 +131,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
 
         #region RenameColumn
 
-        public void RenameColumn_throws_for_missing_column(ITreesorService treesorService)
+        public void RenameColumn_throws_for_missing_column(ITreesorModel treesorService)
         {
             // ACT
 
@@ -142,7 +142,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal("Property 'p' doesn't exist", result.Message);
         }
 
-        public void RenameColumn_changes_the_column_name(ITreesorService treesorService)
+        public void RenameColumn_changes_the_column_name(ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -157,7 +157,7 @@ namespace Treesor.PSDriveProvider.Test.Services.Base
             Assert.Equal("q", treesorService.GetColumns().Single().Name);
         }
 
-        public void RenameColumn_fails_is_column_name_is_used_already(ITreesorService treesorService)
+        public void RenameColumn_fails_is_column_name_is_used_already(ITreesorModel treesorService)
         {
             // ARRANGE
 

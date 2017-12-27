@@ -8,13 +8,13 @@ using Treesor.Abstractions;
 
 namespace Treesor.PSDriveProvider
 {
-    public partial class LiteDbTreesorService : ITreesorService
+    public partial class LiteDbTreesorService : ITreesorModel
     {
         private static readonly NLog.Logger log = LogManager.GetCurrentClassLogger();
 
-        public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
+        public static Func<string, ITreesorModel> Factory { get; set; } = DefaultFactoryDelegate;
 
-        private static ITreesorService DefaultFactoryDelegate(string type)
+        private static ITreesorModel DefaultFactoryDelegate(string type)
         {
             IHierarchy<string,Reference<Guid>> hierarchy = null;// new MutableHierarchy<string, Reference<Guid>>();
             Reference<Guid> id;

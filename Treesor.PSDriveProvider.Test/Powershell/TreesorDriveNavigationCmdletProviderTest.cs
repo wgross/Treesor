@@ -10,11 +10,11 @@ namespace Treesor.PSDriveProvider.Test
     public class TreesorDriveNavigationCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
-        private Mock<ITreesorService> treesorService;
+        private Mock<ITreesorModel> treesorService;
 
         public TreesorDriveNavigationCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorService>();
+            this.treesorService = new Mock<ITreesorModel>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);

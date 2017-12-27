@@ -146,6 +146,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Powershell\TestDataGenerators.cs" />
     <Compile Include="Powershell\TreesorDriveDynamicColumnCmdletTest.cs" />
     <Compile Include="Services\Base\TreesorServiceUsingHierarchyTestBase.cs" />
     <Compile Include="Services\Base\TreesorServiceUsingPropertiesTestBase.cs" />

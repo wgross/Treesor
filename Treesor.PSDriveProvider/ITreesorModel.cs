@@ -6,11 +6,16 @@ namespace Treesor.PSDriveProvider
     /// <summary>
     /// Interface contract for data servcies
     /// </summary>
-    public interface ITreesorService : IDisposable
+    public interface ITreesorModel : IDisposable
     {
         bool ItemExists(TreesorNodePath treesorNodePath);
 
-        TreesorItem GetItem(TreesorNodePath rootPath);
+        /// <summary>
+        /// Retrieves the item specified by te given path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        TreesorItem GetItem(TreesorNodePath path);
 
         void SetItem(TreesorNodePath rootPath, object value);
 
@@ -20,6 +25,11 @@ namespace Treesor.PSDriveProvider
 
         void RemoveItem(TreesorNodePath treesorNodePath, bool recurse);
 
+        /// <summary>
+        /// Returns true if the item specifoed by the given path has children.
+        /// </summary>
+        /// <param name="treesorNodePath"></param>
+        /// <returns></returns>
         bool HasChildItems(TreesorNodePath treesorNodePath);
 
         IEnumerable<TreesorItem> GetChildItemsByWildcard(TreesorNodePath treesorNodePath);

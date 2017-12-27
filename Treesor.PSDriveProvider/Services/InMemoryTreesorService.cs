@@ -7,13 +7,13 @@ using Treesor.Abstractions;
 
 namespace Treesor.PSDriveProvider
 {
-    public class InMemoryTreesorService : ITreesorService
+    public class InMemoryTreesorService : ITreesorModel
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        public static Func<string, ITreesorService> Factory { get; set; } = DefaultFactoryDelegate;
+        public static Func<string, ITreesorModel> Factory { get; set; } = DefaultFactoryDelegate;
 
-        private static ITreesorService DefaultFactoryDelegate(string type)
+        private static ITreesorModel DefaultFactoryDelegate(string type)
         {
             IHierarchy<string,Reference<Guid>> hierarchy = null; 
             Reference<Guid> id;

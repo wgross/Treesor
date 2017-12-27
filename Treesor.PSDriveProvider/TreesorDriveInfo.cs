@@ -12,7 +12,7 @@
         /// <summary>
         /// By default a treesore model is created as an in memory Tresor service. For testing purpos this can be overwritten
         /// </summary>
-        public static Func<string, ITreesorService> TreesorModelFactory { get; set; } = s => InMemoryTreesorService.Factory(s);
+        public static Func<string, ITreesorModel> TreesorModelFactory { get; set; } = s => InMemoryTreesorService.Factory(s);
 
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -34,7 +34,7 @@
            ));
         }
 
-        internal ITreesorService Service => this.treesorService;
+        internal ITreesorModel Service => this.treesorService;
 
         #region Creation and initialization of this instance
 
@@ -52,7 +52,7 @@
                 return this.treesorService.GetChildItems(treesorNodePath);
         }
 
-        private readonly ITreesorService treesorService;
+        private readonly ITreesorModel treesorService;
 
         #endregion Creation and initialization of this instance
 

@@ -5,25 +5,22 @@ using System.Linq;
 using System.Management.Automation;
 using Treesor.PSDriveProvider;
 using Xunit;
+using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
 namespace Treesor.PowershellDriveProvider.Test
 {
     public class TreesorDriveCmdletProviderTest : IDisposable
     {
         private readonly PowerShell powershell;
-        private readonly Mock<ITreesorService> treesorService;
+        private readonly Mock<ITreesorModel> treesorService;
 
         public TreesorDriveCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorService>();
+            this.treesorService = new Mock<ITreesorModel>();
 
             TreesorDriveInfo.TreesorModelFactory = _ => treesorService.Object;
 
-            this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
-            var result = this.powershell
-                .AddCommand("Set-Location")
-                .AddArgument(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location))
-                .Invoke();
+            this.powershell = ShellInModuleDirectory();
         }
 
         public void Dispose()

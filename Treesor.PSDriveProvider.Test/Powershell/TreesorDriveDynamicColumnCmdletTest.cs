@@ -10,11 +10,11 @@ namespace Treesor.PSDriveProvider.Test
     public class TreesorDriveDynamicColumnCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
-        private Mock<ITreesorService> treesorService;
+        private Mock<ITreesorModel> treesorService;
 
         public TreesorDriveDynamicColumnCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorService>();
+            this.treesorService = new Mock<ITreesorModel>();
             InMemoryTreesorService.Factory = uri => treesorService.Object;
 
             // there is always a root node (for Set-Location)

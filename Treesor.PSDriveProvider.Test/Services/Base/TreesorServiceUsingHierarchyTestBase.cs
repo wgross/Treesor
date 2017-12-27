@@ -11,7 +11,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
     public class TreesorServiceUsingHierarchyTestBase
     {
         protected Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        protected ITreesorService treesorService;
+        protected ITreesorModel treesorService;
 
         #region NewItem > Add
 

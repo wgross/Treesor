@@ -9,7 +9,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
     public class TreesorServiceUsingPropertiesTestBase
     {
         protected Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock;
-        protected ITreesorService treesorService;
+        protected ITreesorModel treesorService;
 
         #region SetPropertyValue
 
@@ -726,7 +726,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void MovePropertyValue_fails_for_missing_source_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void MovePropertyValue_fails_for_missing_source_node(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -751,7 +751,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void MovePropertyValue_fails_for_missing_source_column(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void MovePropertyValue_fails_for_missing_source_column(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorModel treesorService)
         {
             // ARRANGE
 
@@ -777,7 +777,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             hierarchyMock.VerifyAll();
         }
 
-        public void MovePropertyValue_fails_for_different_types(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorService treesorService)
+        public void MovePropertyValue_fails_for_different_types(Mock<IHierarchy<string, Reference<Guid>>> hierarchyMock, ITreesorModel treesorService)
         {
             // ARRANGE
 
