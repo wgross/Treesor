@@ -2,13 +2,20 @@
 {
     using NLog;
     using NLog.Fluent;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Management.Automation;
 
     public class TreesorDriveInfo : PSDriveInfo
     {
+        /// <summary>
+        /// By default a treesore model is created as an in memory Tresor service. For testing purpos this can be overwritten
+        /// </summary>
+        public static Func<string, ITreesorService> TreesorModelFactory { get; set; } = s => InMemoryTreesorService.Factory(s);
+
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         internal static readonly object NullValue = new object();
 
         public static TreesorDriveInfo CreateDefault(ProviderInfo provider)
@@ -34,7 +41,7 @@
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = InMemoryTreesorService.Factory(driveInfo.Root);
+            this.treesorService = TreesorModelFactory(driveInfo.Root);
         }
 
         internal IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath, bool recurse)
@@ -44,10 +51,6 @@
             else
                 return this.treesorService.GetChildItems(treesorNodePath);
         }
-
-        //public TreesorDriveInfo(string name, ProviderInfo provider, string root, string description, PSCredential credential) : base(name, provider, root, description, credential)
-        //{
-        //}
 
         private readonly ITreesorService treesorService;
 
