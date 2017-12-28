@@ -1,10 +1,9 @@
 ﻿using Moq;
 using System;
-using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using Treesor.Model;
 using Xunit;
+using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
 namespace Treesor.PSDriveProvider.Test
 {
@@ -12,31 +11,15 @@ namespace Treesor.PSDriveProvider.Test
     public class TreesorDriveDynamicColumnCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
-        private Mock<ITreesorModel> treesorService;
+        private Mock<ITreesorModel> treesorModel;
 
         public TreesorDriveDynamicColumnCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorModel>();
-            InMemoryTreesorService.Factory = uri => treesorService.Object;
+            this.treesorModel = new Mock<ITreesorModel>();
 
-            // there is always a root node (for Set-Location)
-            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, new Reference<System.Guid>(Guid.NewGuid())));
+            TreesorDriveInfo.TreesorModelFactory = _ => this.treesorModel.Object;
 
-            this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
-            this.powershell
-                .AddStatement()
-                .AddCommand("Set-Location")
-                .AddArgument(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll");
-            this.powershell
-                .AddStatement()
-                .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
-
-            this.powershell.Invoke();
-            this.powershell.Commands.Clear();
+            this.powershell = ShellWithDriveCreated();
         }
 
         public void Dispose()
@@ -52,7 +35,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.CreateColumn("p", typeof(string)))
                 .Returns(new TreesorColumn("p", typeof(string)));
 
@@ -74,7 +57,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
             Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
+            this.treesorModel.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
         [Fact]
@@ -87,7 +70,7 @@ namespace Treesor.PSDriveProvider.Test
                     .AddCommand("Set-Location")
                         .AddParameter("Path", @"custTree:\");
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.CreateColumn("p", typeof(string)))
                 .Returns(new TreesorColumn("p", typeof(string)));
 
@@ -108,7 +91,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
             Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
+            this.treesorModel.Verify(s => s.CreateColumn("p", typeof(string)), Times.Once());
         }
 
         [Fact]
@@ -116,7 +99,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.CreateColumn("p", typeof(int)))
                 .Returns(new TreesorColumn("p", typeof(int)));
 
@@ -138,7 +121,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
             Assert.Equal(typeof(int), ((TreesorColumn)result.Single().BaseObject).Type);
 
-            this.treesorService.Verify(s => s.CreateColumn("p", typeof(int)), Times.Once());
+            this.treesorModel.Verify(s => s.CreateColumn("p", typeof(int)), Times.Once());
         }
 
         #endregion New-TreesorColumn > CreateColumn
@@ -162,7 +145,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.False(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
+            this.treesorModel.Verify(s => s.RemoveColumn("p"), Times.Once());
         }
 
         [Fact]
@@ -191,7 +174,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.False(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RemoveColumn("p"), Times.Once());
+            this.treesorModel.Verify(s => s.RemoveColumn("p"), Times.Once());
         }
 
         #endregion Remove-TreesorColumn > RemoveColumn
@@ -216,7 +199,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.False(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
+            this.treesorModel.Verify(s => s.RenameColumn("p", "q"), Times.Once());
         }
 
         [Fact]
@@ -246,7 +229,7 @@ namespace Treesor.PSDriveProvider.Test
 
             Assert.False(this.powershell.HadErrors);
 
-            this.treesorService.Verify(s => s.RenameColumn("p", "q"), Times.Once());
+            this.treesorModel.Verify(s => s.RenameColumn("p", "q"), Times.Once());
         }
 
         #endregion Rename-TreesorColumn > RenameColumn
@@ -258,7 +241,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetColumns()).Returns(Enumerable.Empty<TreesorColumn>());
 
             // ACT
@@ -274,7 +257,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.False(this.powershell.HadErrors);
             Assert.Equal(0, result.Count());
 
-            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+            this.treesorModel.Verify(s => s.GetColumns(), Times.Once());
         }
 
         [Fact]
@@ -282,7 +265,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetColumns()).Returns(new[] { new TreesorColumn("p", typeof(string)) });
 
             // ACT
@@ -300,7 +283,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
             Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
-            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+            this.treesorModel.Verify(s => s.GetColumns(), Times.Once());
         }
 
         [Fact]
@@ -308,7 +291,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetColumns()).Returns(new[] { new TreesorColumn("p", typeof(string)) });
 
             // ARRANGE
@@ -336,7 +319,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal("p", ((TreesorColumn)result.Single().BaseObject).Name);
             Assert.Equal(typeof(string), ((TreesorColumn)result.Single().BaseObject).Type);
 
-            this.treesorService.Verify(s => s.GetColumns(), Times.Once());
+            this.treesorModel.Verify(s => s.GetColumns(), Times.Once());
         }
 
         #endregion Get-TreesorColumn > GetColumn

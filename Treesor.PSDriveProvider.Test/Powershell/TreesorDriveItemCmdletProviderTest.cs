@@ -132,9 +132,10 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Powershell_creates_new_item_under_root_with_value_fails()
+        public void Powershell_creates_new_item_with_value_fails()
         {
             // ARRANGE
+            // model rejecst non-null value
 
             this.treesorModel
                 .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
@@ -144,7 +145,9 @@ namespace Treesor.PSDriveProvider.Test
 
             this.powershell
                 .AddStatement()
-                .AddCommand("New-Item").AddParameter("Path", @"custTree:\item").AddParameter("Value", "value");
+                    .AddCommand("New-Item")
+                        .AddParameter("Path", @"custTree:\item")
+                        .AddParameter("Value", "value");
 
             var result = this.powershell.Invoke();
 

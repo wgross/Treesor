@@ -76,7 +76,7 @@ namespace Treesor.PSDriveProvider
             {
                 this.DriveInfo.Service.SetItem(TreesorNodePath.Parse(path), value);
             }
-            catch (TreesorModelException ex) when (TreesorModelErrorCodes.MissingItem.Equals(ex.ErrorCode))
+            catch (TreesorModelException ex) when (TreesorModelErrorCodes.NotImplemented.Equals(ex.ErrorCode))
             {
                 this.WriteError(new ErrorRecord(ex, "setitem.1", ErrorCategory.NotImplemented, path));
             }

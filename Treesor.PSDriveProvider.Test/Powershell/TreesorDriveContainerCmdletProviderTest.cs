@@ -64,7 +64,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #endregion Set-Location > GetItem
 
-        #region Remove-Item > RemoveItem
+        #region Remove-Item > RemoveItem,HasChildItems
 
         [Fact]
         public void Powershell_removes_existing_leaf_under_root()
@@ -217,17 +217,21 @@ namespace Treesor.PSDriveProvider.Test
 
         #endregion Get-ChildItem > GetChildItem
 
-        #region Copy-Item > CopyItem
+        #region Copy-Item > CopyItem,GetItem
 
         [Fact]
-        public void Powershell_copies_item_to_new_name_under_root()
+        public void Powershell_copies_item_with_new_name()
         {
             // ARRANGE
-            // item2 doesn't exist yet
+            // item2 doesn't exist yet, item doesn exist as container
 
             this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
-                .Returns((TreesorItem)null);
+                .Throws(TreesorModelException.MissingItem("item2"));
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Returns(TreesorItem("item"));
 
             // ACT
             // copy item to item2
@@ -245,6 +249,44 @@ namespace Treesor.PSDriveProvider.Test
 
             this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
             this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
+            this.treesorModel.VerifyAll();
+
+            Assert.False(this.powershell.HadErrors);
+        }
+
+        [Fact]
+        public void Powershell_copies_item_over_existing_item()
+        {
+            // ARRANGE
+            // item2 doesn't exist yet, item doesn exist as container
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
+                .Returns(TreesorItem("item2"));
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Returns(TreesorItem("item"));
+
+            // ACT
+            // copy item to item2
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Copy-Item")
+                        .AddParameter("Path", @"custTree:\item")
+                        .AddParameter("Destination", @"custTree:\item2");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // item2 is checked before and the copied.
+
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
             this.treesorModel.VerifyAll();
 
@@ -255,11 +297,15 @@ namespace Treesor.PSDriveProvider.Test
         public void Powershell_copies_item_to_new_name_under_root_recursively()
         {
             // ARRANGE
-            // destination item deosn exist
+            // destination item doesn't exist but source does
 
             this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
-                .Returns((TreesorItem)null);
+                .Throws(TreesorModelException.MissingItem("item2"));
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Returns(TreesorItem("item"));
 
             // ACT
             // copy item recursively
@@ -278,13 +324,52 @@ namespace Treesor.PSDriveProvider.Test
 
             this.treesorModel.VerifyAll();
             this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
             this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
             this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), true), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
 
-        #endregion Copy-Item > CopyItem
+        [Fact]
+        public void Powershell_copy_item_continues_if_sources_doesnt_exist()
+        {
+            // ARRANGE
+            // item2 doesn't exist yet, item doesn exist as container
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
+                .Throws(TreesorModelException.MissingItem("item2"));
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
+                .Throws(TreesorModelException.MissingItem("item"));
+
+            // ACT
+            // copy item to item2
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Copy-Item")
+                        .AddParameter("Path", @"custTree:\item")
+                        .AddParameter("Destination", @"custTree:\item2");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // item and item2 is checked before and the copied if they are containers
+            // powershell doesn't make a plausability check and continues with the copy operation
+
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
+            this.treesorModel.VerifyAll();
+
+            Assert.False(this.powershell.HadErrors);
+        }
+
+        #endregion Copy-Item > CopyItem,GetItem
 
         #region Rename-Item > RenameItem
 
@@ -331,7 +416,6 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            Reference<Guid> id_a, id_b;
             this.treesorModel
                 .Setup(s => s.GetDescendants(TreesorNodePath.RootPath))
                 .Returns(new[] { TreesorItem("a"), TreesorItem("b") });
