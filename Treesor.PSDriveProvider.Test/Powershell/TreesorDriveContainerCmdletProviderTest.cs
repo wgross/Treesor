@@ -8,16 +8,17 @@ using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
 namespace Treesor.PSDriveProvider.Test
 {
+    [Collection("Uses_powershell")]
     public class TreesorDriveContainerCmdletProviderTest : IDisposable
     {
         private PowerShell powershell;
-        private Mock<ITreesorModel> treesorService;
+        private Mock<ITreesorModel> treesorModel;
 
         public TreesorDriveContainerCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorModel>();
+            this.treesorModel = new Mock<ITreesorModel>();
 
-            TreesorDriveInfo.TreesorModelFactory = _ => treesorService.Object;
+            TreesorDriveInfo.TreesorModelFactory = _ => treesorModel.Object;
 
             this.powershell = ShellWithDriveCreated();
         }
@@ -38,7 +39,7 @@ namespace Treesor.PSDriveProvider.Test
 
             TreesorItem rootItem = new TreesorItem(path: TreesorNodePath.RootPath, id: new Reference<Guid>(Guid.NewGuid()));
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.RootPath))
                 .Returns(rootItem);
 
@@ -55,10 +56,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // set location succeeded
 
-            Assert.False(this.powershell.HadErrors);
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
+            Assert.False(this.powershell.HadErrors);
         }
 
         #endregion Set-Location > GetItem
@@ -71,7 +72,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // mock item without children
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.HasChildItems(TreesorNodePath.Create("item")))
                 .Returns(false);
 
@@ -88,10 +89,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // provider wants item removed but not recursive
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.RemoveItem(TreesorNodePath.Create("item"), false), Times.Once());
-            this.treesorService.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.RemoveItem(TreesorNodePath.Create("item"), false), Times.Once());
+            this.treesorModel.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -102,7 +103,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // mock item with children
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.HasChildItems(TreesorNodePath.Create("item")))
                 .Returns(true);
 
@@ -120,10 +121,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // provider wants item removed recursively
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.RemoveItem(TreesorNodePath.Create("item"), true), Times.Once());
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.RemoveItem(TreesorNodePath.Create("item"), true), Times.Once());
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.HasChildItems(TreesorNodePath.Create("item")), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -138,16 +139,16 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // mock item under root with one child
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
                 .Returns(TreesorItem("item"));
 
             TreesorItem child = null;
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetChildItems(TreesorNodePath.Create("item")))
                 .Returns(new[] { TreesorItem("child", setup: ti => child = ti) });
 
@@ -164,10 +165,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // the result contains the single child item of 'item'
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
-            this.treesorService.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.GetChildItems(TreesorNodePath.Create("item")), Times.Once());
 
             var resultItem = result.LastOrDefault();
 
@@ -182,12 +183,12 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // children and grandchildren ar returned in a flat list
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
                 .Returns(TreesorItem("item"));
 
             TreesorItem grandChild = null;
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetDescendants(TreesorNodePath.Create("item")))
                 .Returns(new[] { TreesorItem("child"), TreesorItem("grandchild", setup: ti => grandChild = ti) });
 
@@ -205,10 +206,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // the result contains child and grand child
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Exactly(2)); // because of isContainer
-            this.treesorService.Verify(s => s.GetDescendants(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Exactly(2)); // because of isContainer
+            this.treesorModel.Verify(s => s.GetDescendants(TreesorNodePath.Create("item")), Times.Once());
 
             Assert.Equal(2, result.Count());
             Assert.Same(grandChild, result.ElementAt(1).BaseObject);
@@ -224,7 +225,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // item2 doesn't exist yet
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
                 .Returns((TreesorItem)null);
 
@@ -242,10 +243,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // item2 is checked before and the copied.
 
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
-            this.treesorService.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
-            this.treesorService.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false), Times.Once());
+            this.treesorModel.VerifyAll();
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -256,7 +257,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // destination item deosn exist
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
                 .Returns((TreesorItem)null);
 
@@ -275,10 +276,10 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // item2 was checked, copy got recurse flag
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
-            this.treesorService.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), true), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Create("item2")), Times.Once());
+            this.treesorModel.Verify(s => s.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), true), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -293,11 +294,11 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // item with new names desn exist yet
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item")))
                 .Returns(true);
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetItem(TreesorNodePath.Create("item2")))
                 .Returns((TreesorItem)null);
 
@@ -315,8 +316,8 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // rename was sent to model
 
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
-            this.treesorService.Verify(s => s.RenameItem(TreesorNodePath.Create("item"), "item2"), Times.Once());
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once());
+            this.treesorModel.Verify(s => s.RenameItem(TreesorNodePath.Create("item"), "item2"), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -331,7 +332,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
 
             Reference<Guid> id_a, id_b;
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetDescendants(TreesorNodePath.RootPath))
                 .Returns(new[] { TreesorItem("a"), TreesorItem("b") });
 
@@ -348,8 +349,8 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // Drive info is resolving the wildcard correctly, path infos are returned
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.GetDescendants(TreesorNodePath.RootPath), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.GetDescendants(TreesorNodePath.RootPath), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.Equal(2, result.Count);
@@ -376,7 +377,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // create a hierachy with positive and negative items at each level of selection
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.GetDescendants(TreesorNodePath.RootPath))
                 .Returns(new[] {
                     TreesorItem(TreesorNodePath.Create("item")),
@@ -399,8 +400,8 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // Drive info is resolving the wildcard correctly
 
-            this.treesorService.VerifyAll();
-            this.treesorService.Verify(s => s.GetDescendants(TreesorNodePath.RootPath), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.GetDescendants(TreesorNodePath.RootPath), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.Equal(2, result.Count);

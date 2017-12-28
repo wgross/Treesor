@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Treesor.PSDriveProvider.Test
 {
+    [Collection("Uses_powershell")]
     public class TreesorDriveDynamicPropertyCmdletProviderTest : IDisposable
     {
         private Mock<ITreesorModel> treesorService;

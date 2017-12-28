@@ -1,88 +1,122 @@
 ﻿using Moq;
 using System;
-using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using Treesor.Model;
 using Xunit;
+using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
 namespace Treesor.PSDriveProvider.Test
 {
+    [Collection("Uses_powershell")]
     public class TreesorDriveNavigationCmdletProviderTest : IDisposable
     {
-        private PowerShell powershell;
-        private Mock<ITreesorModel> treesorService;
+        private readonly PowerShell powershell;
+        private readonly Mock<ITreesorModel> treesorModel;
 
         public TreesorDriveNavigationCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorModel>();
-            InMemoryTreesorService.Factory = uri => treesorService.Object;
+            this.treesorModel = new Mock<ITreesorModel>();
 
-            this.powershell = PowerShell.Create(RunspaceMode.NewRunspace);
-            this.powershell
-                .AddStatement()
-                .AddCommand("Set-Location")
-                .AddArgument(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+            TreesorDriveInfo.TreesorModelFactory = _ => this.treesorModel.Object;
 
-            this.powershell
-                .AddStatement()
-                .AddCommand("Import-Module").AddArgument("./TreesorDriveProvider.dll");
-            this.powershell
-                .AddStatement()
-                .AddCommand("New-PsDrive").AddParameter("Name", "custTree").AddParameter("PsProvider", "Treesor").AddParameter("Root", @"\");
+            this.powershell = ShellWithDriveCreated();
         }
 
-        
         public void Dispose()
         {
             this.powershell.Stop();
             this.powershell.Dispose();
         }
 
-        #region Set-Location
+        #region Set-Location > IsItemContainer > GetItem
 
-        [Fact]
-        public void Powershell_sets_location_to_root_container()
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        [InlineData("item\a")]
+        public void Powershell_sets_location_to_container(string path)
         {
             // ARRANGE
+            // location exists
 
-            Reference<Guid> id_root;
-            this.treesorService
-                .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Parse(path)))
+                .Returns(TreesorItem(TreesorNodePath.Parse(path)));
 
             // ACT
+            // change location
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Set-Location").AddParameter("Path", @"treesor:\");
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", $@"custTree:\{path}");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
+            // destination item was retrieved
+
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Parse(path)), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Parse(path)), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
-            this.treesorService.VerifyAll();
         }
 
-        [Fact]
-        public void Powershell_gets_location_from_root_container()
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        [InlineData(@"item\a")]
+        public void Powershell_sets_location_to_missing_container_fails(string path)
         {
             // ARRANGE
+            // location exists
 
-            Reference<Guid> id_root;
-            this.treesorService
-                .Setup(s => s.GetItem(TreesorNodePath.RootPath))
-                .Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Parse(path)))
+                .Throws(TreesorModelException.MissingItem(path));
+
+            // ACT
+            // change location
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Set-Location").AddParameter("Path", @"treesor:\");
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", $@"custTree:\{path}");
+
+            var result = this.powershell.Invoke();
+
+            // ASSERT
+            // destination item was retrieved
+
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Parse(path)), Times.Never());
+            this.treesorModel.Verify(s => s.GetItem(TreesorNodePath.Parse(path)), Times.Once());
+
+            Assert.True(this.powershell.HadErrors);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        [InlineData(@"item\a")]
+        public void Powershell_gets_location_from_drive(string path)
+        {
+            // ARRANGE
+            // item exists
+
+            this.treesorModel
+                .Setup(s => s.GetItem(TreesorNodePath.Parse(path)))
+                .Returns(TreesorItem(TreesorNodePath.Parse(path)));
+
+            this.powershell
+                .AddStatement()
+                    .AddCommand("Set-Location")
+                        .AddParameter("Path", $@"custTree:\{path}");
 
             // ACT
+            // ask for current location
 
             this.powershell
                 .AddStatement()
@@ -92,72 +126,14 @@ namespace Treesor.PSDriveProvider.Test
 
             // ASSERT
 
-            Assert.False(this.powershell.HadErrors);
-            Assert.IsType<PathInfo>(result.Last().BaseObject);
-            Assert.Equal(TreesorNodePath.Create(@"treesor:\"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
-
-            this.treesorService.VerifyAll();
-        }
-
-        [Fact]
-        public void Powershell_set_location_to_container_under_root()
-        {
-            // ARRANGE
-
-            Reference<Guid> id_item;
-            this.treesorService
-                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
-
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Set-Location").AddParameter("Path", @"treesor:\item");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-
-            Assert.False(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item")), Times.Once());
-            this.treesorService.VerifyAll();
-        }
-
-        [Fact]
-        public void Powershell_gets_location_from_container_under_root()
-        {
-            // ARRANGE
-
-            Reference<Guid> id_item;
-            this.treesorService
-                .Setup(s => s.GetItem(TreesorNodePath.Create("item")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item"), id_item = new Reference<Guid>(Guid.NewGuid())));
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Set-Location").AddParameter("Path", @"treesor:\item");
-
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Get-Location");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
+            this.treesorModel.VerifyAll();
 
             Assert.False(this.powershell.HadErrors);
             Assert.IsType<PathInfo>(result.Last().BaseObject);
-            Assert.Equal(TreesorNodePath.Create(@"treesor:\item"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
-
-            this.treesorService.VerifyAll();
+            Assert.Equal(TreesorNodePath.Create($@"custTree:\{path}"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
         }
 
-        #endregion Set-Location
+        #endregion Set-Location > IsItemContainer > GetItem
 
         #region Move-Item > MoveItem
 
@@ -166,7 +142,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorService
+            this.treesorModel
                 .Setup(s => s.ItemExists(TreesorNodePath.Create("item1")))
                 .Returns(true);
 
@@ -174,16 +150,16 @@ namespace Treesor.PSDriveProvider.Test
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Move-Item").AddParameter("Path", @"treesor:\item1").AddParameter("Destination", @"treesor:\item2");
+                .AddCommand("Move-Item").AddParameter("Path", @"custTree:\item1").AddParameter("Destination", @"custTree:\item2");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
 
-            Assert.False(this.powershell.HadErrors);
+            this.treesorModel.VerifyAll();
+            this.treesorModel.Verify(s => s.MoveItem(TreesorNodePath.Create("item1"), TreesorNodePath.Create("item2")), Times.Once());
 
-            this.treesorService.Verify(s => s.MoveItem(TreesorNodePath.Create("item1"), TreesorNodePath.Create("item2")), Times.Once());
-            this.treesorService.VerifyAll();
+            Assert.False(this.powershell.HadErrors);
         }
 
         #endregion Move-Item > MoveItem

@@ -1,6 +1,7 @@
 ﻿using Elementary.Hierarchy;
 using NLog.Fluent;
 using System.Linq;
+using System.Management.Automation;
 using Treesor.Model;
 
 namespace Treesor.PSDriveProvider
@@ -58,7 +59,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(IsItemContainer)}({nameof(path)}={path})").Write();
 
-            return (this.DriveInfo.Service.GetItem(TreesorNodePath.Parse(path))?.IsContainer ?? false);
+            try
+            {
+                return (this.DriveInfo.Service.GetItem(TreesorNodePath.Parse(path)).IsContainer);
+            }
+            catch (TreesorModelException ex) when (TreesorModelErrorCodes.MissingItem.Equals(ex.ErrorCode))
+            {
+                return false;
+            }
         }
 
         #endregion Override NavigationCmdletProvider methods

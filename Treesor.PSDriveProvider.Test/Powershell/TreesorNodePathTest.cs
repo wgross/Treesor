@@ -1,10 +1,9 @@
 ﻿using Elementary.Hierarchy;
 using System.Linq;
 using Treesor.Model;
-using Treesor.PSDriveProvider;
 using Xunit;
 
-namespace Treesor.PowershellDriveProvider.Test
+namespace Treesor.PSDriveProvider.Test
 {
     public class TreesorNodePathTest
     {

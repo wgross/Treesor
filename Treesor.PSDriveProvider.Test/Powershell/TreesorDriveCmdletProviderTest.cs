@@ -7,18 +7,19 @@ using Treesor.PSDriveProvider;
 using Xunit;
 using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
-namespace Treesor.PowershellDriveProvider.Test
+namespace Treesor.PSDriveProvider.Test
 {
+    [Collection("Uses_powershell")]
     public class TreesorDriveCmdletProviderTest : IDisposable
     {
         private readonly PowerShell powershell;
-        private readonly Mock<ITreesorModel> treesorService;
+        private readonly Mock<ITreesorModel> treesorModel;
 
         public TreesorDriveCmdletProviderTest()
         {
-            this.treesorService = new Mock<ITreesorModel>();
+            this.treesorModel = new Mock<ITreesorModel>();
 
-            TreesorDriveInfo.TreesorModelFactory = _ => treesorService.Object;
+            TreesorDriveInfo.TreesorModelFactory = _ => treesorModel.Object;
 
             this.powershell = ShellInModuleDirectory();
         }
@@ -135,7 +136,7 @@ namespace Treesor.PowershellDriveProvider.Test
             // drive is no longer there and service was called.
 
             Assert.False(this.powershell.HadErrors);
-            treesorService.Verify(s => s.Dispose(), Times.Once());
+            treesorModel.Verify(s => s.Dispose(), Times.Once());
         }
 
         [Fact]
