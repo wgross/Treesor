@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Management.Automation;
 using Treesor.Model;
+using static Treesor.Model.TreesorItemPath;
 
 namespace Treesor.PSDriveProvider
 {
@@ -15,14 +16,14 @@ namespace Treesor.PSDriveProvider
 
             // the path is considered valid if it can be parsed.
             TreesorItemPath parsedPath;
-            return TreesorItemPath.TryParse(path, out parsedPath);
+            return TryParse(path, out parsedPath);
         }
 
         protected override void ClearItem(string path)
         {
             log.Trace().Message($"{nameof(ClearItem)}({nameof(path)}={path})").Write();
 
-            this.DriveInfo.Model.ClearItem(TreesorItemPath.ParsePath(path));
+            this.DriveInfo.Model.ClearItem(ParsePath(path));
         }
 
         protected override string[] ExpandPath(string path)
@@ -31,7 +32,7 @@ namespace Treesor.PSDriveProvider
 
             var filter = new WildcardPattern(path);
 
-            var tmp = from i in this.DriveInfo.Model.GetDescendants(TreesorItemPath.RootPath)
+            var tmp = from i in this.DriveInfo.Model.GetDescendants(RootPath)
                       let itemPath = i.Path.ToString()
                       where filter.IsMatch(itemPath)
                       select itemPath;
@@ -43,7 +44,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(GetItem)}({nameof(path)}={path})").Write();
 
-            var treesorNodePath = TreesorItemPath.ParsePath(path);
+            var treesorNodePath = ParsePath(path);
 
             try
             {
@@ -65,7 +66,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}={path})").Write();
 
-            return this.DriveInfo.Model.Items.Exists(TreesorItemPath.ParsePath(path));
+            return this.DriveInfo.Model.Items.Exists(ParsePath(path));
         }
 
         protected override void SetItem(string path, object value)
@@ -74,7 +75,7 @@ namespace Treesor.PSDriveProvider
 
             try
             {
-                this.DriveInfo.Model.SetItem(TreesorItemPath.ParsePath(path), value);
+                this.DriveInfo.Model.SetItem(ParsePath(path), value);
             }
             catch (TreesorModelException ex) when (TreesorModelErrorCodes.NotImplemented.Equals(ex.ErrorCode))
             {

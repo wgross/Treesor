@@ -1,8 +1,8 @@
 ﻿using Elementary.Hierarchy;
 using NLog.Fluent;
 using System.Linq;
-using System.Management.Automation;
 using Treesor.Model;
+using static Treesor.Model.TreesorItemPath;
 
 namespace Treesor.PSDriveProvider
 {
@@ -14,14 +14,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(MoveItem)}({nameof(path)}={path}, {nameof(destination)}={destination})").Write();
 
-            this.DriveInfo.Model.MoveItem(path: TreesorItemPath.ParsePath(path), destination: TreesorItemPath.ParsePath(destination));
+            this.DriveInfo.Model.MoveItem(path: ParsePath(path), destination: ParsePath(destination));
         }
 
         protected override string GetChildName(string path)
         {
             log.Trace().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')").Write();
 
-            var childName = TreesorItemPath.ParsePath(path).HierarchyPath.Leaf().ToString();
+            var childName = ParsePath(path).HierarchyPath.Leaf().ToString();
 
             log.Debug().Message($"{nameof(GetChildName)}({nameof(path)}='{path}')->'{childName}'").Write();
 
@@ -32,8 +32,8 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')").Write();
 
-            var result = TreesorItemPath.CreatePath(
-                TreesorItemPath.ParsePath(parent).HierarchyPath.Join(TreesorItemPath.ParsePath(child).HierarchyPath).Items.ToArray()).ToString();
+            var result = CreatePath(
+                ParsePath(parent).HierarchyPath.Join(ParsePath(child).HierarchyPath).Items.ToArray()).ToString();
 
             log.Trace().Message($"{nameof(MakePath)}({nameof(parent)}='{parent}',{nameof(child)}='{child}')->'{result}'").Write();
 
@@ -44,7 +44,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(GetParentPath)}({nameof(path)}='{path}',{nameof(root)}='{root}')").Write();
 
-            var parsedPath = TreesorItemPath.ParsePath(path).HierarchyPath;
+            var parsedPath = ParsePath(path).HierarchyPath;
             string result;
             if (parsedPath.HasParentNode)
                 result = parsedPath.Parent().ToString();
@@ -61,7 +61,7 @@ namespace Treesor.PSDriveProvider
 
             try
             {
-                return (this.DriveInfo.Model.Items.Get(TreesorItemPath.ParsePath(path)).IsContainer);
+                return (this.DriveInfo.Model.Items.Get(ParsePath(path)).IsContainer);
             }
             catch (TreesorModelException ex) when (TreesorModelErrorCodes.MissingItem.Equals(ex.ErrorCode))
             {

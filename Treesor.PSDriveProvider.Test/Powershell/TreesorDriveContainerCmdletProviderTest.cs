@@ -41,7 +41,6 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // mock result of creation of new item
 
-            Reference<Guid> id_item = new Reference<Guid>(Guid.NewGuid());
             TreesorItem newItem = null;
             this.treesorModel
                 .Setup(s => s.NewItem(It.IsAny<TreesorItemPath>(), It.IsAny<object>()))
