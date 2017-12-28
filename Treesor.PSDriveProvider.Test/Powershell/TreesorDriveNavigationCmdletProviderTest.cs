@@ -29,7 +29,7 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region Set-Location > IsItemContainer > GetItem
+        #region Set-Location > IsItemContainer, GetItem > GetItem
 
         [Theory]
         [InlineData("")]
@@ -133,7 +133,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal(TreesorNodePath.Create($@"custTree:\{path}"), TreesorNodePath.Create(((PathInfo)result.Last().BaseObject).Path));
         }
 
-        #endregion Set-Location > IsItemContainer > GetItem
+        #endregion Set-Location > IsItemContainer, GetItem > GetItem
 
         #region Move-Item > MoveItem
 

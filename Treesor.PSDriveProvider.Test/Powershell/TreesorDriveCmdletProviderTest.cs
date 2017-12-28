@@ -30,21 +30,21 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
+        //[Fact]
+        //public void Powershell_returns_list_or_processes()
+        //{
+        //    // ACT
+
+        //    var result = this.powershell.AddStatement().AddCommand("Get-Process").Invoke();
+
+        //    // ASSERT
+
+        //    Assert.NotNull(result);
+        //    Assert.True(result.Count > 0);
+        //}
+
         [Fact]
-        public void Powershell_returns_list_or_processes()
-        {
-            // ACT
-
-            var result = this.powershell.AddStatement().AddCommand("Get-Process").Invoke();
-
-            // ASSERT
-
-            Assert.NotNull(result);
-            Assert.True(result.Count > 0);
-        }
-
-        [Fact]
-        public void Powershell_loads_Treesor_DrivePowershell_automatically()
+        public void Powershell_loads_Treesor_drive_automatically()
         {
             // ACT
             // import the module
@@ -75,7 +75,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Powershell_creates_new_instance_of_treesor_service()
+        public void Powershell_creates_new_instance_of_treesor_model()
         {
             // ARRANGE
             // import teh module

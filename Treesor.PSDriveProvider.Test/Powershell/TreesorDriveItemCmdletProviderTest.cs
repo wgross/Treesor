@@ -29,140 +29,6 @@ namespace Treesor.PSDriveProvider.Test
             this.powershell.Dispose();
         }
 
-        #region New-Item > NewItem, MakePath
-
-        [Fact]
-        public void Powershell_creates_new_item_under_root()
-        {
-            // ARRANGE
-            // mock result of creation of new item
-
-            Reference<Guid> id_item = new Reference<Guid>(Guid.NewGuid());
-            TreesorItem newItem = null;
-            this.treesorModel
-                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Returns<TreesorNodePath, object>((p, v) => TreesorItem(p, setup: ti => newItem = ti));
-
-            // ACT
-            // create new item under root.
-
-            this.powershell
-                .AddStatement()
-                    .AddCommand("New-Item")
-                        .AddParameter("Path", @"custTree:\item");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // provider writes new item on outut pipe
-
-            this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorModel.Verify(s => s.NewItem(TreesorNodePath.Create("item"), null), Times.Once());
-
-            Assert.False(this.powershell.HadErrors);
-            Assert.IsType<TreesorItem>(result.Last().BaseObject);
-            Assert.Equal(newItem.Id, ((TreesorItem)result.Last().BaseObject).Id);
-            Assert.Equal(@"TreesorDriveProvider\Treesor::item", result.Last().Properties["PSPath"].Value);
-        }
-
-        [Fact]
-        public void Powershell_creates_new_item_under_node()
-        {
-            // ARRANGE
-            // mock result of creation
-
-            TreesorItem newItem = null;
-            this.treesorModel
-                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Returns<TreesorNodePath, object>((p, v) => TreesorItem(p, setup: ti => newItem = ti));
-
-            // ACT
-            // create a under item
-
-            this.powershell
-                .AddStatement()
-                    .AddCommand("New-Item")
-                        .AddParameter("Path", @"custTree:\item\a");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // provider writes new item on outut pipe
-
-            this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item", "a")), Times.Never());
-            this.treesorModel.Verify(s => s.NewItem(TreesorNodePath.Create("item", "a"), null), Times.Once());
-
-            Assert.False(this.powershell.HadErrors);
-            Assert.IsType<TreesorItem>(result.Last().BaseObject);
-            Assert.Equal(newItem.Id, ((TreesorItem)result.Last().BaseObject).Id);
-            Assert.Equal(@"TreesorDriveProvider\Treesor::item\a", result.Last().Properties["PSPath"].Value);
-            Assert.Equal(@"TreesorDriveProvider\Treesor::item", result.Last().Properties["PSParentPath"].Value);
-        }
-
-        [Fact]
-        public void Powershell_creates_new_item_under_root_twice_fails()
-        {
-            // ARRANGE
-            // treesor service throws in existing item
-
-            this.treesorModel
-                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Throws(TreesorModelException.DuplicateItem(TreesorNodePath.Create("item")));
-
-            // ACT
-            // create a new item under root.
-
-            this.powershell
-                .AddStatement()
-                    .AddCommand("New-Item")
-                        .AddParameter("Path", @"custTree:\item");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // provider write new item on output pipe
-
-            this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorModel.Verify(s => s.NewItem(TreesorNodePath.Create("item"), null), Times.Once());
-
-            Assert.True(this.powershell.HadErrors);
-        }
-
-        [Fact]
-        public void Powershell_creates_new_item_with_value_fails()
-        {
-            // ARRANGE
-            // model rejecst non-null value
-
-            this.treesorModel
-                .Setup(s => s.NewItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Throws(TreesorModelException.NotImplemented(TreesorNodePath.Create("item"), "item value"));
-
-            // ACT
-
-            this.powershell
-                .AddStatement()
-                    .AddCommand("New-Item")
-                        .AddParameter("Path", @"custTree:\item")
-                        .AddParameter("Value", "value");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // provider write new item on outut pipe
-
-            this.treesorModel.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Never());
-            this.treesorModel.Verify(s => s.NewItem(TreesorNodePath.Create("item"), "value"), Times.Once());
-            this.treesorModel.VerifyAll();
-
-            Assert.True(this.powershell.HadErrors);
-        }
-
-        #endregion New-Item > NewItem, MakePath
-
         #region Test-Path > ItemExists
 
         [Theory]
@@ -182,7 +48,8 @@ namespace Treesor.PSDriveProvider.Test
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", $"custTree:\\{path}");
+                    .AddCommand("Test-Path")
+                    .AddParameter("Path", $@"custTree:\{path}");
 
             var result = this.powershell.Invoke();
 
@@ -206,7 +73,8 @@ namespace Treesor.PSDriveProvider.Test
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", $"custTree:\\{path}");
+                    .AddCommand("Test-Path")
+                        .AddParameter("Path", $@"custTree:\{path}");
 
             var result = this.powershell.Invoke();
 
@@ -222,7 +90,7 @@ namespace Treesor.PSDriveProvider.Test
 
         #endregion Test-Path > ItemExists
 
-        #region Get-Item > GetItem, MakePath
+        #region Get-Item > GetItem, MakePath > GetItem
 
         [Theory]
         [InlineData("")]
@@ -286,9 +154,9 @@ namespace Treesor.PSDriveProvider.Test
             Assert.Equal(parentPath, result.Last().Properties["PSParentPath"].Value);
         }
 
-        #endregion Get-Item > GetItem, MakePath
+        #endregion Get-Item > GetItem, MakePath > GetItem
 
-        #region Set-Item > ItemExists, SetItem
+        #region Set-Item > SetItem
 
         [Fact]
         public void Powershell_set_item_fails()
@@ -321,7 +189,7 @@ namespace Treesor.PSDriveProvider.Test
             Assert.True(this.powershell.HadErrors);
         }
 
-        #endregion Set-Item > ItemExists, SetItem
+        #endregion Set-Item > SetItem
 
         #region Clear-Item > ItemExists, ClearItem
 
