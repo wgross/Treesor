@@ -32,7 +32,7 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ACT
 
-            this.treesorService.NewItem(TreesorNodePath.Create("item"), newItemValue: null);
+            this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), newItemValue: null);
 
             // ASSERT
 
@@ -44,11 +44,11 @@ namespace Treesor.PSDriveProvider.Test.Services
         {
             // ACT
 
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.NewItem(TreesorNodePath.Create("item"), new object()));
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), new object()));
 
             // ASSERT
 
-            Assert.True(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
+            Assert.True(result.Message.Contains($"A value for node {TreesorItemPath.CreatePath("item")} is not allowed"));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Treesor.PSDriveProvider.Test.Services
 
             // ACT
 
-            var result = Assert.Throws<ArgumentException>(() => this.treesorService.NewItem(TreesorNodePath.Create("item"), newItemValue: null));
+            var result = Assert.Throws<ArgumentException>(() => this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), newItemValue: null));
 
             // ASSERT
 

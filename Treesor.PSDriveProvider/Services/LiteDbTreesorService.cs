@@ -82,13 +82,13 @@ namespace Treesor.PSDriveProvider
 
         #endregion IDisposable Support
 
-        public bool ItemExists(TreesorNodePath treesorNodePath)
+        public bool ItemExists(TreesorItemPath treesorNodePath)
         {
             Reference<Guid> id;
             return this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id);
         }
 
-        public TreesorItem GetItem(TreesorNodePath path)
+        public TreesorItem GetItem(TreesorItemPath path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -99,7 +99,7 @@ namespace Treesor.PSDriveProvider
             else return null;
         }
 
-        private bool TryGetItem(TreesorNodePath path, out TreesorItem item)
+        private bool TryGetItem(TreesorItemPath path, out TreesorItem item)
         {
             Reference<Guid> id;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
@@ -112,18 +112,18 @@ namespace Treesor.PSDriveProvider
             return false;
         }
 
-        public void SetItem(TreesorNodePath treesorNodePath, object value)
+        public void SetItem(TreesorItemPath treesorNodePath, object value)
         {
             throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
         }
 
-        public void ClearItem(TreesorNodePath rootPath)
+        public void ClearItem(TreesorItemPath rootPath)
         {
             // currently function isn't implmented.
             return;
         }
 
-        public TreesorItem NewItem(TreesorNodePath treesorNodePath, object newItemValue)
+        public TreesorItem NewItem(TreesorItemPath treesorNodePath, object newItemValue)
         {
             // currently a value is not accepted.
             // a data model of the nodes is not yet decided
@@ -137,40 +137,40 @@ namespace Treesor.PSDriveProvider
             return new TreesorItem(treesorNodePath, id);
         }
 
-        public void RemoveItem(TreesorNodePath treesorNodePath, bool recurse)
+        public void RemoveItem(TreesorItemPath treesorNodePath, bool recurse)
         {
             this.hierarchy.RemoveNode(treesorNodePath.HierarchyPath, recurse);
         }
 
-        public bool HasChildItems(TreesorNodePath treesorNodePath)
+        public bool HasChildItems(TreesorItemPath treesorNodePath)
         {
             // Result of Travesr is never null.
             // hierachy throws KeyNotFindException in this case.
             return this.hierarchy.Traverse(treesorNodePath.HierarchyPath).HasChildNodes;
         }
 
-        public IEnumerable<TreesorItem> GetChildItemsByWildcard(TreesorNodePath treesorNodePath)
+        public IEnumerable<TreesorItem> GetChildItemsByWildcard(TreesorItemPath treesorNodePath)
         {
             throw new InvalidOperationException();
         }
 
-        public IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath)
+        public IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath)
         {
             return this.hierarchy
                 .Traverse(treesorNodePath.HierarchyPath)
                 .Children()
-                .Select(n => new TreesorItem(TreesorNodePath.Create(n.Path), n.Value));
+                .Select(n => new TreesorItem(TreesorItemPath.Create(n.Path), n.Value));
         }
 
-        public IEnumerable<TreesorItem> GetDescendants(TreesorNodePath treesorNodePath)
+        public IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath)
         {
             return this.hierarchy
                 .Traverse(treesorNodePath.HierarchyPath)
                 .Descendants()
-                .Select(n => new TreesorItem(TreesorNodePath.Create(n.Path), n.Value));
+                .Select(n => new TreesorItem(TreesorItemPath.Create(n.Path), n.Value));
         }
 
-        public void CopyItem(TreesorNodePath path, TreesorNodePath destinationPath, bool recurse)
+        public void CopyItem(TreesorItemPath path, TreesorItemPath destinationPath, bool recurse)
         {
             Reference<Guid> id;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
@@ -196,7 +196,7 @@ namespace Treesor.PSDriveProvider
             }
         }
 
-        public void RenameItem(TreesorNodePath treesorNodePath, string newName)
+        public void RenameItem(TreesorItemPath treesorNodePath, string newName)
         {
             Reference<Guid> id;
             if (this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id))
@@ -205,7 +205,7 @@ namespace Treesor.PSDriveProvider
                         this.hierarchy.Add(treesorNodePath.HierarchyPath.Parent().Join(newName), id);
         }
 
-        public void MoveItem(TreesorNodePath path, TreesorNodePath destinationPath)
+        public void MoveItem(TreesorItemPath path, TreesorItemPath destinationPath)
         {
             Reference<Guid> id, destinationId;
             if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
@@ -253,7 +253,7 @@ namespace Treesor.PSDriveProvider
             return columnEntity;
         }
 
-        public void SetPropertyValue(TreesorNodePath path, string name, object value)
+        public void SetPropertyValue(TreesorItemPath path, string name, object value)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -286,7 +286,7 @@ namespace Treesor.PSDriveProvider
             collection.Upsert(itemValuesDocument.Set(columnId.ToString(), new BsonValue(value)));
         }
 
-        public object GetPropertyValue(TreesorNodePath path, string name)
+        public object GetPropertyValue(TreesorItemPath path, string name)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -312,7 +312,7 @@ namespace Treesor.PSDriveProvider
                 .RawValue;
         }
 
-        public void ClearPropertyValue(TreesorNodePath path, string name)
+        public void ClearPropertyValue(TreesorItemPath path, string name)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -337,12 +337,12 @@ namespace Treesor.PSDriveProvider
             collection.Update(bsonDocument);
         }
 
-        public void CopyPropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
+        public void CopyPropertyValue(TreesorItemPath sourcePath, string sourceProperty, TreesorItemPath destinationPath, string destinationProperty)
         {
             this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
         }
 
-        public void MovePropertyValue(TreesorNodePath sourcePath, string sourceProperty, TreesorNodePath destinationPath, string destinationProperty)
+        public void MovePropertyValue(TreesorItemPath sourcePath, string sourceProperty, TreesorItemPath destinationPath, string destinationProperty)
         {
             this.SetPropertyValue(destinationPath, destinationProperty, this.GetPropertyValue(sourcePath, sourceProperty));
             this.ClearPropertyValue(sourcePath, sourceProperty);

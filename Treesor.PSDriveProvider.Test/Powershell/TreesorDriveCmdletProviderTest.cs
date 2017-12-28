@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using Treesor.Model;
 using Treesor.PSDriveProvider;
 using Xunit;
 using static Treesor.PSDriveProvider.Test.TestDataGenerators;

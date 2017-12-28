@@ -2,7 +2,7 @@
 using System;
 using Treesor.Model;
 
-namespace Treesor.PSDriveProvider
+namespace Treesor.Model
 {
     public class TreesorColumn
     {

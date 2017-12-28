@@ -23,14 +23,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(CopyItem)}({nameof(path)}={path},{nameof(copyPath)}={copyPath},{nameof(recurse)}={recurse})").Write();
 
-            this.DriveInfo.Service.CopyItem(path: TreesorNodePath.Parse(path), destinationPath: TreesorNodePath.Parse(copyPath), recurse: recurse);
+            this.DriveInfo.Service.CopyItem(path: TreesorItemPath.ParsePath(path), destinationPath: TreesorItemPath.ParsePath(copyPath), recurse: recurse);
         }
 
         protected override void GetChildItems(string path, bool recurse)
         {
             log.Trace().Message($"{nameof(GetChildItems)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
-            foreach (var childItem in this.DriveInfo.GetChildItems(TreesorNodePath.Parse(path), recurse))
+            foreach (var childItem in this.DriveInfo.GetChildItems(TreesorItemPath.ParsePath(path), recurse))
             {
                 log.Trace()
                     .Message($"{nameof(GetChildItems)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childItem)}.GetHashCode={childItem?.GetHashCode()},{nameof(childItem.Path)}={childItem.Path},isContainer={childItem.IsContainer})")
@@ -44,7 +44,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(GetChildNames)}({nameof(path)}={path},{nameof(returnContainers)}={returnContainers})").Write();
 
-            foreach (var childName in this.DriveInfo.GetChildNames(TreesorNodePath.Parse(path), returnContainers))
+            foreach (var childName in this.DriveInfo.GetChildNames(TreesorItemPath.ParsePath(path), returnContainers))
             {
                 log.Trace()
                     .Message($"{nameof(GetChildNames)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(childName)}={childName},{nameof(path)}={path},isContainer={true})")
@@ -58,7 +58,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)}={path})").Write();
 
-            var hasChildItems = this.DriveInfo.Service.HasChildItems(TreesorNodePath.Parse(path));
+            var hasChildItems = this.DriveInfo.Service.HasChildItems(TreesorItemPath.ParsePath(path));
 
             log.Trace().Message($"{nameof(HasChildItems)}({nameof(path)}={path})->{hasChildItems}").Write();
 
@@ -76,7 +76,7 @@ namespace Treesor.PSDriveProvider
                 //    newItem = this.TreesorDriveInfo.NewItem(TreesorNodePath.Parse(path), itemTypeName, TreesorDriveInfo.NullValue, out isContainer);
                 //else
 
-                var newItem = this.DriveInfo.Service.NewItem(TreesorNodePath.Parse(path), newItemValue);
+                var newItem = this.DriveInfo.Service.NewItem(TreesorItemPath.ParsePath(path), newItemValue);
 
                 log.Trace()
                     .Message($"{nameof(NewItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(newItem)}.GetHashCode='{newItem?.GetHashCode()}',{nameof(path)}='{newItem.Path}',isContainer='{newItem.IsContainer}'")
@@ -107,14 +107,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(RemoveItem)}({nameof(path)}={path},{nameof(recurse)}={recurse})").Write();
 
-            this.DriveInfo.Service.RemoveItem(TreesorNodePath.Parse(path), recurse);
+            this.DriveInfo.Service.RemoveItem(TreesorItemPath.ParsePath(path), recurse);
         }
 
         protected override void RenameItem(string path, string newName)
         {
             log.Debug($"{nameof(RenameItem)}({nameof(path)}='{path}', {nameof(newName)}='{newName}'s)");
 
-            this.DriveInfo.Service.RenameItem(TreesorNodePath.Parse(path), newName);
+            this.DriveInfo.Service.RenameItem(TreesorItemPath.ParsePath(path), newName);
         }
 
         #endregion Override ContainerCmdletProvider methods

@@ -1,6 +1,7 @@
-﻿using Xunit;
+﻿using Treesor.Model;
+using Xunit;
 
-namespace Treesor.PSDriveProvider.Test.Services
+namespace Treesor.Model.Test
 {
     public class TreesorColumnTest
     {

@@ -45,7 +45,7 @@
             this.treesorService = TreesorModelFactory(driveInfo.Root);
         }
 
-        internal IEnumerable<TreesorItem> GetChildItems(TreesorNodePath treesorNodePath, bool recurse)
+        internal IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath, bool recurse)
         {
             if (recurse)
                 return this.treesorService.GetDescendants(treesorNodePath);
@@ -64,7 +64,7 @@
             this.treesorService.Dispose();
         }
 
-        internal IEnumerable<string> GetChildNames(TreesorNodePath treesorNodePath, ReturnContainers returnContainers)
+        internal IEnumerable<string> GetChildNames(TreesorItemPath treesorNodePath, ReturnContainers returnContainers)
         {
             return this.treesorService
                 .GetChildItems(treesorNodePath)

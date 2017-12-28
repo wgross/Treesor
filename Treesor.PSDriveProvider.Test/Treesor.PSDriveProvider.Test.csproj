@@ -157,8 +157,6 @@
     <Compile Include="Services\LiteDbTreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Services\LiteDbTreesorServiceUsingHierarchyTest.cs" />
     <Compile Include="Services\LiteDbTreesorServiceUsingPropertiesTest.cs" />
-    <Compile Include="Services\TreesorColumnTest.cs" />
-    <Compile Include="Services\TreesorItemTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingColumnsTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingHierarchyTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -166,7 +164,6 @@
     <Compile Include="Powershell\TreesorDriveContainerCmdletProviderTest.cs" />
     <Compile Include="Powershell\TreesorDriveItemCmdletProviderTest.cs" />
     <Compile Include="Powershell\TreesorDriveNavigationCmdletProviderTest.cs" />
-    <Compile Include="Powershell\TreesorNodePathTest.cs" />
     <Compile Include="Services\InMemoryTreesorServiceUsingPropertiesTest.cs" />
     <Compile Include="Powershell\TreesorDriveDynamicPropertyCmdletProviderTest.cs" />
   </ItemGroup>

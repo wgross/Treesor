@@ -18,9 +18,9 @@ namespace Treesor.Model
         {
         }
 
-        public static TreesorModelException DuplicateItem(TreesorNodePath path) => new TreesorModelException(TreesorModelErrorCodes.DuplicateItem, $"item(path='{path}') already exists");
+        public static TreesorModelException DuplicateItem(TreesorItemPath path) => new TreesorModelException(TreesorModelErrorCodes.DuplicateItem, $"item(path='{path}') already exists");
 
-        public static TreesorModelException NotImplemented(TreesorNodePath treesorNodePath, string message) => new TreesorModelException(TreesorModelErrorCodes.NotImplemented, message);
+        public static TreesorModelException NotImplemented(TreesorItemPath treesorNodePath, string message) => new TreesorModelException(TreesorModelErrorCodes.NotImplemented, message);
 
         public static TreesorModelException MissingItem(string path) => new TreesorModelException(TreesorModelErrorCodes.MissingItem, $"item(path='{path}') doesn't exist");
     }

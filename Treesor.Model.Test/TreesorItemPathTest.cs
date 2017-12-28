@@ -1,18 +1,18 @@
 ﻿using Elementary.Hierarchy;
 using System.Linq;
-using Treesor.Model;
 using Xunit;
+using static Treesor.Model.TreesorItemPath;
 
-namespace Treesor.PSDriveProvider.Test
+namespace Treesor.Model.Test
 {
-    public class TreesorNodePathTest
+    public class TreesorItemPathTest
     {
         [Fact]
-        public void Create_TreesorNodePath_from_path_item_array()
+        public void TreesorNodePath_from_path_item_array()
         {
             // ACT
 
-            TreesorNodePath result = TreesorNodePath.Create("a", "b");
+            TreesorItemPath result = CreatePath("a", "b");
 
             // ASSERT
 
@@ -20,7 +20,7 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Create_TreesorNodePath_from_HierarchyPath()
+        public void TreesorNodePath_from_HierarchyPath()
         {
             // ARRANGE
 
@@ -28,7 +28,7 @@ namespace Treesor.PSDriveProvider.Test
 
             // ACT
 
-            TreesorNodePath result = TreesorNodePath.Create(treeKey.Items.ToArray());
+            TreesorItemPath result = CreatePath(treeKey.Items.ToArray());
 
             // ASSERT
 
@@ -37,11 +37,11 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Parse_HierarchyPath_from_string_with_slashes()
+        public void TreesorNodePath_from_string_with_slashes()
         {
             // ARRANGE
 
-            TreesorNodePath result = TreesorNodePath.Parse("a/b");
+            TreesorItemPath result = ParsePath("a/b");
 
             // ASSERT
 
@@ -49,11 +49,11 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Parse_HierarchyPath_from_string_with_backslashes()
+        public void TreesorNodePath_from_string_with_backslashes()
         {
             // ARRANGE
 
-            TreesorNodePath result = TreesorNodePath.Parse(@"a\b");
+            TreesorItemPath result = ParsePath(@"a\b");
 
             // ASSERT
 
@@ -61,11 +61,11 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void Parse_HierarchyPath_from_string_with_mixed_slashes_and_backslashes()
+        public void TreesotNodePath_from_string_with_mixed_slashes_and_backslashes()
         {
             // ARRANGE
 
-            TreesorNodePath result = TreesorNodePath.Parse(@"a\b/c");
+            TreesorItemPath result = ParsePath(@"a\b/c");
 
             // ASSERT
 
@@ -73,12 +73,12 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void TreesorNodePathes_are_equal_if_HierarchyPaths_are_equal()
+        public void TreesorNodePaths_are_equal_if_HierarchyPaths_are_equal()
         {
             // ARRANGE
 
-            var left = TreesorNodePath.Create("a", "b");
-            var right = TreesorNodePath.Create("a", "b");
+            var left = CreatePath("a", "b");
+            var right = CreatePath("a", "b");
 
             // ACT
 
@@ -93,12 +93,12 @@ namespace Treesor.PSDriveProvider.Test
         }
 
         [Fact]
-        public void TreesorNodePathes_are_not_equal_if_HierarchyPaths_are_not_equal()
+        public void TreesorNodePaths_are_not_equal_if_HierarchyPaths_are_not_equal()
         {
             // ARRANGE
 
-            var left = TreesorNodePath.Create("b", "a");
-            var right = TreesorNodePath.Create("a", "b");
+            var left = CreatePath("b", "a");
+            var right = CreatePath("a", "b");
 
             // ACT
 
@@ -117,9 +117,9 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ASSERT
 
-            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Create());
-            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Create(""));
-            Assert.Equal(TreesorNodePath.RootPath, TreesorNodePath.Parse(@"\"));
+            Assert.Equal(RootPath, CreatePath());
+            Assert.Equal(RootPath, CreatePath(""));
+            Assert.Equal(RootPath, ParsePath(@"\"));
         }
     }
 }

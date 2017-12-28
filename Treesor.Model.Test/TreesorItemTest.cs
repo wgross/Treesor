@@ -1,8 +1,8 @@
 ﻿using System;
-using Treesor.Model;
 using Xunit;
+using static Treesor.Model.TreesorItemPath;
 
-namespace Treesor.PSDriveProvider.Test.Service
+namespace Treesor.Model.Test
 {
     public class TreesorItemTest
     {
@@ -12,8 +12,8 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            var a = new TreesorItem(TreesorNodePath.Create("a"), id);
-            var b = new TreesorItem(TreesorNodePath.Create("b"), id);
+            var a = new TreesorItem(CreatePath("a"), id);
+            var b = new TreesorItem(CreatePath("b"), id);
 
             // ACT
 
@@ -32,8 +32,8 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ARRANGE
 
             var id = new Reference<Guid>(Guid.NewGuid());
-            var a = new TreesorItem(TreesorNodePath.Create("a"), id);
-            var b = new TreesorItem(TreesorNodePath.Create("b"), id);
+            var a = new TreesorItem(CreatePath("a"), id);
+            var b = new TreesorItem(CreatePath("b"), id);
 
             // ACT
 

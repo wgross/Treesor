@@ -51,9 +51,9 @@ namespace Treesor.PSDriveProvider.Test
 
         #region TreesorItems
 
-        public static TreesorItem TreesorItem(string name, Guid? id = null, Action<TreesorItem> setup = null) => TreesorItem(TreesorNodePath.Create(name), id, setup);
+        public static TreesorItem TreesorItem(string name, Guid? id = null, Action<TreesorItem> setup = null) => TreesorItem(TreesorItemPath.CreatePath(name), id, setup);
 
-        public static TreesorItem TreesorItem(TreesorNodePath path, Guid? id = null, Action<TreesorItem> setup = null)
+        public static TreesorItem TreesorItem(TreesorItemPath path, Guid? id = null, Action<TreesorItem> setup = null)
         {
             var tmp = new TreesorItem(path, new Reference<Guid>(id ?? Guid.NewGuid()));
             setup?.Invoke(tmp);

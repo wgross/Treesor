@@ -28,11 +28,11 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: value);
+            this.treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: value);
 
             // ASSERT
 
-            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column.Name));
+            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), column.Name));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -50,16 +50,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             var column1 = this.treesorService.CreateColumn(name: "p", type: typeof(string));
             var column2 = this.treesorService.CreateColumn(name: "q", type: typeof(int));
 
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: p_value);
+            this.treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: p_value);
 
             // ACT
 
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: q_value);
+            this.treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "q", value: q_value);
 
             // ASSERT
 
-            Assert.Equal(p_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column1.Name));
-            Assert.Equal(q_value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), column2.Name));
+            Assert.Equal(p_value, this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), column1.Name));
+            Assert.Equal(q_value, this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), column2.Name));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -79,11 +79,11 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: newValue);
+            treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: newValue);
 
             // ASSERT
 
-            Assert.Equal(newValue, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Equal(newValue, this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -99,15 +99,15 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Returns(true);
 
             this.treesorService.CreateColumn(name: "p", type: typeof(string));
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), "p", value);
+            this.treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), "p", value);
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: wrongValue));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: wrongValue));
 
             // ASSERT
 
-            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Equal(value, this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
             Assert.Equal($"Couldn't assign value '{wrongValue}'(type='System.Int32') to property 'p' at node '{id.Value}': value.GetType() must be 'System.String'", result.Message);
 
             hierarchyMock.VerifyAll();
@@ -125,7 +125,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: 5));
 
             // ASSERT
 
@@ -147,7 +147,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: 5));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: 5));
 
             // ASSERT
 
@@ -160,7 +160,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => treesorService.SetPropertyValue(TreesorNodePath.Create("a"), null, "value"));
+            var result = Assert.Throws<ArgumentNullException>(() => treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), null, "value"));
 
             // ASSERT
 
@@ -186,7 +186,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
         {
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             // ASSERT
 
@@ -209,7 +209,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             // ASSERT
 
@@ -222,7 +222,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => treesorService.GetPropertyValue(TreesorNodePath.Create("a"), null));
+            var result = Assert.Throws<ArgumentNullException>(() => treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), null));
 
             // ASSERT
 
@@ -255,15 +255,15 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Returns(true);
 
             treesorService.CreateColumn("p", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: value);
+            treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: value);
 
             // ACT
 
-            treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p");
+            treesorService.ClearPropertyValue(TreesorItemPath.CreatePath("a"), "p");
 
             // ASSERT
 
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -280,17 +280,17 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(string));
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "p", value: p_value);
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: q_value);
+            treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "p", value: p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "q", value: q_value);
 
             // ACT
 
-            treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "q");
+            treesorService.ClearPropertyValue(TreesorItemPath.CreatePath("a"), "q");
 
             // ASSERT
 
-            Assert.Equal(p_value, treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "p"));
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(p_value, treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -306,7 +306,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.ClearPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             // ASSERT
 
@@ -326,7 +326,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), "p"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.ClearPropertyValue(TreesorItemPath.CreatePath("a"), "p"));
 
             // ASSERT
 
@@ -339,7 +339,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => treesorService.ClearPropertyValue(TreesorNodePath.Create("a"), null));
+            var result = Assert.Throws<ArgumentNullException>(() => treesorService.ClearPropertyValue(TreesorItemPath.CreatePath("a"), null));
 
             // ASSERT
 
@@ -377,16 +377,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(string));
             treesorService.CreateColumn("q", typeof(string));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: root_p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: root_p_value);
 
             // ACT
 
-            treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q");
+            treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q");
 
             // ASSERT
 
-            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Equal(root_p_value, (string)treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -403,16 +403,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: node_p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: node_p_value);
 
             // ACT
 
-            treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.RootPath, "q");
+            treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.RootPath, "q");
 
             // ASSERT
 
-            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
+            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Equal(node_p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -433,16 +433,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("q", typeof(int));
             treesorService.CreateColumn("p", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: child_q_value);
+            treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "q", value: child_q_value);
 
             // ACT
 
-            treesorService.CopyPropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p");
+            treesorService.CopyPropertyValue(TreesorItemPath.CreatePath("a"), "q", TreesorItemPath.CreatePath(), "p");
 
             // ASSERT
 
-            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -458,16 +458,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: p_value);
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Node 'a' doesn't exist", result.Message);
-            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -487,16 +487,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Returns(true);
 
             treesorService.CreateColumn("p", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: root_p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: root_p_value);
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Property 'q' doesn't exist", result.Message);
-            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -516,12 +516,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.CopyPropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p"));
+                treesorService.CopyPropertyValue(TreesorItemPath.CreatePath("a"), "q", TreesorItemPath.CreatePath(), "p"));
 
             // ASSERT
 
             Assert.Equal("Node 'a' doesn't exist", result.Message);
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -540,12 +540,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Property 'p' doesn't exist", result.Message);
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
@@ -568,18 +568,18 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(double));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: root_p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: root_p_value);
 
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.CopyPropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                treesorService.CopyPropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal($"Couldn't assign value '{root_p_value}'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -604,16 +604,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: root_p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: root_p_value);
 
             // ACT
 
-            treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q");
+            treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q");
 
             // ASSERT
 
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Equal(root_p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -629,16 +629,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: p_value);
 
             // ACT
 
-            treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.RootPath, "q");
+            treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.RootPath, "q");
 
             // ASSERT
 
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -659,16 +659,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.CreateColumn("q", typeof(int));
-            this.treesorService.SetPropertyValue(TreesorNodePath.Create("a"), name: "q", value: child_q_value);
+            this.treesorService.SetPropertyValue(TreesorItemPath.CreatePath("a"), name: "q", value: child_q_value);
 
             // ACT
 
-            this.treesorService.MovePropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p");
+            this.treesorService.MovePropertyValue(TreesorItemPath.CreatePath("a"), "q", TreesorItemPath.CreatePath(), "p");
 
             // ASSERT
 
-            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(child_q_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }
@@ -684,16 +684,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: p_value);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: p_value);
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Node 'a' doesn't exist", result.Message);
-            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(p_value, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -713,16 +713,16 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
                 .Returns(true);
 
             treesorService.CreateColumn("p", typeof(int));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: 5);
 
             // ACT
 
-            var result = Assert.Throws<InvalidOperationException>(() => treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+            var result = Assert.Throws<InvalidOperationException>(() => treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Property 'q' doesn't exist", result.Message);
-            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -742,12 +742,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.MovePropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p"));
+                treesorService.MovePropertyValue(TreesorItemPath.CreatePath("a"), "q", TreesorItemPath.CreatePath(), "p"));
 
             // ASSERT
 
             Assert.Equal("Node 'a' doesn't exist", result.Message);
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             hierarchyMock.VerifyAll();
         }
@@ -766,12 +766,12 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Property 'p' doesn't exist", result.Message);
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
@@ -794,18 +794,18 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             treesorService.CreateColumn("p", typeof(int));
             treesorService.CreateColumn("q", typeof(double));
-            treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: 5);
 
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Null(treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(5, (int)treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Null(treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             hierarchyMock.VerifyAll();
         }

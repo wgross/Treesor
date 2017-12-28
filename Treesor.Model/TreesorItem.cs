@@ -4,7 +4,7 @@ namespace Treesor.Model
 {
     public class TreesorItem
     {
-        public TreesorItem(TreesorNodePath path, Reference<Guid> id)
+        public TreesorItem(TreesorItemPath path, Reference<Guid> id)
         {
             this.Path = path;
             this.IdRef = id;
@@ -19,7 +19,7 @@ namespace Treesor.Model
         /// </summary>
         public bool IsContainer => true;
 
-        public TreesorNodePath Path { get; }
+        public TreesorItemPath Path { get; }
 
         /// <summary>
         /// Equality of an entity depends on the Id

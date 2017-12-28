@@ -298,12 +298,12 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                this.treesorService.MovePropertyValue(TreesorNodePath.Create("a"), "q", TreesorNodePath.Create(), "p"));
+                this.treesorService.MovePropertyValue(TreesorItemPath.CreatePath("a"), "q", TreesorItemPath.CreatePath(), "p"));
 
             // ASSERT
 
             Assert.Equal("Node 'a' doesn't exist", result.Message);
-            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
 
             this.hierarchyMock.VerifyAll();
         }
@@ -323,12 +323,12 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                this.treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal("Property 'p' doesn't exist", result.Message);
-            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             var id = new Reference<Guid>(Guid.NewGuid());
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create<string>(), out id), Times.Never());
@@ -352,18 +352,18 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             this.treesorService.CreateColumn("p", typeof(int));
             this.treesorService.CreateColumn("q", typeof(double));
-            this.treesorService.SetPropertyValue(TreesorNodePath.RootPath, name: "p", value: 5);
+            this.treesorService.SetPropertyValue(TreesorItemPath.RootPath, name: "p", value: 5);
 
             // ACT
 
             var result = Assert.Throws<InvalidOperationException>(() =>
-                this.treesorService.MovePropertyValue(TreesorNodePath.RootPath, "p", TreesorNodePath.Create("a"), "q"));
+                this.treesorService.MovePropertyValue(TreesorItemPath.RootPath, "p", TreesorItemPath.CreatePath("a"), "q"));
 
             // ASSERT
 
             Assert.Equal($"Couldn't assign value '5'(type='System.Int32') to property 'q' at node '{id_a.Value.ToString()}': value.GetType() must be 'System.Double'", result.Message);
-            Assert.Equal(5, (int)this.treesorService.GetPropertyValue(TreesorNodePath.Create(), "p"));
-            Assert.Null(this.treesorService.GetPropertyValue(TreesorNodePath.Create("a"), "q"));
+            Assert.Equal(5, (int)this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath(), "p"));
+            Assert.Null(this.treesorService.GetPropertyValue(TreesorItemPath.CreatePath("a"), "q"));
 
             this.hierarchyMock.VerifyAll();
         }

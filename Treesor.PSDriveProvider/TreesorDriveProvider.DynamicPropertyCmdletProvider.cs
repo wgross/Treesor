@@ -16,7 +16,7 @@ namespace Treesor.PSDriveProvider
             log.Trace().Message($"{nameof(GetProperty)}({nameof(path)}='{path}',{nameof(providerSpecificPickList)}='{string.Join(",", providerSpecificPickList)}')").Write();
 
             this.WritePropertyObject(
-                this.DriveInfo.Service.GetPropertyValue(TreesorNodePath.Parse(path), providerSpecificPickList.First()),
+                this.DriveInfo.Service.GetPropertyValue(TreesorItemPath.ParsePath(path), providerSpecificPickList.First()),
                 path);
         }
 
@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(SetProperty)}({nameof(path)}='{path}',{nameof(propertyValue)}='{propertyValue}')").Write();
             var property = propertyValue.Properties.First();
-            this.DriveInfo.Service.SetPropertyValue(TreesorNodePath.Create(path), property.Name, property.Value);
+            this.DriveInfo.Service.SetPropertyValue(TreesorItemPath.CreatePath(path), property.Name, property.Value);
         }
 
         public object SetPropertyDynamicParameters(string path, PSObject propertyValue)
@@ -45,7 +45,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ClearProperty)}({nameof(path)}='{path}',{nameof(propertyToClear)}='{propertyToClear}')").Write();
 
-            this.DriveInfo.Service.ClearPropertyValue(TreesorNodePath.Parse(path), propertyToClear.First());
+            this.DriveInfo.Service.ClearPropertyValue(TreesorItemPath.ParsePath(path), propertyToClear.First());
         }
 
         public object ClearPropertyDynamicParameters(string path, Collection<string> propertyToClear)
@@ -126,7 +126,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(CopyProperty)}({nameof(sourcePath)}='{sourcePath}',{nameof(sourceProperty)}='{sourceProperty}',{nameof(destinationPath)}='{destinationPath}',{nameof(destinationProperty)}='{destinationProperty}')").Write();
 
-            this.DriveInfo.Service.CopyPropertyValue(TreesorNodePath.Create(sourcePath), sourceProperty, TreesorNodePath.Parse(destinationPath), destinationProperty);
+            this.DriveInfo.Service.CopyPropertyValue(TreesorItemPath.CreatePath(sourcePath), sourceProperty, TreesorItemPath.ParsePath(destinationPath), destinationProperty);
         }
 
         public object CopyPropertyDynamicParameters(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)
@@ -140,7 +140,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(MoveProperty)}({nameof(sourcePath)}='{sourcePath}',{nameof(sourceProperty)}='{sourceProperty}',{nameof(destinationPath)}='{destinationPath}',{nameof(destinationProperty)}='{destinationProperty}')").Write();
 
-            this.DriveInfo.Service.MovePropertyValue(TreesorNodePath.Parse(sourcePath), sourceProperty, TreesorNodePath.Create(destinationPath), destinationProperty);
+            this.DriveInfo.Service.MovePropertyValue(TreesorItemPath.ParsePath(sourcePath), sourceProperty, TreesorItemPath.CreatePath(destinationPath), destinationProperty);
         }
 
         public object MovePropertyDynamicParameters(string sourcePath, string sourceProperty, string destinationPath, string destinationProperty)

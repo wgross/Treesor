@@ -3,42 +3,42 @@
     using Elementary.Hierarchy;
     using System.Linq;
 
-    public sealed class TreesorNodePath
+    public sealed class TreesorItemPath
     {
-        public static readonly TreesorNodePath RootPath = new TreesorNodePath(itemPath: Elementary.Hierarchy.HierarchyPath.Create<string>());
+        public static readonly TreesorItemPath RootPath = new TreesorItemPath(itemPath: Elementary.Hierarchy.HierarchyPath.Create<string>());
 
-        public static TreesorNodePath Parse(string drivePath)
+        public static TreesorItemPath ParsePath(string drivePath)
         {
-            TreesorNodePath result;
+            TreesorItemPath result;
             TryParse(drivePath, out result);
             return result;
         }
 
-        public static bool TryParse(string drivePath, out TreesorNodePath parsedPath)
+        public static bool TryParse(string drivePath, out TreesorItemPath parsedPath)
         {
             if (string.IsNullOrEmpty(drivePath))
                 parsedPath = RootPath;
 
-            parsedPath = new TreesorNodePath(Elementary.Hierarchy.HierarchyPath.Parse(drivePath, @"\/"));
+            parsedPath = new TreesorItemPath(Elementary.Hierarchy.HierarchyPath.Parse(drivePath, @"\/"));
             return true; // currently no error cases are implemented
         }
 
-        public static TreesorNodePath Create(HierarchyPath<string> treeKey)
+        public static TreesorItemPath Create(HierarchyPath<string> treeKey)
         {
-            return new TreesorNodePath(treeKey);
+            return new TreesorItemPath(treeKey);
         }
 
-        public static TreesorNodePath Create(params string[] pathItems)
+        public static TreesorItemPath CreatePath(params string[] pathItems)
         {
             if (pathItems.Count() == 1 && string.IsNullOrEmpty(pathItems.First()))
                 return RootPath;
 
-            return new TreesorNodePath(Elementary.Hierarchy.HierarchyPath.Create(pathItems));
+            return new TreesorItemPath(Elementary.Hierarchy.HierarchyPath.Create(pathItems));
         }
 
         #region Construction and initialization of this instance
 
-        private TreesorNodePath(HierarchyPath<string> itemPath)
+        private TreesorItemPath(HierarchyPath<string> itemPath)
         {
             this.itemPath = itemPath;
         }
@@ -67,7 +67,7 @@
 
         public override bool Equals(object other)
         {
-            TreesorNodePath otherAsNodePath = other as TreesorNodePath;
+            TreesorItemPath otherAsNodePath = other as TreesorItemPath;
 
             if (otherAsNodePath == null)
                 return false; // wrong type

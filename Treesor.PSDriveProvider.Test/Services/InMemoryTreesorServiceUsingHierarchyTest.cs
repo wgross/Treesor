@@ -25,7 +25,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT & ASSERT
 
-            this.treesorService.NewItem(TreesorNodePath.Create("item"), newItemValue: null);
+            this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), newItemValue: null);
 
             // ASSERT
 
@@ -37,11 +37,11 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.NewItem(TreesorNodePath.Create("item"), new object()));
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), new object()));
 
             // ASSERT
 
-            Assert.True(result.Message.Contains($"A value for node {TreesorNodePath.Create("item")} is not allowed"));
+            Assert.True(result.Message.Contains($"A value for node {TreesorItemPath.CreatePath("item")} is not allowed"));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = Assert.Throws<ArgumentException>(() => this.treesorService.NewItem(TreesorNodePath.Create("item"), newItemValue: null));
+            var result = Assert.Throws<ArgumentException>(() => this.treesorService.NewItem(TreesorItemPath.CreatePath("item"), newItemValue: null));
 
             // ASSERT
 
@@ -78,7 +78,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.ItemExists(TreesorNodePath.Create("item"));
+            var result = this.treesorService.ItemExists(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -98,7 +98,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.ItemExists(TreesorNodePath.Create("item"));
+            var result = this.treesorService.ItemExists(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -122,13 +122,13 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.GetItem(TreesorNodePath.Create("item"));
+            var result = this.treesorService.GetItem(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
             Assert.NotNull(result);
             Assert.True(result.IsContainer);
-            Assert.Equal(TreesorNodePath.Create("item"), result.Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item"), result.Path);
             Assert.Equal(id.Value, result.Id);
 
             this.hierarchyMock.Verify(s => s.TryGetValue(HierarchyPath.Create("item"), out id), Times.Once());
@@ -147,7 +147,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.GetItem(TreesorNodePath.Create("item"));
+            var result = this.treesorService.GetItem(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -177,7 +177,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.SetItem(TreesorNodePath.Create("item"), null));
+            var result = Assert.Throws<NotSupportedException>(() => this.treesorService.SetItem(TreesorItemPath.CreatePath("item"), null));
 
             // ASSERT
 
@@ -193,7 +193,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            this.treesorService.ClearItem(TreesorNodePath.Create("item"));
+            this.treesorService.ClearItem(TreesorItemPath.CreatePath("item"));
         }
 
         #endregion ClearItem: Does nothing
@@ -205,7 +205,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            this.treesorService.RemoveItem(TreesorNodePath.Create("item"), false);
+            this.treesorService.RemoveItem(TreesorItemPath.CreatePath("item"), false);
 
             // ASSERT
 
@@ -217,7 +217,7 @@ namespace Treesor.PSDriveProvider.Test.Service
         {
             // ACT
 
-            this.treesorService.RemoveItem(TreesorNodePath.Create("item"), true);
+            this.treesorService.RemoveItem(TreesorItemPath.CreatePath("item"), true);
 
             // ASSERT
 
@@ -276,13 +276,13 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.GetChildItems(TreesorNodePath.Create("item"));
+            var result = this.treesorService.GetChildItems(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
             Assert.Equal(2, result.Count());
-            Assert.Equal(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
-            Assert.Equal(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "a"), result.ElementAt(0).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "b"), result.ElementAt(1).Path);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
         }
@@ -335,15 +335,15 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.GetDescendants(TreesorNodePath.Create("item"));
+            var result = this.treesorService.GetDescendants(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
             Assert.Equal(4, result.Count());
-            Assert.Equal(TreesorNodePath.Create("item", "a"), result.ElementAt(0).Path);
-            Assert.Equal(TreesorNodePath.Create("item", "b"), result.ElementAt(1).Path);
-            Assert.Equal(TreesorNodePath.Create("item", "b", "c"), result.ElementAt(2).Path);
-            Assert.Equal(TreesorNodePath.Create("item", "b", "d"), result.ElementAt(3).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "a"), result.ElementAt(0).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "b"), result.ElementAt(1).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "b", "c"), result.ElementAt(2).Path);
+            Assert.Equal(TreesorItemPath.CreatePath("item", "b", "d"), result.ElementAt(3).Path);
 
             this.hierarchyMock.Verify(h => h.Traverse(HierarchyPath.Create("item")), Times.Once());
         }
@@ -374,7 +374,7 @@ namespace Treesor.PSDriveProvider.Test.Service
             // ACT
 
             this.treesorService
-                .RenameItem(TreesorNodePath.Create("item"), newName: "item2");
+                .RenameItem(TreesorItemPath.CreatePath("item"), newName: "item2");
 
             // ASSERT
 
@@ -407,7 +407,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false);
+            this.treesorService.CopyItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"), false);
 
             // ASSERT
 
@@ -458,7 +458,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), recurse: true);
+            this.treesorService.CopyItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"), recurse: true);
 
             // ASSERT
 
@@ -491,7 +491,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false);
+            this.treesorService.CopyItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"), false);
 
             // ASSERT
 
@@ -522,7 +522,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.CopyItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"), false);
+            this.treesorService.CopyItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"), false);
 
             // ASSERT
 
@@ -563,7 +563,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.MoveItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"));
+            this.treesorService.MoveItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"));
 
             // ASSERT
 
@@ -615,7 +615,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.MoveItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"));
+            this.treesorService.MoveItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"));
 
             // ASSERT
             this.hierarchyMock.Verify(h => h.TryGetValue(HierarchyPath.Create("item"), out item_value), Times.Once());
@@ -655,7 +655,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.MoveItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"));
+            this.treesorService.MoveItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"));
 
             // ASSERT
 
@@ -687,7 +687,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            this.treesorService.MoveItem(TreesorNodePath.Create("item"), TreesorNodePath.Create("item2"));
+            this.treesorService.MoveItem(TreesorItemPath.CreatePath("item"), TreesorItemPath.CreatePath("item2"));
 
             // ASSERT
 
@@ -716,7 +716,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.HasChildItems(TreesorNodePath.Create("item"));
+            var result = this.treesorService.HasChildItems(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -741,7 +741,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.HasChildItems(TreesorNodePath.Create("item"));
+            var result = this.treesorService.HasChildItems(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -762,7 +762,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = Assert.Throws<KeyNotFoundException>(() => this.treesorService.HasChildItems(TreesorNodePath.Create("item")));
+            var result = Assert.Throws<KeyNotFoundException>(() => this.treesorService.HasChildItems(TreesorItemPath.CreatePath("item")));
 
             // ASSERT
 
