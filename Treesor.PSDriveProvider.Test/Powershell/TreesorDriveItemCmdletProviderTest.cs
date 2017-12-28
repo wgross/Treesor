@@ -161,175 +161,125 @@ namespace Treesor.PSDriveProvider.Test
 
         #region Test-Path > ItemExists
 
-        [Fact]
-        public void Powershell_asks_service_for_existence_of_missing_root()
-        {
-            // ACT
-            // test for a missing item
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", @"custTree:\");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // item wasn't found and service was ask for the path
-
-            Assert.False(this.powershell.HadErrors);
-            Assert.False((bool)result.Last().BaseObject);
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Once());
-        }
-
-        [Fact]
-        public void Powershell_asks_service_for_existence_of_existing_root()
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        public void Powershell_asks_service_for_existence_of_existing_item(string path)
         {
             // ARRANGE
-            this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.RootPath)).Returns(true);
+            // root exists
+
+            this.treesorService
+                .Setup(s => s.ItemExists(TreesorNodePath.Create(path)))
+                .Returns(true);
 
             // ACT
-            // test for a missing item
+            // test for a root
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", @"custTree:\");
+                .AddCommand("Test-Path").AddParameter("Path", $"custTree:\\{path}");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
             // item wasn't found and service was ask for the path
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create(path)), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.True((bool)result.Last().BaseObject);
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Once);
         }
 
-        [Fact]
-        public void Powershell_asks_service_for_existence_of_missing_item()
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        public void Powershell_asks_service_for_existence_of_missing_item(string path)
         {
             // ACT
             // test for a missing item
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", @"custTree:\item");
+                .AddCommand("Test-Path").AddParameter("Path", $"custTree:\\{path}");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
-            // item wasn't found and service was ask for the path
+            // item wasn't found and service was asked for the path
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create(path)), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.False((bool)result.Last().BaseObject);
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once);
-        }
-
-        [Fact]
-        public void Powershell_asks_service_for_existence_of_exiting_item()
-        {
-            // ARRANGE
-
-            this.treesorService.Setup(s => s.ItemExists(TreesorNodePath.Create("item"))).Returns(true);
-
-            // ACT
-            // test for a missing item
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Test-Path").AddParameter("Path", @"custTree:\item");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // item wasn't found and service was ask for the path
-
-            Assert.False(this.powershell.HadErrors);
-            Assert.True((bool)result.Last().BaseObject);
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create("item")), Times.Once);
         }
 
         #endregion Test-Path > ItemExists
 
         #region Get-Item > GetItem, MakePath
 
-        [Fact]
-        public void Powershell_retrieves_missing_root_item()
+        [Theory]
+        [InlineData("")]
+        [InlineData("item")]
+        public void Powershell_retrieves_missing_item(string path)
         {
             // ACT
             // getting a missing item fails
+            this.treesorService
+                .Setup(s => s.GetItem(TreesorNodePath.Create(path)))
+                .Throws(TreesorModelException.MissingItem(path));
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Get-Item").AddParameter("Path", @"custTree:\");
+                    .AddCommand("Get-Item").AddParameter("Path", $"custTree:\\{path}");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
             // reading an item that doesn't exist is an error
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.Create(path)), Times.Never());
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create(path)), Times.Once());
 
             Assert.True(this.powershell.HadErrors);
-
-            this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Never());
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
         }
 
-        [Fact]
-        public void Powershell_retrieves_existing_root_item()
+        [Theory]
+        [InlineData(@"TreesorDriveProvider\Treesor::\", "")]
+        [InlineData("", "item")]
+        [InlineData(@"TreesorDriveProvider\Treesor::item", @"item\a")]
+        public void Powershell_retrieves_existing_item(string parentPath, string path)
         {
             // ARRANGE
+            // item exists
 
-            Reference<Guid> id_root;
-            this.treesorService.Setup(s => s.GetItem(TreesorNodePath.RootPath)).Returns(new TreesorItem(TreesorNodePath.RootPath, id_root = new Reference<Guid>(Guid.NewGuid())));
-
-            // ACT
-            // test for a missing item
-
-            this.powershell
-                .AddStatement()
-                .AddCommand("Get-Item").AddParameter("Path", @"custTree:\");
-
-            var result = this.powershell.Invoke();
-
-            // ASSERT
-            // reading an item that doesn't exist is an error
-
-            Assert.False(this.powershell.HadErrors);
-            Assert.IsType<TreesorItem>(result.Last().BaseObject);
-            Assert.Equal("TreesorDriveProvider\\Treesor::", result.Last().Properties["PSPath"].Value);
-
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.RootPath), Times.Once());
-            this.treesorService.VerifyAll();
-        }
-
-        [Fact]
-        public void Powershell_retrieves_existing_node_item()
-        {
-            // ARRANGE
-
-            Reference<Guid> id_root;
             this.treesorService
-                .Setup(s => s.GetItem(TreesorNodePath.Create("item", "a")))
-                .Returns(new TreesorItem(TreesorNodePath.Create("item", "a"), id_root = new Reference<Guid>(Guid.NewGuid())));
+                .Setup(s => s.GetItem(TreesorNodePath.Parse(path)))
+                .Returns(TreesorItem(TreesorNodePath.Parse(path)));
 
             // ACT
-            // test for a missing item
+            // retrieve item
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Get-Item").AddParameter("Path", @"custTree:\item\a");
+                    .AddCommand("Get-Item")
+                        .AddParameter("Path", $@"custTree:\{path}");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
-            // reading an item that doesn't exist is an error
+            // item was read and written to the pipe
+
+            this.treesorService.VerifyAll();
+            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Parse(path)), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.IsType<TreesorItem>(result.Last().BaseObject);
-            Assert.Equal(@"TreesorDriveProvider\Treesor::item\a", result.Last().Properties["PSPath"].Value);
-            Assert.Equal(@"TreesorDriveProvider\Treesor::item", result.Last().Properties["PSParentPath"].Value);
-
-            this.treesorService.Verify(s => s.GetItem(TreesorNodePath.Create("item", "a")), Times.Once());
-            this.treesorService.VerifyAll();
+            Assert.Equal($@"TreesorDriveProvider\Treesor::{path}", result.Last().Properties["PSPath"].Value);
+            Assert.Equal(parentPath, result.Last().Properties["PSParentPath"].Value);
         }
 
         #endregion Get-Item > GetItem, MakePath
@@ -337,30 +287,34 @@ namespace Treesor.PSDriveProvider.Test
         #region Set-Item > ItemExists, SetItem
 
         [Fact]
-        public void Powershell_sets_root_item()
+        public void Powershell_set_item_fails()
         {
             // ARRANGE
             // setting a value isn't supported currently
 
             this.treesorService
                 .Setup(s => s.SetItem(It.IsAny<TreesorNodePath>(), It.IsAny<object>()))
-                .Throws<NotSupportedException>();
+                .Throws(TreesorModelException.NotImplemented(TreesorNodePath.RootPath, "setting value of item(path='') isn't supported"));
 
             // ACT
             // setting a missing item fails
 
             this.powershell
                 .AddStatement()
-                .AddCommand("Set-Item").AddParameter("Path", @"custTree:\").AddParameter("Value", "value");
+                    .AddCommand("Set-Item")
+                    .AddParameter("Path", @"custTree:\")
+                    .AddParameter("Value", "value");
 
             var result = this.powershell.Invoke();
 
             // ASSERT
             // ps invokes SetItem in any case to create or update the Item
 
-            Assert.True(this.powershell.HadErrors);
+            this.treesorService.VerifyAll();
             this.treesorService.Verify(s => s.ItemExists(TreesorNodePath.RootPath), Times.Never());
             this.treesorService.Verify(s => s.SetItem(TreesorNodePath.RootPath, "value"), Times.Once());
+
+            Assert.True(this.powershell.HadErrors);
         }
 
         #endregion Set-Item > ItemExists, SetItem
@@ -368,7 +322,7 @@ namespace Treesor.PSDriveProvider.Test
         #region Clear-Item > ItemExists, ClearItem
 
         [Fact]
-        public void Powershell_clears_root_item()
+        public void Powershell_clears_item_fails_silently()
         {
             // ACT
             // getting a missing item fails
@@ -380,7 +334,7 @@ namespace Treesor.PSDriveProvider.Test
             var result = this.powershell.Invoke();
 
             // ASSERT
-            // clearing an item is donw always
+            // clearing an item is done always without error
 
             Assert.False(this.powershell.HadErrors);
 

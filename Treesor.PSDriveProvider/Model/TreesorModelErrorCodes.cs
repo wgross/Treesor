@@ -9,6 +9,7 @@ namespace Treesor.Model
     public enum TreesorModelErrorCodes
     {
         DuplicateItem,
-        NotImplemented
+        NotImplemented,
+        MissingItem
     }
 }

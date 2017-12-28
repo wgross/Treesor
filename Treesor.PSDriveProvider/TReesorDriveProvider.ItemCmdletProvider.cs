@@ -45,13 +45,20 @@ namespace Treesor.PSDriveProvider
 
             var treesorNodePath = TreesorNodePath.Parse(path);
 
-            var item = this.DriveInfo.Service.GetItem(treesorNodePath);
+            try
+            {
+                var item = this.DriveInfo.Service.GetItem(treesorNodePath);
 
-            log.Debug()
-                .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item.GetHashCode)}={item?.GetHashCode()},{nameof(item.Path)}={item?.Path},{nameof(item.IsContainer)}={item?.IsContainer})")
-                .Write();
+                log.Debug()
+                    .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item.GetHashCode)}={item?.GetHashCode()},{nameof(item.Path)}={item?.Path},{nameof(item.IsContainer)}={item?.IsContainer})")
+                    .Write();
 
-            this.WriteItemObject(item, path, isContainer: item.IsContainer);
+                this.WriteItemObject(item, path, isContainer: item.IsContainer);
+            }
+            catch (TreesorModelException ex) when (TreesorModelErrorCodes.MissingItem.Equals(ex.ErrorCode))
+            {
+                this.WriteError(new ErrorRecord(ex, "getitem.1", ErrorCategory.ObjectNotFound, path));
+            }
         }
 
         protected override bool ItemExists(string path)
@@ -65,7 +72,14 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(SetItem)}({nameof(path)}={path},{nameof(value)}.GetHashCode={value?.GetHashCode()})").Write();
 
-            this.DriveInfo.Service.SetItem(TreesorNodePath.Parse(path), value);
+            try
+            {
+                this.DriveInfo.Service.SetItem(TreesorNodePath.Parse(path), value);
+            }
+            catch (TreesorModelException ex) when (TreesorModelErrorCodes.NotImplemented.Equals(ex.ErrorCode))
+            {
+                this.WriteError(new ErrorRecord(ex, "setitem.1", ErrorCategory.NotImplemented, path));
+            }
         }
 
         #endregion Override ItemCmdletProvider methods
