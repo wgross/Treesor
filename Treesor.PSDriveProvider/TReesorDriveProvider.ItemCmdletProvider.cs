@@ -15,8 +15,7 @@ namespace Treesor.PSDriveProvider
             log.Trace().Message($"{nameof(IsValidPath)}({nameof(path)}={path})").Write();
 
             // the path is considered valid if it can be parsed.
-            TreesorItemPath parsedPath;
-            return TryParse(path, out parsedPath);
+            return TryParsePath(path).Success;
         }
 
         protected override void ClearItem(string path)

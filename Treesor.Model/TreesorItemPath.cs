@@ -9,21 +9,18 @@
 
         public static TreesorItemPath ParsePath(string drivePath)
         {
-            TreesorItemPath result;
-            TryParse(drivePath, out result);
-            return result;
+            return TryParsePath(drivePath).Path;
         }
 
-        public static bool TryParse(string drivePath, out TreesorItemPath parsedPath)
+        public static (bool Success, TreesorItemPath Path) TryParsePath(string drivePath)
         {
             if (string.IsNullOrEmpty(drivePath))
-                parsedPath = RootPath;
+                return (true, RootPath);
 
-            parsedPath = new TreesorItemPath(Elementary.Hierarchy.HierarchyPath.Parse(drivePath, @"\/"));
-            return true; // currently no error cases are implemented
+            return (true, new TreesorItemPath(Elementary.Hierarchy.HierarchyPath.Parse(drivePath, @"\/")));
         }
 
-        public static TreesorItemPath Create(HierarchyPath<string> treeKey)
+        public static TreesorItemPath CreatePath(HierarchyPath<string> treeKey)
         {
             return new TreesorItemPath(treeKey);
         }

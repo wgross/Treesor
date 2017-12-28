@@ -153,7 +153,7 @@ namespace Treesor.PSDriveProvider
             return this.hierarchy
                 .Traverse(treesorNodePath.HierarchyPath)
                 .Children()
-                .Select(n => new TreesorItem(TreesorItemPath.Create(n.Path), n.Value));
+                .Select(n => new TreesorItem(TreesorItemPath.CreatePath(n.Path), n.Value));
         }
 
         public IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath)
@@ -161,7 +161,7 @@ namespace Treesor.PSDriveProvider
             return this.hierarchy
                 .Traverse(treesorNodePath.HierarchyPath)
                 .Descendants()
-                .Select(n => new TreesorItem(TreesorItemPath.Create(n.Path), n.Value));
+                .Select(n => new TreesorItem(TreesorItemPath.CreatePath(n.Path), n.Value));
         }
 
         public void CopyItem(TreesorItemPath path, TreesorItemPath destinationPath, bool recurse)
