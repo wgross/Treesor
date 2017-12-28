@@ -132,8 +132,6 @@
     <Compile Include="ITreesorModel.cs" />
     <Compile Include="Commands\NewTreesorColumnCommand.cs" />
     <Compile Include="Commands\TreesorDriveNameArgumentCompleter.cs" />
-    <Compile Include="Model\TreesorModelErrorCodes.cs" />
-    <Compile Include="Model\TreesorModelException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LiteDbCollection.cs" />
     <Compile Include="Services\LiteDbHierarchyVisitor.cs" />
@@ -147,12 +145,9 @@
     <Compile Include="TreesorDriveInfo.cs" />
     <Compile Include="TreesorDriveProvider.ItemCmdletProvider.cs" />
     <Compile Include="TreesorDriveProvider.NavigationCmdletProvider.cs" />
-    <Compile Include="Model\TreesorItem.cs" />
-    <Compile Include="Model\TreesorNodePath.cs" />
     <Compile Include="TreesorProviderIntrinsics.cs" />
     <Compile Include="Services\InMemoryTreesorService.cs" />
     <Compile Include="TreesorDriveProvider.DynamicPropertyCmdletProvider.cs" />
-    <Compile Include="Model\Reference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -175,6 +170,10 @@
     <ProjectReference Include="..\Treesor.Abstractions\Treesor.Abstractions.csproj">
       <Project>{7527bd7e-9335-48f0-81ff-00c842c48a0f}</Project>
       <Name>Treesor.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Treesor.Model\Treesor.Model.csproj">
+      <Project>{4cebadc7-5cfb-41da-94f1-1f30407c8e74}</Project>
+      <Name>Treesor.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

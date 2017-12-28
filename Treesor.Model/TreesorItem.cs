@@ -10,7 +10,7 @@ namespace Treesor.Model
             this.IdRef = id;
         }
 
-        internal Reference<Guid> IdRef { get; }
+        public Reference<Guid> IdRef { get; }
 
         public Guid Id => this.IdRef.Value;
 

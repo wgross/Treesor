@@ -175,6 +175,10 @@
       <Project>{7527bd7e-9335-48f0-81ff-00c842c48a0f}</Project>
       <Name>Treesor.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Treesor.Model\Treesor.Model.csproj">
+      <Project>{4cebadc7-5cfb-41da-94f1-1f30407c8e74}</Project>
+      <Name>Treesor.Model</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Treesor.PSDriveProvider\Treesor.PSDriveProvider.csproj">
       <Project>{a6ca94f3-1bef-4f7b-8a20-22b0ef222eb7}</Project>
       <Name>Treesor.PSDriveProvider</Name>
