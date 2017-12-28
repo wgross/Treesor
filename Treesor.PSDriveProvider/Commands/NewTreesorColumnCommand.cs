@@ -21,7 +21,7 @@ namespace Treesor.PSDriveProvider.Commands
                 typeName = this.ColumnType.ToString();
             
             this.WriteObject(this.GetTreesorDriveProvider(this.GetDriveName())?
-                .Service.CreateColumn(this.Name, Type.GetType(typeName, throwOnError: true, ignoreCase: true)));
+                .Model.CreateColumn(this.Name, Type.GetType(typeName, throwOnError: true, ignoreCase: true)));
         }
     }
 }

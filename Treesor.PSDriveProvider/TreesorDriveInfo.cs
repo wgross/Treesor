@@ -35,7 +35,7 @@
            ));
         }
 
-        internal ITreesorModel Service => this.treesorService;
+        internal ITreesorModel Model => this.treesorService;
 
         #region Creation and initialization of this instance
 

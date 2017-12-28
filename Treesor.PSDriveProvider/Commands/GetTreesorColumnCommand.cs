@@ -7,7 +7,7 @@ namespace Treesor.PSDriveProvider.Commands
     {
         protected override void ProcessRecord()
         {
-            foreach (var column in this.GetTreesorDriveProvider(this.GetDriveName())?.Service.GetColumns())
+            foreach (var column in this.GetTreesorDriveProvider(this.GetDriveName())?.Model.GetColumns())
                 this.WriteObject(column);
         }
     }

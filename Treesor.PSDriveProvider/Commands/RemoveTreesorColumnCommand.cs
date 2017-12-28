@@ -7,7 +7,7 @@ namespace Treesor.PSDriveProvider.Commands
     {
         protected override void ProcessRecord()
         {
-            this.GetTreesorDriveProvider(this.GetDriveName())?.Service.RemoveColumn(this.Name);
+            this.GetTreesorDriveProvider(this.GetDriveName())?.Model.RemoveColumn(this.Name);
         }
     }
 }

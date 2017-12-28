@@ -12,7 +12,7 @@ namespace Treesor.PSDriveProvider.Commands
 
         protected override void ProcessRecord()
         {
-            this.GetTreesorDriveProvider(this.GetDriveName())?.Service.RenameColumn(this.Name, this.NewName);
+            this.GetTreesorDriveProvider(this.GetDriveName())?.Model.RenameColumn(this.Name, this.NewName);
         }
     }
 }

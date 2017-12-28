@@ -13,10 +13,13 @@ namespace Treesor.PSDriveProvider.Test
     {
         private PowerShell powershell;
         private Mock<ITreesorModel> treesorModel;
+        private Mock<ITreesorItemRepository> treesorModelItems;
 
         public TreesorDriveDynamicColumnCmdletProviderTest()
         {
+            this.treesorModelItems = new Mock<ITreesorItemRepository>();
             this.treesorModel = new Mock<ITreesorModel>();
+            this.treesorModel.Setup(m => m.Items).Returns(this.treesorModelItems.Object);
 
             TreesorDriveInfo.TreesorModelFactory = _ => this.treesorModel.Object;
 

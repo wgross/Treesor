@@ -22,7 +22,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ClearItem)}({nameof(path)}={path})").Write();
 
-            this.DriveInfo.Service.ClearItem(TreesorItemPath.ParsePath(path));
+            this.DriveInfo.Model.ClearItem(TreesorItemPath.ParsePath(path));
         }
 
         protected override string[] ExpandPath(string path)
@@ -31,7 +31,7 @@ namespace Treesor.PSDriveProvider
 
             var filter = new WildcardPattern(path);
 
-            var tmp = from i in this.DriveInfo.Service.GetDescendants(TreesorItemPath.RootPath)
+            var tmp = from i in this.DriveInfo.Model.GetDescendants(TreesorItemPath.RootPath)
                       let itemPath = i.Path.ToString()
                       where filter.IsMatch(itemPath)
                       select itemPath;
@@ -47,7 +47,7 @@ namespace Treesor.PSDriveProvider
 
             try
             {
-                var item = this.DriveInfo.Service.GetItem(treesorNodePath);
+                var item = this.DriveInfo.Model.Items.Get(treesorNodePath);
 
                 log.Debug()
                     .Message($"{nameof(GetItem)}:Sending to pipe:{nameof(this.WriteItemObject)}({nameof(item.GetHashCode)}={item?.GetHashCode()},{nameof(item.Path)}={item?.Path},{nameof(item.IsContainer)}={item?.IsContainer})")
@@ -65,7 +65,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(ItemExists)}({nameof(path)}={path})").Write();
 
-            return this.DriveInfo.Service.ItemExists(TreesorItemPath.ParsePath(path));
+            return this.DriveInfo.Model.Items.Exists(TreesorItemPath.ParsePath(path));
         }
 
         protected override void SetItem(string path, object value)
@@ -74,7 +74,7 @@ namespace Treesor.PSDriveProvider
 
             try
             {
-                this.DriveInfo.Service.SetItem(TreesorItemPath.ParsePath(path), value);
+                this.DriveInfo.Model.SetItem(TreesorItemPath.ParsePath(path), value);
             }
             catch (TreesorModelException ex) when (TreesorModelErrorCodes.NotImplemented.Equals(ex.ErrorCode))
             {

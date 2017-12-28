@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Treesor.Model;
 
 namespace Treesor.Model
 {
@@ -9,14 +8,7 @@ namespace Treesor.Model
     /// </summary>
     public interface ITreesorModel : IDisposable
     {
-        bool ItemExists(TreesorItemPath treesorNodePath);
-
-        /// <summary>
-        /// Retrieves the item specified by te given path
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        TreesorItem GetItem(TreesorItemPath path);
+        ITreesorItemRepository Items { get; }
 
         void SetItem(TreesorItemPath rootPath, object value);
 

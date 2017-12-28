@@ -68,7 +68,7 @@
                 return null;
             }
 
-            DriveInfo.Service.Dispose();
+            DriveInfo.Model.Dispose();
 
             return treesorDriveInfo;
         }

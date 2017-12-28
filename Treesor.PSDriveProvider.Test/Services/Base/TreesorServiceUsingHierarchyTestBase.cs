@@ -70,7 +70,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = this.treesorService.ItemExists(TreesorItemPath.CreatePath("item"));
+            var result = this.treesorService.Items.Exists(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -89,7 +89,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = this.treesorService.ItemExists(TreesorItemPath.CreatePath("item"));
+            var result = this.treesorService.Items.Exists(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -112,7 +112,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = this.treesorService.GetItem(TreesorItemPath.CreatePath("item"));
+            var result = this.treesorService.Items.Get(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -136,7 +136,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
 
             // ACT
 
-            var result = this.treesorService.GetItem(TreesorItemPath.CreatePath("item"));
+            var result = this.treesorService.Items.Get(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 
@@ -149,7 +149,7 @@ namespace Treesor.PSDriveProvider.Test.Service.Base
         {
             // ACT
 
-            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.GetItem(null));
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorService.Items.Get(null));
 
             // ASSERT
 

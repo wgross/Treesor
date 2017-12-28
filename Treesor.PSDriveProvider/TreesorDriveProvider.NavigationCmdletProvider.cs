@@ -14,7 +14,7 @@ namespace Treesor.PSDriveProvider
         {
             log.Trace().Message($"{nameof(MoveItem)}({nameof(path)}={path}, {nameof(destination)}={destination})").Write();
 
-            this.DriveInfo.Service.MoveItem(path: TreesorItemPath.ParsePath(path), destination: TreesorItemPath.ParsePath(destination));
+            this.DriveInfo.Model.MoveItem(path: TreesorItemPath.ParsePath(path), destination: TreesorItemPath.ParsePath(destination));
         }
 
         protected override string GetChildName(string path)
@@ -61,7 +61,7 @@ namespace Treesor.PSDriveProvider
 
             try
             {
-                return (this.DriveInfo.Service.GetItem(TreesorItemPath.ParsePath(path)).IsContainer);
+                return (this.DriveInfo.Model.Items.Get(TreesorItemPath.ParsePath(path)).IsContainer);
             }
             catch (TreesorModelException ex) when (TreesorModelErrorCodes.MissingItem.Equals(ex.ErrorCode))
             {

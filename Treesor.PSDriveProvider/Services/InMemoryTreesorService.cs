@@ -14,6 +14,8 @@ namespace Treesor.PSDriveProvider
 
         public static Func<string, ITreesorModel> Factory { get; set; } = DefaultFactoryDelegate;
 
+        public ITreesorItemRepository Items => throw new NotImplementedException();
+
         private static ITreesorModel DefaultFactoryDelegate(string type)
         {
             IHierarchy<string,Reference<Guid>> hierarchy = null; 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Management.Automation;
 using Treesor.Model;
 using Xunit;
+using static Treesor.Model.TreesorItemPath;
 using static Treesor.PSDriveProvider.Test.TestDataGenerators;
 
 namespace Treesor.PSDriveProvider.Test
@@ -13,10 +14,13 @@ namespace Treesor.PSDriveProvider.Test
     {
         private readonly PowerShell powershell;
         private readonly Mock<ITreesorModel> treesorModel;
+        private readonly Mock<ITreesorItemRepository> treesorModelItems;
 
         public TreesorDriveNavigationCmdletProviderTest()
         {
+            this.treesorModelItems = new Mock<ITreesorItemRepository>();
             this.treesorModel = new Mock<ITreesorModel>();
+            this.treesorModel.Setup(s => s.Items).Returns(this.treesorModelItems.Object);
 
             TreesorDriveInfo.TreesorModelFactory = _ => this.treesorModel.Object;
 
@@ -40,9 +44,9 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // location exists
 
-            this.treesorModel
-                .Setup(s => s.GetItem(TreesorItemPath.ParsePath(path)))
-                .Returns(TreesorItem(TreesorItemPath.ParsePath(path)));
+            this.treesorModelItems
+                .Setup(s => s.Get(ParsePath(path)))
+                .Returns(TreesorItem(ParsePath(path)));
 
             // ACT
             // change location
@@ -58,8 +62,9 @@ namespace Treesor.PSDriveProvider.Test
             // destination item was retrieved
 
             this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.ItemExists(TreesorItemPath.ParsePath(path)), Times.Never());
-            this.treesorModel.Verify(s => s.GetItem(TreesorItemPath.ParsePath(path)), Times.Once());
+            this.treesorModelItems.VerifyAll();
+            this.treesorModelItems.Verify(s => s.Exists(ParsePath(path)), Times.Never());
+            this.treesorModelItems.Verify(s => s.Get(ParsePath(path)), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
@@ -73,8 +78,8 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // location exists
 
-            this.treesorModel
-                .Setup(s => s.GetItem(TreesorItemPath.ParsePath(path)))
+            this.treesorModelItems
+                .Setup(s => s.Get(ParsePath(path)))
                 .Throws(TreesorModelException.MissingItem(path));
 
             // ACT
@@ -91,8 +96,9 @@ namespace Treesor.PSDriveProvider.Test
             // destination item was retrieved
 
             this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.ItemExists(TreesorItemPath.ParsePath(path)), Times.Never());
-            this.treesorModel.Verify(s => s.GetItem(TreesorItemPath.ParsePath(path)), Times.Once());
+            this.treesorModelItems.VerifyAll();
+            this.treesorModelItems.Verify(s => s.Exists(ParsePath(path)), Times.Never());
+            this.treesorModelItems.Verify(s => s.Get(ParsePath(path)), Times.Once());
 
             Assert.True(this.powershell.HadErrors);
         }
@@ -106,9 +112,9 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // item exists
 
-            this.treesorModel
-                .Setup(s => s.GetItem(TreesorItemPath.ParsePath(path)))
-                .Returns(TreesorItem(TreesorItemPath.ParsePath(path)));
+            this.treesorModelItems
+                .Setup(s => s.Get(ParsePath(path)))
+                .Returns(TreesorItem(ParsePath(path)));
 
             this.powershell
                 .AddStatement()
@@ -127,10 +133,11 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
 
             this.treesorModel.VerifyAll();
+            this.treesorModelItems.VerifyAll();
 
             Assert.False(this.powershell.HadErrors);
             Assert.IsType<PathInfo>(result.Last().BaseObject);
-            Assert.Equal(TreesorItemPath.CreatePath($@"custTree:\{path}"), TreesorItemPath.CreatePath(((PathInfo)result.Last().BaseObject).Path));
+            Assert.Equal(CreatePath($@"custTree:\{path}"), CreatePath(((PathInfo)result.Last().BaseObject).Path));
         }
 
         #endregion Set-Location > IsItemContainer, GetItem > GetItem
@@ -142,8 +149,8 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorModel
-                .Setup(s => s.ItemExists(TreesorItemPath.CreatePath("item1")))
+            this.treesorModelItems
+                .Setup(s => s.Exists(CreatePath("item1")))
                 .Returns(true);
 
             // ACT
@@ -157,7 +164,9 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
 
             this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.MoveItem(TreesorItemPath.CreatePath("item1"), TreesorItemPath.CreatePath("item2")), Times.Once());
+            this.treesorModelItems.VerifyAll();
+            this.treesorModelItems.VerifyAll();
+            this.treesorModel.Verify(s => s.MoveItem(CreatePath("item1"), CreatePath("item2")), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
         }
