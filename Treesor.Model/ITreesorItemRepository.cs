@@ -1,4 +1,6 @@
-﻿namespace Treesor.Model
+﻿using System.Collections.Generic;
+
+namespace Treesor.Model
 {
     public interface ITreesorItemRepository
     {
@@ -15,5 +17,12 @@
         /// <param name="path"></param>
         /// <returns></returns>
         TreesorItem Get(TreesorItemPath path);
+
+        /// <summary>
+        /// Retrieves the child items of the given item
+        /// </summary>
+        /// <param name="treesorNodePath"></param>
+        /// <returns></returns>
+        IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath);
     }
 }

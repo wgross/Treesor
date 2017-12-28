@@ -256,7 +256,7 @@ namespace Treesor.PSDriveProvider.Test
                 .Returns(TreesorItem("item"));
 
             TreesorItem child = null;
-            this.treesorModel
+            this.treesorModelItems
                 .Setup(s => s.GetChildItems(CreatePath("item")))
                 .Returns(new[] { TreesorItem("child", setup: ti => child = ti) });
 
@@ -277,7 +277,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorModelItems.VerifyAll();
             this.treesorModelItems.Verify(s => s.Exists(CreatePath("item")), Times.Once());
             this.treesorModelItems.Verify(s => s.Get(CreatePath("item")), Times.Once());
-            this.treesorModel.Verify(s => s.GetChildItems(CreatePath("item")), Times.Once());
+            this.treesorModelItems.Verify(s => s.GetChildItems(CreatePath("item")), Times.Once());
 
             var resultItem = result.LastOrDefault();
 

@@ -35,25 +35,25 @@
            ));
         }
 
-        internal ITreesorModel Model => this.treesorService;
+        internal ITreesorModel Model => this.treesorModel;
 
         #region Creation and initialization of this instance
 
         public TreesorDriveInfo(PSDriveInfo driveInfo)
             : base(driveInfo)
         {
-            this.treesorService = TreesorModelFactory(driveInfo.Root);
+            this.treesorModel = TreesorModelFactory(driveInfo.Root);
         }
 
         internal IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath, bool recurse)
         {
             if (recurse)
-                return this.treesorService.GetDescendants(treesorNodePath);
+                return this.treesorModel.GetDescendants(treesorNodePath);
             else
-                return this.treesorService.GetChildItems(treesorNodePath);
+                return this.treesorModel.Items.GetChildItems(treesorNodePath);
         }
 
-        private readonly ITreesorModel treesorService;
+        private readonly ITreesorModel treesorModel;
 
         #endregion Creation and initialization of this instance
 
@@ -61,12 +61,12 @@
 
         public void RemovingDrive()
         {
-            this.treesorService.Dispose();
+            this.treesorModel.Dispose();
         }
 
         internal IEnumerable<string> GetChildNames(TreesorItemPath treesorNodePath, ReturnContainers returnContainers)
         {
-            return this.treesorService
+            return this.treesorModel.Items
                 .GetChildItems(treesorNodePath)
                 .Select(ci => ci.Path.HierarchyPath.Leaf().Items.Last());
         }

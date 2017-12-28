@@ -276,7 +276,7 @@ namespace Treesor.PSDriveProvider.Test.Service
 
             // ACT
 
-            var result = this.treesorService.GetChildItems(TreesorItemPath.CreatePath("item"));
+            var result = this.treesorService.Items.GetChildItems(TreesorItemPath.CreatePath("item"));
 
             // ASSERT
 

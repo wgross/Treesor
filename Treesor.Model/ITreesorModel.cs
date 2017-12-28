@@ -27,7 +27,7 @@ namespace Treesor.Model
 
         IEnumerable<TreesorItem> GetChildItemsByWildcard(TreesorItemPath treesorNodePath);
 
-        IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath);
+        //IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath);
 
         IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath);
 
