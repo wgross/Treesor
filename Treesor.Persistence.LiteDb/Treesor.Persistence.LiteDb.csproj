@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Elementary.Hierarchy" Version="2.0.0" />
+    <PackageReference Include="LiteDB" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Treesor.Abstractions\Treesor.Abstractions.csproj" />
     <ProjectReference Include="..\Treesor.Model\Treesor.Model.csproj" />
   </ItemGroup>
 

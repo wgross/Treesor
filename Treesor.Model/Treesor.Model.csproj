@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elementary.Hierarchy" Version="1.7.1" />
+    <PackageReference Include="Elementary.Hierarchy" Version="2.0.0" />
     <PackageReference Include="Elementary.Properties" Version="1.2.0" />
   </ItemGroup>
 

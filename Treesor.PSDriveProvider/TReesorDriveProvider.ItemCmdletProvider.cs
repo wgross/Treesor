@@ -31,12 +31,11 @@ namespace Treesor.PSDriveProvider
 
             var filter = new WildcardPattern(path);
 
-            var tmp = from i in this.DriveInfo.Model.GetDescendants(RootPath)
+            var tmp = from i in this.DriveInfo.Model.Items.GetDescendants(RootPath)
                       let itemPath = i.Path.ToString()
                       where filter.IsMatch(itemPath)
                       select itemPath;
-            var tmp2 = tmp.ToArray();
-            return tmp2;
+            return tmp.ToArray();
         }
 
         protected override void GetItem(string path)

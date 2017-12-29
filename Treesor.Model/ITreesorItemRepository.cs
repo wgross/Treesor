@@ -24,5 +24,12 @@ namespace Treesor.Model
         /// <param name="treesorNodePath"></param>
         /// <returns></returns>
         IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath);
+
+        /// <summary>
+        /// Get descendants (until leaves are reached) of the specified item
+        /// </summary>
+        /// <param name="treesorNodePath"></param>
+        /// <returns></returns>
+        IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath);
     }
 }

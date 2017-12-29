@@ -29,7 +29,7 @@ namespace Treesor.Model
 
         //IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath);
 
-        IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath);
+        // IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath);
 
         void CopyItem(TreesorItemPath path, TreesorItemPath destinationPath, bool recurse);
 

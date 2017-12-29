@@ -30,9 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elementary.Hierarchy, Version=1.7.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elementary.Hierarchy.1.7.1\lib\net461\Elementary.Hierarchy.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Elementary.Hierarchy, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elementary.Hierarchy.2.0.0\lib\netstandard2.0\Elementary.Hierarchy.dll</HintPath>
     </Reference>
     <Reference Include="Elementary.Properties, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Elementary.Properties.1.2.0\lib\net461\Elementary.Properties.dll</HintPath>

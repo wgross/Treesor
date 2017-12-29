@@ -297,7 +297,7 @@ namespace Treesor.PSDriveProvider.Test
                 .Returns(TreesorItem("item"));
 
             TreesorItem grandChild = null;
-            this.treesorModel
+            this.treesorModelItems
                 .Setup(s => s.GetDescendants(CreatePath("item")))
                 .Returns(new[] { TreesorItem("child"), TreesorItem("grandchild", setup: ti => grandChild = ti) });
 
@@ -319,7 +319,7 @@ namespace Treesor.PSDriveProvider.Test
             this.treesorModelItems.VerifyAll();
             this.treesorModelItems.Verify(s => s.Exists(CreatePath("item")), Times.Never());
             this.treesorModelItems.Verify(s => s.Get(CreatePath("item")), Times.Exactly(2)); // because of isContainer
-            this.treesorModel.Verify(s => s.GetDescendants(CreatePath("item")), Times.Once());
+            this.treesorModelItems.Verify(s => s.GetDescendants(CreatePath("item")), Times.Once());
 
             Assert.Equal(2, result.Count());
             Assert.Same(grandChild, result.ElementAt(1).BaseObject);
@@ -528,7 +528,7 @@ namespace Treesor.PSDriveProvider.Test
         {
             // ARRANGE
 
-            this.treesorModel
+            this.treesorModelItems
                 .Setup(s => s.GetDescendants(RootPath))
                 .Returns(new[] { TreesorItem("a"), TreesorItem("b") });
 
@@ -545,8 +545,9 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // Drive info is resolving the wildcard correctly, path infos are returned
 
-            //this.treesorModel.VerifyAll();
-            this.treesorModel.Verify(s => s.GetDescendants(RootPath), Times.Once());
+            this.treesorModel.VerifyAll();
+            this.treesorModelItems.VerifyAll();
+            this.treesorModelItems.Verify(s => s.GetDescendants(RootPath), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.Equal(2, result.Count);
@@ -573,7 +574,7 @@ namespace Treesor.PSDriveProvider.Test
             // ARRANGE
             // create a hierachy with positive and negative items at each level of selection
 
-            this.treesorModel
+            this.treesorModelItems
                 .Setup(s => s.GetDescendants(RootPath))
                 .Returns(new[] {
                     TreesorItem(CreatePath("item")),
@@ -596,9 +597,9 @@ namespace Treesor.PSDriveProvider.Test
             // ASSERT
             // Drive info is resolving the wildcard correctly
 
-            //this.treesorModel.VerifyAll();
+            this.treesorModel.VerifyAll();
             this.treesorModelItems.VerifyAll();
-            this.treesorModel.Verify(s => s.GetDescendants(RootPath), Times.Once());
+            this.treesorModelItems.Verify(s => s.GetDescendants(RootPath), Times.Once());
 
             Assert.False(this.powershell.HadErrors);
             Assert.Equal(2, result.Count);

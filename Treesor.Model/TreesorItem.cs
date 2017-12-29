@@ -4,15 +4,20 @@ namespace Treesor.Model
 {
     public class TreesorItem
     {
+
         public TreesorItem(TreesorItemPath path, Reference<Guid> id)
         {
             this.Path = path;
             this.IdRef = id;
         }
 
-        public Reference<Guid> IdRef { get; }
+        public Reference<Guid> IdRef { get; private set; }
 
-        public Guid Id => this.IdRef.Value;
+        public Guid Id
+        {
+            set => this.IdRef = new Reference<Guid>(value);
+            get => this.IdRef.Value;
+        }
 
         /// <summary>
         /// a treesor item can always contain other items
