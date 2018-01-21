@@ -10,7 +10,7 @@ using static Treesor.Model.TreesorItemPath;
 
 namespace Treesor.Persistence.LiteDb.Test
 {
-    public class LiteDbTreesorServiceUsingHierarchyTest : IDisposable
+    public class LiteDbTreesorModelTest : IDisposable
     {
         private readonly LiteDatabase database;
         private readonly LiteCollection<BsonDocument> nodeCollection;
@@ -21,7 +21,7 @@ namespace Treesor.Persistence.LiteDb.Test
         private readonly MockRepository mocks;
         private readonly MemoryStream databaseStream;
 
-        public LiteDbTreesorServiceUsingHierarchyTest()
+        public LiteDbTreesorModelTest()
         {
             this.mocks = new MockRepository(MockBehavior.Strict);
 
@@ -146,6 +146,18 @@ namespace Treesor.Persistence.LiteDb.Test
             Assert.Equal("Creating TreesorItem(path='item') failed: It already exists.", result.Message);
         }
 
+        [Fact]
+        public void NewItem_fails_on_null_path()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorModel.NewItem(null, treesorItemValue: null));
+
+            // ASSERT
+
+            Assert.Equal("treesorItemPath", result.ParamName);
+        }
+
         #endregion NewItem > Get,Upsert
 
         #region Exists
@@ -167,7 +179,7 @@ namespace Treesor.Persistence.LiteDb.Test
         }
 
         [Fact]
-        public void Exists_returns_false_on_missing_item()
+        public void Exists_returns_fails_on_missing_item()
         {
             // ACT
 
@@ -176,6 +188,18 @@ namespace Treesor.Persistence.LiteDb.Test
             // ASSERT
 
             Assert.False(result);
+        }
+
+        [Fact]
+        public void Exists_returns_fail_on_null_path()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorModel.Items.Exists(null));
+
+            // ASSERT
+
+            Assert.Equal("treesorItemPath", result.ParamName);
         }
 
         #endregion Exists
@@ -211,6 +235,30 @@ namespace Treesor.Persistence.LiteDb.Test
             Assert.Null(result);
         }
 
+        [Fact]
+        public void Get_fails_on_null_path()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentNullException>(() => this.treesorModel.Items.Get(null));
+
+            // ASSERT
+
+            Assert.Equal("treesorItemPath", result.ParamName);
+        }
+
         #endregion Get(..)
+
+        #region ClearItem: Does nothing
+
+        [Fact]
+        public void ClearItem_does_nothing()
+        {
+            // ACT
+
+            this.treesorModel.ClearItem(TreesorItemPath.CreatePath("item"));
+        }
+
+        #endregion ClearItem: Does nothing
     }
 }

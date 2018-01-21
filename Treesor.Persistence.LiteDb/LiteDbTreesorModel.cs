@@ -74,24 +74,7 @@ namespace Treesor.Persistence.LiteDb
 
         #endregion IDisposable Support
 
-        public bool ItemExists(TreesorItemPath treesorNodePath)
-        {
-            Reference<Guid> id;
-            return this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id);
-        }
-
         #region Retrieve node by path
-
-        public TreesorItem GetItem(TreesorItemPath path)
-        {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-
-            Reference<Guid> id;
-            if (this.hierarchy.TryGetValue(path.HierarchyPath, out id))
-                return new TreesorItem(path, id);
-            else return null;
-        }
 
         private bool TryGetItem(TreesorItemPath path, out TreesorItem item)
         {

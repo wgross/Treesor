@@ -75,17 +75,23 @@ namespace Treesor.Persistence.LiteDb
 
         #endregion Construction and initialization of this instance
 
-        public bool Exists(TreesorItemPath treesorNodePath)
+        public bool Exists(TreesorItemPath treesorItemPath)
         {
-            return this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, treesorNodePath.HierarchyPath).Item1;
+            if (treesorItemPath == null)
+                throw new ArgumentNullException(nameof(treesorItemPath));
+
+            return this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, treesorItemPath.HierarchyPath).Item1;
         }
 
-        public TreesorItem Get(TreesorItemPath path)
+        public TreesorItem Get(TreesorItemPath treesorItemPath)
         {
-            if (RootPath.Equals(path))
+            if (treesorItemPath == null)
+                throw new ArgumentNullException(nameof(treesorItemPath));
+
+            if (RootPath.Equals(treesorItemPath))
                 return this.lazyRootNode.Value;
 
-            var (exists, node) = this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, path.HierarchyPath);
+            var (exists, node) = this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, treesorItemPath.HierarchyPath);
             if (exists)
                 return node;
 
@@ -115,14 +121,17 @@ namespace Treesor.Persistence.LiteDb
             return this.lazyRootNode.Value.Descendants(this.GetChildNode);
         }
 
-        internal LiteDbTreesorItem New(TreesorItemPath treesorNodePath)
+        internal LiteDbTreesorItem New(TreesorItemPath treesorItemPath)
         {
-            // fail if node is laready there
-            if (Exists(treesorNodePath))
-                throw new InvalidOperationException($"Creating TreesorItem(path='{treesorNodePath.HierarchyPath.ToString()}') failed: It already exists.");
+            if (treesorItemPath == null)
+                throw new ArgumentNullException(nameof(treesorItemPath));
+
+            // fail if node is already there
+            if (Exists(treesorItemPath))
+                throw new InvalidOperationException($"Creating TreesorItem(path='{treesorItemPath.HierarchyPath.ToString()}') failed: It already exists.");
 
             // create node and return it
-            var (_, node) = this.lazyRootNode.Value.TryGetDescendantAt(GetOrCreateChildNodeByKey, treesorNodePath.HierarchyPath);
+            var (_, node) = this.lazyRootNode.Value.TryGetDescendantAt(GetOrCreateChildNodeByKey, treesorItemPath.HierarchyPath);
             return node;
         }
 
