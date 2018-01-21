@@ -4,7 +4,6 @@ namespace Treesor.Model
 {
     public class TreesorItem
     {
-
         public TreesorItem(TreesorItemPath path, Reference<Guid> id)
         {
             this.Path = path;

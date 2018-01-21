@@ -2,6 +2,7 @@
 using LiteDB;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Treesor.Model;
 using static Treesor.Model.TreesorItemPath;
 
@@ -15,84 +16,149 @@ namespace Treesor.Persistence.LiteDb
         /// Represents the Lite db node structure
         /// </summary>
 
-        public class Node : TreesorItem
+        public class LiteDbTreesorItem : TreesorItem
         {
-            public Node()
-                : this(RootPath, new Reference<Guid>(Guid.NewGuid()))
-            { }
-
-            public Node(TreesorItemPath path, Reference<Guid> idRef)
-                : base(path, idRef)
+            public LiteDbTreesorItem(BsonDocument node)
+                : this(RootPath)
             {
-                this.Key = path.HierarchyPath.Leaf().ToString();
+                this.BsonDocument = node;
             }
 
-            public string Key { get; set; }
+            internal BsonDocument BsonDocument { get; private set; }
+
+            public LiteDbTreesorItem(TreesorItemPath path)
+                : base(path, new Reference<Guid>(Guid.NewGuid()))
+
+            {
+                //this.Key = path.HierarchyPath.Leaf().ToString();
+            }
+
+            public LiteDbTreesorItem(TreesorItemPath path, BsonDocument bsonDocumentNode) : this(path)
+            {
+                this.BsonDocument = bsonDocumentNode;
+            }
+
+            public void Add(LiteDbTreesorItem child)
+            {
+                this.BsonDocument.TryAddChild(child.BsonDocument);
+            }
+
+            public string Key => this.BsonDocument.Key();
+
+            public (bool, BsonValue) TryGetChild(string childKey)
+            {
+                throw new NotImplementedException();
+            }
+
+            public (string, BsonValue) Children => (null, null);
         }
 
-        #region Construction and initialeization of this instance
+        #region Construction and initialization of this instance
 
         private readonly LiteDatabase database;
-        private readonly LiteCollection<Node> nodes;
-        private readonly Lazy<Node> rootNode;
+        private readonly LiteCollection<BsonDocument> nodes;
+        private readonly Lazy<LiteDbTreesorItem> lazyRootNode;
 
-        static LiteDbTreesorItemRepository()
-        {
-            BsonMapper.Global.Entity<Node>()
-                .Id(n => n.Id)
-                .Ignore(n => n.IdRef).Ignore(n => n.IsContainer).Ignore(n => n.Path);
-        }
+        //static LiteDbTreesorItemRepository()
+        //{
+        //    BsonMapper.Global.Entity<LiteDbTreesorItem>()
+        //        .Id(n => n.Id)
+        //        .Ignore(n => n.IdRef).Ignore(n => n.IsContainer).Ignore(n => n.Path);
+        //}
 
         public LiteDbTreesorItemRepository(LiteDatabase database)
         {
             this.database = database;
-            this.nodes = this.database.GetCollection<Node>(node_collection);
-            this.nodes.EnsureIndex(ce => ce.Key, unique: false);
-            this.rootNode = new Lazy<Node>(() => this.GetOrCreateRootNode());
+            this.nodes = this.database.GetCollection<BsonDocument>(node_collection);
+            this.lazyRootNode = new Lazy<LiteDbTreesorItem>(() => this.GetOrCreateRootNode());
         }
 
-        #endregion Construction and initialeization of this instance
+        #endregion Construction and initialization of this instance
 
         public bool Exists(TreesorItemPath treesorNodePath)
         {
-            throw new System.NotImplementedException();
+            return this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, treesorNodePath.HierarchyPath).Item1;
         }
 
         public TreesorItem Get(TreesorItemPath path)
         {
             if (RootPath.Equals(path))
-                return this.rootNode.Value;
+                return this.lazyRootNode.Value;
 
-            throw new NotImplementedException();
+            var (exists, node) = this.lazyRootNode.Value.TryGetDescendantAt(this.TryGetChildNodeByKey, path.HierarchyPath);
+            if (exists)
+                return node;
+
+            return null;
         }
 
-        private Node GetOrCreateRootNode()
+        private LiteDbTreesorItem GetOrCreateRootNode()
         {
-            var root = new Node(RootPath, new Reference<Guid>(Guid.NewGuid()));
-            this.nodes.Upsert(root);
-            return root;
+            var existingNode = this.nodes.FindOne(Query.EQ("key", BsonValue.Null));
+            if (existingNode != null)
+                return new LiteDbTreesorItem(RootPath, existingNode);
+
+            var newRoot = new LiteDbTreesorItem(RootPath, new BsonDocument().Key(BsonValue.Null));
+            if (this.nodes.Upsert(newRoot.BsonDocument))
+                return newRoot;
+
+            throw new InvalidOperationException("A root not was't found and couldn't be created");
         }
 
         public IEnumerable<TreesorItem> GetChildItems(TreesorItemPath treesorNodePath)
         {
-            throw new System.NotImplementedException();
+            return this.lazyRootNode.Value.Children(this.GetChildNode);
         }
 
         public IEnumerable<TreesorItem> GetDescendants(TreesorItemPath treesorNodePath)
         {
-            throw new System.NotImplementedException();
+            return this.lazyRootNode.Value.Descendants(this.GetChildNode);
         }
 
-        internal Node New(TreesorItemPath treesorNodePath)
+        internal LiteDbTreesorItem New(TreesorItemPath treesorNodePath)
         {
-            return null;
-            //Elementary.Hierarchy.Generic.HasIdentifiableChildNodeExtensions.TryGetDescendantAt(this.rootNode.Value,TryGetChildNode);
-            //return result;
+            // fail if node is laready there
+            if (Exists(treesorNodePath))
+                throw new InvalidOperationException($"Creating TreesorItem(path='{treesorNodePath.HierarchyPath.ToString()}') failed: It already exists.");
+
+            // create node and return it
+            var (_, node) = this.lazyRootNode.Value.TryGetDescendantAt(GetOrCreateChildNodeByKey, treesorNodePath.HierarchyPath);
+            return node;
         }
 
-        private (bool,Node) TryGetChildNode(Node parent, string childKey)
+        private (bool Success, LiteDbTreesorItem Node) GetOrCreateChildNodeByKey(LiteDbTreesorItem parent, string childKey)
         {
-            throw new NotImplementedException();
+            var child = parent.BsonDocument.TryGetChild(childKey);
+            if (child.Exists)
+                return (true, new LiteDbTreesorItem(this.nodes.FindById(child.Id)));
+
+            var childNode = new BsonDocument().Key(childKey);
+            if (this.nodes.Upsert(childNode))
+                if (parent.BsonDocument.TryAddChild(childNode))
+                    if (this.nodes.Update(parent.BsonDocument))
+                        return (true, new LiteDbTreesorItem(childNode));
+
+            return (false, null);
+        }
+
+        private (bool Success, LiteDbTreesorItem Node) TryGetChildNodeByKey(LiteDbTreesorItem parent, string childKey)
+        {
+            var child = parent.BsonDocument.TryGetChild(childKey);
+            if (child.Exists)
+                return (true, new LiteDbTreesorItem(CreatePath(parent.Path.HierarchyPath.Join(childKey)), this.nodes.FindById(child.Id)));
+
+            return (false, null);
+        }
+
+        private IEnumerable<LiteDbTreesorItem> GetChildNode(LiteDbTreesorItem parent)
+        {
+            LiteDbTreesorItem fromId(ObjectId id)
+            {
+                var tmp = this.nodes.FindById(id);
+                return new LiteDbTreesorItem(TreesorItemPath.CreatePath(parent.Path.HierarchyPath.Join(tmp.Key())), tmp);
+            }
+
+            return parent.BsonDocument.Children().Select(kv => fromId(kv.Value));
         }
     }
 }

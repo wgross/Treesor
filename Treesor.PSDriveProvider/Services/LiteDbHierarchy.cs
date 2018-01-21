@@ -87,6 +87,11 @@ namespace Treesor.PSDriveProvider.Services
                 throw new NotImplementedException();
             }
 
+            public (bool, IHierarchyNode<TKey, TValue>) TryGetChildNode(TKey id)
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion IHasIdentifiableChildNodes Members
         }
 

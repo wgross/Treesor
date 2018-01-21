@@ -119,15 +119,15 @@ namespace Treesor.Persistence.LiteDb
             return;
         }
 
-        public TreesorItem NewItem(TreesorItemPath treesorNodePath, object newItemValue)
+        public TreesorItem NewItem(TreesorItemPath treesorItemPath, object treesorItemValue)
         {
             // currently a value is not accepted.
             // a data model of the nodes is not yet decided
 
-            if (newItemValue != null)
-                throw new NotSupportedException($"A value for node {treesorNodePath} is not allowed");
+            if (treesorItemValue != null)
+                throw new NotSupportedException($"Creating treesorItem(path='{treesorItemPath}' failed: a value isn't allowed.");
 
-            return this.items.New(treesorNodePath);
+            return this.items.New(treesorItemPath);
         }
 
         public void RemoveItem(TreesorItemPath treesorNodePath, bool recurse)
