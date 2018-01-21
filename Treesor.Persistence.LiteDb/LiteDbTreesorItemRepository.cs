@@ -154,8 +154,10 @@ namespace Treesor.Persistence.LiteDb
         {
             var child = parent.BsonDocument.TryGetChild(childKey);
             if (child.Exists)
-                return (true, new LiteDbTreesorItem(CreatePath(parent.Path.HierarchyPath.Join(childKey)), this.nodes.FindById(child.Id)));
-
+            {
+                var doc = this.nodes.FindById(child.Id);
+                return (true, new LiteDbTreesorItem(CreatePath(parent.Path.HierarchyPath.Join(doc.Key())), doc));
+            }
             return (false, null);
         }
 

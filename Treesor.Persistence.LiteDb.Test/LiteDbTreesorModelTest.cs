@@ -179,6 +179,22 @@ namespace Treesor.Persistence.LiteDb.Test
         }
 
         [Fact]
+        public void Exists_returns_true_on_existing_item_CI()
+        {
+            // ACT
+
+            this.treesorModel.NewItem(CreatePath("item"), treesorItemValue: null);
+
+            // ACT
+
+            var result = this.treesorModel.Items.Exists(CreatePath("ITEM"));
+
+            // ASSERT
+
+            Assert.True(result);
+        }
+
+        [Fact]
         public void Exists_returns_fails_on_missing_item()
         {
             // ACT
@@ -221,6 +237,23 @@ namespace Treesor.Persistence.LiteDb.Test
 
             Assert.NotNull(result);
             Assert.Equal(CreatePath("item"), result.Path);
+        }
+
+        [Fact]
+        public void Get_returns_existing_descendant_CI()
+        {
+            // ARRANGE
+
+            this.treesorModel.NewItem(CreatePath("Item"), treesorItemValue: null);
+
+            // ACT
+
+            var result = this.treesorModel.Items.Get(CreatePath("ITEM"));
+
+            // ASSERT
+
+            Assert.NotNull(result);
+            Assert.Equal(CreatePath("Item"), result.Path);
         }
 
         [Fact]

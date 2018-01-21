@@ -28,6 +28,8 @@ namespace Treesor.Persistence.LiteDb
 
         public static string Key(this BsonDocument thisDoc) => thisDoc["key"].AsString;
 
+        public static string KeyCI(this BsonDocument thisDoc) => CI(thisDoc["key"].AsString);
+
         public static BsonDocument Key(this BsonDocument thisDoc, string childKey)
         {
             thisDoc.Set("key", childKey);
@@ -36,15 +38,20 @@ namespace Treesor.Persistence.LiteDb
 
         public static bool TryAddChild(this BsonDocument thisDoc, BsonDocument child)
         {
-            return thisDoc.Children().TryAdd(child.Key(), child.Id());
+            return thisDoc.Children().TryAdd(CI(child.Key()), child.Id());
         }
 
         public static (bool Exists, string Key, ObjectId Id) TryGetChild(this BsonDocument thisDoc, string childKey)
         {
-            if (thisDoc.Children().TryGetValue(childKey, out var childId))
+            if (thisDoc.Children().TryGetValue(CI(childKey), out var childId))
                 return (true, childKey, childId);
             else
                 return (false, null, null);
+        }
+
+        private static string CI(string str)
+        {
+            return str.ToLowerInvariant();
         }
     }
 }

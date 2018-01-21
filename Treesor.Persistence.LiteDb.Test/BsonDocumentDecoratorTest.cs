@@ -79,13 +79,39 @@ namespace Treesor.Persistence.LiteDb.Test
         }
 
         [Fact]
-        public void Node_receives_a_childnode_id()
+        public void Node_receives_a_childnode_key()
         {
             // ARRANGE
             // prepare two nodes
 
             var parent = new BsonDocument();
             var child = new BsonDocument().Key("item");
+
+            // ACT
+            // add a child node
+
+            var result = parent.TryAddChild(child);
+
+            // ASSERT
+            // parent contains the child
+
+            Assert.True(result);
+
+            var (hasChild, childNodeKey, childNodeId) = parent.TryGetChild("item");
+
+            Assert.True(hasChild);
+            Assert.Equal("item", childNodeKey);
+            Assert.Equal(child.Id(), childNodeId);
+        }
+
+        [Fact]
+        public void Node_receives_a_childnode_key_is_CI()
+        {
+            // ARRANGE
+            // prepare two nodes
+
+            var parent = new BsonDocument();
+            var child = new BsonDocument().Key("ITEM");
 
             // ACT
             // add a child node
@@ -113,6 +139,29 @@ namespace Treesor.Persistence.LiteDb.Test
             var parent = new BsonDocument();
             var child1 = new BsonDocument().Key("item");
             var child2 = new BsonDocument().Key("item");
+
+            parent.TryAddChild(child1);
+
+            // ACT
+            // add a child node
+
+            var result = parent.TryAddChild(child2);
+
+            // ASSERT
+            // parent rejects duplicate child
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void Node_fails_on_adding_duplicate_child_CI()
+        {
+            // ARRANGE
+            // prepare three nodes
+
+            var parent = new BsonDocument();
+            var child1 = new BsonDocument().Key("item");
+            var child2 = new BsonDocument().Key("ITEM");
 
             parent.TryAddChild(child1);
 
