@@ -174,11 +174,7 @@ namespace Treesor.Persistence.LiteDb
 
         public void RenameItem(TreesorItemPath treesorNodePath, string newName)
         {
-            Reference<Guid> id;
-            if (this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath, out id))
-                if (!this.hierarchy.TryGetValue(treesorNodePath.HierarchyPath.Parent().Join(newName), out id))
-                    if (this.hierarchy.Remove(treesorNodePath.HierarchyPath))
-                        this.hierarchy.Add(treesorNodePath.HierarchyPath.Parent().Join(newName), id);
+            this.items.Rename(treesorNodePath, newName);
         }
 
         public void MoveItem(TreesorItemPath path, TreesorItemPath destinationPath)

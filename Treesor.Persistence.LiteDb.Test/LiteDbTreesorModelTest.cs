@@ -207,7 +207,7 @@ namespace Treesor.Persistence.LiteDb.Test
         }
 
         [Fact]
-        public void Exists_returns_fail_on_null_path()
+        public void Exists_fails_on_null_path()
         {
             // ACT
 
@@ -293,5 +293,60 @@ namespace Treesor.Persistence.LiteDb.Test
         }
 
         #endregion ClearItem: Does nothing
+
+        #region RenameItem
+
+        [Fact]
+        public void Rename_changes_nodes_key_parents_childKey()
+        {
+            // ARRANGE
+
+            var item = this.treesorModel.NewItem(CreatePath("item"), null);
+            var child = this.treesorModel.NewItem(CreatePath("item", "child"), null);
+
+            // ACT
+
+            this.treesorModel.RenameItem(CreatePath("item", "child"), "child2");
+
+            // ASSERT
+
+            var item2 = this.treesorModel.Items.Get(CreatePath("item", "child2"));
+
+            Assert.Equal(CreatePath("item", "child2"), item2.Path);
+        }
+
+        [Fact]
+        public void Rename_fails_for_unknown_child()
+        {
+            // ARRANGE
+
+            var item = this.treesorModel.NewItem(CreatePath("item"), null);
+            var child = this.treesorModel.NewItem(CreatePath("item", "child"), null);
+
+            // ACT
+
+            var result = Assert.Throws<InvalidOperationException>(() => this.treesorModel.RenameItem(CreatePath("item", "child2"), "child1"));
+
+            // ASSERT
+
+            Assert.NotNull(result);
+            Assert.Equal(@"Renaming TreesorItem(path='item\child2') failed: It doesn't exist.", result.Message);
+        }
+
+        [Fact]
+        public void Rename_root_fails()
+        {
+            // ACT
+
+            var result = Assert.Throws<ArgumentException>(() => this.treesorModel.RenameItem(RootPath, "child1"));
+
+            // ASSERT
+
+            Assert.NotNull(result);
+            Assert.Contains("Root node can't be renamed", result.Message);
+            Assert.Equal("treesorItemPath", result.ParamName);
+        }
+
+        #endregion RenameItem
     }
 }

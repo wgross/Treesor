@@ -1,4 +1,5 @@
-﻿using Elementary.Hierarchy.Generic;
+﻿using Elementary.Hierarchy;
+using Elementary.Hierarchy.Generic;
 using LiteDB;
 using System;
 using System.Collections.Generic;
@@ -133,6 +134,23 @@ namespace Treesor.Persistence.LiteDb
             // create node and return it
             var (_, node) = this.lazyRootNode.Value.TryGetDescendantAt(GetOrCreateChildNodeByKey, treesorItemPath.HierarchyPath);
             return node;
+        }
+
+        internal void Rename(TreesorItemPath treesorItemPath, string newChildKey)
+        {
+            if (RootPath.Equals(treesorItemPath))
+                throw new ArgumentException("Root node can't be renamed", nameof(treesorItemPath));
+
+            var child = (LiteDbTreesorItem)this.Get(treesorItemPath);
+            if (child == null)
+                throw new InvalidOperationException($"Renaming TreesorItem(path='{treesorItemPath}') failed: It doesn't exist.");
+
+            var parent = (LiteDbTreesorItem)this.Get(CreatePath(treesorItemPath.HierarchyPath.Parent()));
+
+            parent.BsonDocument.TryRenameChild(treesorItemPath.HierarchyPath.Leaf().ToString(), newChildKey);
+            child.BsonDocument.Key(newChildKey);
+
+            this.nodes.Upsert(new[] { parent.BsonDocument, child.BsonDocument });
         }
 
         private (bool Success, LiteDbTreesorItem Node) GetOrCreateChildNodeByKey(LiteDbTreesorItem parent, string childKey)
